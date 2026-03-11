@@ -1,0 +1,255 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   RTF DESIGN SYSTEM — CSS Custom Properties
+   ============================================ */
+
+:root {
+  /* Backgrounds */
+  --bg-void:      #020408;
+  --bg-deep:      #080D14;
+  --bg-surface:   #0D1520;
+  --bg-elevated:  #141E2E;
+  --bg-border:    #1E2D42;
+
+  /* Primary Accent — Cyan */
+  --cyan-500:     #06B6D4;
+  --cyan-400:     #22D3EE;
+  --cyan-300:     #67E8F9;
+  --cyan-glow:    rgba(6, 182, 212, 0.35);
+
+  /* Secondary Accent — Amber */
+  --amber-500:    #F59E0B;
+  --amber-400:    #FBBF24;
+  --amber-glow:   rgba(245, 158, 11, 0.35);
+
+  /* Tertiary — Electric Purple */
+  --purple-500:   #7C3AED;
+  --purple-400:   #8B5CF6;
+  --purple-glow:  rgba(124, 58, 237, 0.3);
+
+  /* Text */
+  --text-primary:   #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted:     #475569;
+  --text-accent:    #22D3EE;
+
+  /* Semantic */
+  --success: #10B981;
+  --error:   #EF4444;
+  --warning: #F59E0B;
+
+  /* Component Tokens */
+  --radius-card:   12px;
+  --radius-button: 8px;
+  --radius-badge:  4px;
+
+  --shadow-card:        0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px var(--bg-border);
+  --shadow-glow-cyan:   0 0 30px var(--cyan-glow);
+  --shadow-glow-amber:  0 0 30px var(--amber-glow);
+  --shadow-glow-purple: 0 0 30px var(--purple-glow);
+
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow:   400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-primary);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: rgba(6, 182, 212, 0.3);
+    color: #F1F5F9;
+  }
+
+  /* Focus ring for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--cyan-400);
+    outline-offset: 2px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--bg-border);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--cyan-500);
+  }
+}
+
+/* ============================================
+   TYPOGRAPHY SCALE
+   ============================================ */
+
+@layer components {
+  .text-display {
+    font: 700 clamp(3rem, 7vw, 6rem)/1.0 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  .text-h1 {
+    font: 700 clamp(2rem, 4vw, 3.5rem)/1.1 'Space Grotesk', sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  .text-h2 {
+    font: 600 clamp(1.5rem, 3vw, 2.5rem)/1.2 'Space Grotesk', sans-serif;
+  }
+
+  .text-h3 {
+    font: 600 clamp(1.2rem, 2vw, 1.75rem)/1.3 'Space Grotesk', sans-serif;
+  }
+
+  .text-body {
+    font: 400 1rem/1.7 'Inter', sans-serif;
+  }
+
+  .text-mono {
+    font: 400 0.875rem/1.6 'JetBrains Mono', monospace;
+  }
+
+  .text-label {
+    font: 600 0.75rem/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+@layer utilities {
+  /* Glassmorphism base */
+  .glass {
+    background: rgba(13, 21, 32, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(30, 45, 66, 0.5);
+  }
+
+  /* Grid background pattern */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* Glow effects */
+  .glow-cyan {
+    box-shadow: var(--shadow-glow-cyan);
+  }
+
+  .glow-amber {
+    box-shadow: var(--shadow-glow-amber);
+  }
+
+  .glow-purple {
+    box-shadow: var(--shadow-glow-purple);
+  }
+
+  /* Text gradient */
+  .text-gradient-cyan {
+    background: linear-gradient(135deg, var(--cyan-400), var(--cyan-300));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-amber {
+    background: linear-gradient(135deg, var(--amber-500), var(--amber-400));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Skip to content — accessibility */
+  .skip-to-content {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    padding: 0.75rem 1.5rem;
+    background: var(--cyan-500);
+    color: var(--bg-void);
+    font-weight: 700;
+    border-radius: var(--radius-button);
+    transition: top var(--transition-fast);
+  }
+
+  .skip-to-content:focus {
+    top: 1rem;
+  }
+
+  /* Thin scrollbar for terminal-style elements */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--bg-border);
+    border-radius: 2px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--cyan-500);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
