@@ -39,11 +39,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled && !mobileOpen
           ? 'glass shadow-card'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
@@ -64,11 +63,10 @@ export default function Navbar() {
               <li key={link.path}>
                 <Link
                   to={link.path}
-                  className={`relative px-3 py-2 text-sm font-body font-medium transition-colors duration-200 rounded-button ${
-                    isActive
+                  className={`relative px-3 py-2 text-sm font-body font-medium transition-colors duration-200 rounded-button ${isActive
                       ? 'text-cyan-400'
                       : 'text-text-secondary hover:text-text-primary'
-                  }`}
+                    }`}
                 >
                   {link.label}
                   {isActive && (
@@ -111,6 +109,7 @@ export default function Navbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             className="fixed inset-0 top-0 z-40 bg-deep/98 backdrop-blur-xl lg:hidden"
+            onClick={() => setMobileOpen(false)}
           >
             <motion.nav
               variants={staggerContainer}
@@ -126,9 +125,8 @@ export default function Navbar() {
                     <Link
                       to={link.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`text-2xl font-display font-semibold transition-colors ${
-                        isActive ? 'text-cyan-400' : 'text-text-secondary hover:text-text-primary'
-                      }`}
+                      className={`text-2xl font-display font-semibold transition-colors ${isActive ? 'text-cyan-400' : 'text-text-secondary hover:text-text-primary'
+                        }`}
                     >
                       {link.label}
                     </Link>
