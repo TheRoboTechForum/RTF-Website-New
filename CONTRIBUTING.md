@@ -16,6 +16,7 @@ This guide will walk you through everything you need to know.
 - [Pull Request Process](#-pull-request-process)
 - [What We're Looking For](#-what-were-looking-for)
 - [AI Policy](#-ai-policy)
+- [Claiming an Issue](#-claiming-an-issue)
 - [Reporting Bugs](#-reporting-bugs)
 - [Requesting Features](#-requesting-features)
 - [Getting Help](#-getting-help)
@@ -525,41 +526,143 @@ This is about respect — for the project, for other contributors who review you
 
 ---
 
+## 🎯 Claiming an Issue
+
+Before you start working on any issue, you **must** claim it first. This prevents duplicate effort and ensures everyone knows who is working on what.
+
+### How to Claim an Issue
+
+1. Find an issue you'd like to work on in the [Issues tab](https://github.com/TheRoboTechForum/RTF-Website-New/issues)
+2. Read the issue description carefully to make sure you understand it
+3. Leave a comment on the issue with `/assign` to request assignment:
+
+```
+/assign
+```
+
+4. The **Smart Assign** workflow (`.github/workflows/assign.yml`) will automatically:
+   - Assign the issue to you
+   - Add the `in-progress` label
+   - Post a comment confirming your assignment with a **5-day deadline**
+
+### Assignment Rules
+
+| Rule | Detail |
+| ---- | ------ |
+| 🔒 **No self-assignment** | Issues are not auto-assigned — you must comment `/assign` to claim one |
+| ⏳ **5-day expiry** | You have 5 days from assignment to submit a PR. After that, the issue may be reassigned |
+| 🚫 **No double-assignment** | If an issue is already assigned, you'll receive a warning and cannot claim it |
+| 👤 **Assign on behalf** | Maintainers can use `/assign @username` to assign an issue to a specific contributor |
+
+### Example
+
+```
+/assign
+```
+
+You'll see an automated reply like:
+
+> ✅ Assigned to @your-username until Mon Apr 07 2026
+
+> ⚠️ This issue is already assigned to @other-username
+
+If an issue has been inactive beyond its expiry, ping a maintainer to unassign it so others can claim it.
+
+---
+
 ## 🐛 Reporting Bugs
 
-Found a bug? [Open an issue](https://github.com/TheRoboTechForum/RTF-Website-New/issues/new) with:
+Found a bug? [Open an issue](https://github.com/TheRoboTechForum/RTF-Website-New/issues/new) using the template below.
 
-- **Title:** Short, descriptive summary
-- **Description:** What happened vs. what you expected
-- **Steps to reproduce:** How can we see the bug?
-- **Screenshots:** Especially for visual/layout bugs
-- **Environment:** Browser, OS, viewport size
+### Bug Report Template
 
 ```markdown
-**Bug:** Navbar overlaps hero section on iPhone SE (375px)
+**Title:** [Bug] Short, descriptive summary of the issue
 
-**Expected:** Navbar should be above the hero content with no overlap
+---
 
-**Steps:**
-1. Open the site on a 375px viewport
+## What is the issue?
+<!-- Describe what is broken or behaving incorrectly -->
+
+## Steps to Reproduce
+1. Go to '...'
+2. Click on '...'
+3. Scroll down to '...'
+4. See the error
+
+## Expected Behaviour
+<!-- What should have happened instead? -->
+
+## Actual Behaviour
+<!-- What actually happened? -->
+
+## Proof (Screenshots / Video)
+<!-- Attach a screenshot or screen recording showing the bug.
+     This is especially important for visual/layout issues. -->
+
+## Environment
+- **Browser:** <!-- e.g., Chrome 123, Safari 17, Firefox 124 -->
+- **Device:** <!-- e.g., MacBook Pro, iPhone 15, Samsung Galaxy S23 -->
+- **Viewport / Screen size:** <!-- e.g., 375px (mobile), 1440px (desktop) -->
+- **OS:** <!-- e.g., macOS 14, Windows 11, iOS 17 -->
+```
+
+### Example Bug Report
+
+```markdown
+**Title:** [Bug] Navbar overlaps hero section on iPhone SE (375px)
+
+## What is the issue?
+The fixed navbar covers part of the hero headline text when the page is opened on a 375px viewport.
+
+## Steps to Reproduce
+1. Open the site on a 375px viewport (or use DevTools device emulation)
 2. Scroll down slightly
-3. Notice the fixed navbar covers the hero headline
+3. Notice the fixed navbar overlaps the hero headline
 
-**Browser:** Safari iOS 17.2
-**Device:** iPhone SE (3rd gen)
+## Expected Behaviour
+The navbar should sit above the hero content with no overlap.
+
+## Actual Behaviour
+The navbar covers the top portion of the hero section headline.
+
+## Proof (Screenshots / Video)
+<!-- screenshot attached -->
+
+## Environment
+- **Browser:** Safari iOS 17.2
+- **Device:** iPhone SE (3rd gen)
+- **Viewport / Screen size:** 375px
+- **OS:** iOS 17.2
 ```
 
 ---
 
 ## 💡 Requesting Features
 
-Have an idea? [Open an issue](https://github.com/TheRoboTechForum/RTF-Website-New/issues/new) with:
+Have an idea? [Open an issue](https://github.com/TheRoboTechForum/RTF-Website-New/issues/new) using the template below.
 
-- **What** you'd like to see
-- **Why** it would be useful (who benefits?)
-- **How** you envision it working (mockups/sketches welcome)
+### Feature Request Template
 
-Don't worry about whether it's feasible — just describe the idea. We'll discuss it.
+```markdown
+**Title:** [Feature] Short summary of the feature
+
+---
+
+## What would you like to see?
+<!-- Describe the feature or enhancement you're proposing -->
+
+## Why would this be useful?
+<!-- Who benefits from this? How does it improve the site or developer experience? -->
+
+## How do you envision it working?
+<!-- Describe your idea for implementation, or attach mockups/sketches if you have them -->
+
+## Additional context
+<!-- Any other information, links, or references that might be helpful -->
+```
+
+Don't worry about whether it's feasible — just describe the idea clearly. We'll discuss it.
 
 ---
 
