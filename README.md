@@ -11,9 +11,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-cyan.svg)](CONTRIBUTING.md)
 
-[**Live Site**](https://rtf-website-new.vercel.app) · [**Report Bug**](https://github.com/TheRoboTechForum/RTF-Website-New/issues) · [**Request Feature**](https://github.com/TheRoboTechForum/RTF-Website-New/issues) · [**Contributing Guide**](CONTRIBUTING.md)
+[**Live Site**](https://rtf-website-new.vercel.app) · [**Report Bug**](https://github.com/TheRoboTechForum/RTF-Website-New/issues) · [**Request Feature**](https://github.com/TheRoboTechForum/RTF-Website-New/issues) · [**Contributing Guide**](CONTRIBUTING.md) · [**Discord**](https://discord.gg/nFcxaYKc)
 
 </div>
+
+---
+
+## 💬 Join Our Discord Community
+
+**Have questions or want to chat with contributors?**
+
+[![Discord](https://img.shields.io/badge/Discord-Join%20RTF%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/nFcxaYKc)
+
+👉 **[discord.gg/nFcxaYKc](https://discord.gg/nFcxaYKc)** — Real-time help, discussions, and community support
 
 ---
 

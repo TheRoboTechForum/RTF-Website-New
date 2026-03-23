@@ -6,7 +6,17 @@ This guide will walk you through everything you need to know.
 
 ---
 
-## 📋 Table of Contents
+## � Join Our Community
+
+**We'd love to have you in real-time communication with the team!**
+
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/nFcxaYKc)
+
+👉 **[Join the RTF Discord](https://discord.gg/nFcxaYKc)** — Get help, ask questions, discuss features, and connect with other contributors and maintainers.
+
+---
+
+## �📋 Table of Contents
 
 - [Getting Started](#-getting-started)
 - [How to Contribute](#-how-to-contribute)
@@ -14,6 +24,7 @@ This guide will walk you through everything you need to know.
 - [Code Style Guide](#-code-style-guide)
 - [Commit Convention](#-commit-convention)
 - [Pull Request Process](#-pull-request-process)
+- [Issue Template and Assignment Process](#-issue-template-and-assignment-process)
 - [What We're Looking For](#-what-were-looking-for)
 - [AI Policy](#-ai-policy)
 - [Reporting Bugs](#-reporting-bugs)
@@ -443,6 +454,128 @@ When you open a PR, include:
 
 ---
 
+## 🎫 Issue Template and Assignment Process
+
+### How to Open/Raise an Issue
+
+Before starting work on any bug fix or feature, please [open an issue](https://github.com/TheRoboTechForum/RTF-Website-New/issues/new) describing what you'd like to fix or build. This helps prevent duplicate work and allows maintainers and contributors to discuss the best approach.
+
+### Issue Template
+
+When opening an issue, please provide the following information:
+
+```markdown
+## 🐛 Issue Type
+<!-- Check one -->
+- [ ] Bug report
+- [ ] Feature request
+- [ ] Documentation improvement
+- [ ] Design/UI improvement
+- [ ] Other (please specify)
+
+## 📝 Description
+### What is the issue?
+Clearly describe the problem or feature request. What is broken? What is missing? What should be improved?
+
+### Expected Behavior
+Describe what should happen or how it should look/work.
+
+### Proof/Evidence
+<!-- Provide screenshots, recordings, or a link to a live example -->
+- **Screenshots:** [Attach before/after images]
+- **Screen Recording:** [Link to video showing the issue]
+- **Live URL:** [If applicable]
+
+## 🖥️ Environment Details
+<!-- Please tell us where you encountered this -->
+
+### Browser
+- [ ] Chrome
+- [ ] Firefox
+- [ ] Safari
+- [ ] Edge
+- [ ] Mobile Browser (specify): ___________
+
+### Device
+- [ ] Desktop (Windows/Mac/Linux) - specify: ___________
+- [ ] Mobile (iOS/Android) - Device: ___________
+- [ ] Tablet - Device: ___________
+
+### Viewport Size (if applicable)
+- Approximate width: _____ px
+
+### Additional Context
+Any other relevant information? Links to related issues? Configuration details?
+```
+
+### Assignment Workflow
+
+⚠️ **Important:** Issues are not automatically assigned to anyone. If you want to work on an issue, you must **request assignment** first.
+
+#### How to Get Assigned to an Issue
+
+1. **Find an issue** you'd like to work on
+2. **Comment on the issue** with the command: `/assign`
+3. **Wait for confirmation** — The workflow will automatically:
+   - Assign you to the issue
+   - Add the `in-progress` label
+   - Post a confirmation comment with an expiry date
+
+```
+💬 Comment to request assignment:
+/assign
+```
+
+#### Assignment Rules
+
+- **Assignment Duration:** 5 days
+- **Once 5 days pass:** The assignment automatically expires, the `in-progress` label is removed, and the issue becomes available for others
+- **Already Assigned?** If someone else is already assigned, you'll see a message. Wait for them to finish or ask in the issue if they need help
+- **Want to Unassign?** Comment `/unassign` to release the issue back to the community
+- **Stuck?** If you're nearing the 5-day limit and need more time, comment on the issue to request a renewal
+
+#### Workflow Details
+
+Our automated workflow ensures fair assignment and prevents issues from being left idle:
+
+- **`/assign` command** → Triggers the Smart Assign workflow
+  - Checks if the issue is already assigned
+  - Assigns to you (or a mentioned user if you use `/assign @username`)
+  - Adds the `in-progress` label
+  - Sets a 5-day expiry date
+
+- **Auto Unassign** → Daily checks for expired assignments
+  - If 5 days have passed since assignment, automatically unassigns
+  - Removes the `in-progress` label
+  - Posts a message that the issue is open again
+
+### Example Workflow
+
+```
+1️⃣ You find issue #42: "Fix navbar overflow on mobile"
+
+2️⃣ You comment:
+   /assign
+
+3️⃣ Workflow responds:
+   ✅ Assigned to @yourname until Mar 28, 2026
+   Issue gets the "in-progress" label
+
+4️⃣ You create a branch and open a PR within 5 days
+
+5️⃣ Your PR gets merged → Issue is closed ✨
+```
+
+**Never start work on an issue without being assigned** — this prevents duplicate effort and confusion.
+
+#### Need Help with Assignment?
+
+If you're unsure about anything related to the assignment process, feel free to ask:
+- **On Discord:** [discord.gg/nFcxaYKc](https://discord.gg/nFcxaYKc) — Quickest way to get answers
+- **In the GitHub issue:** Comment with your questions
+
+---
+
 ## 🔍 What We're Looking For
 
 ### High-priority contributions right now:
@@ -569,8 +702,16 @@ Stuck on something? Here's how to get unblocked:
 
 1. **Check existing issues** — Someone may have asked the same question
 2. **Read the code** — The codebase has JSDoc comments and the design system is documented in the README
-3. **Open a Discussion/Issue** — Ask on GitHub. No question is too basic.
-4. **Reach out to maintainers** — Tag `@dakshtitarmare` or `@TheRoboTechForum` in your issue
+3. **Join our Discord** — Quick questions? [Join the RTF Discord server](https://discord.gg/nFcxaYKc) for real-time discussion with contributors and maintainers
+4. **Open a Discussion/Issue** — Ask on GitHub. No question is too basic.
+5. **Reach out to maintainers** — Tag `@dakshtitarmare` or `@TheRoboTechForum` in your issue
+
+### 💬 Communication Channels
+
+- **Discord:** [https://discord.gg/nFcxaYKc](https://discord.gg/nFcxaYKc) — Real-time communication, quick questions, and community support
+- **GitHub Issues:** Ask anything in the repository issues
+- **GitHub Discussions:** Join conversations about features and improvements
+- **Email:** Reach out to maintainers in GitHub issues for more complex discussions
 
 ---
 
