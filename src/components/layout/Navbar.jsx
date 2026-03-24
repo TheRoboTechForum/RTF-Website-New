@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
-import { staggerContainer, fadeUp } from '../../lib/animations';
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
+import { staggerContainer, fadeUp } from "../../lib/animations";
+import ThemeToggle from "../ui/ThemeToggle";
 
 const navLinks = [
-  { path: '/', label: 'Home' },
-  { path: '/about', label: 'About' },
-  { path: '/projects', label: 'Projects' },
-  { path: '/team', label: 'Team' },
-  { path: '/sponsors', label: 'Sponsors' },
-  { path: '/timeline', label: 'Timeline' },
-  { path: '/gallery', label: 'Gallery' },
-  { path: '/contact', label: 'Contact' },
+  { path: "/", label: "Home" },
+  { path: "/about", label: "About" },
+  { path: "/projects", label: "Projects" },
+  { path: "/team", label: "Team" },
+  { path: "/sponsors", label: "Sponsors" },
+  { path: "/timeline", label: "Timeline" },
+  { path: "/gallery", label: "Gallery" },
+  { path: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
@@ -22,8 +23,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Close mobile menu on route change
@@ -33,23 +34,29 @@ export default function Navbar() {
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? 'glass shadow-card'
-          : 'bg-transparent'
+        scrolled ? "glass shadow-card" : "bg-transparent"
       }`}
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group" aria-label="RTF Home">
+        <Link
+          to="/"
+          className="flex items-center gap-2 group"
+          aria-label="RTF Home"
+        >
           <div className="w-9 h-9 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center group-hover:shadow-glow-cyan transition-shadow duration-300">
-            <span className="font-display font-bold text-cyan-400 text-sm">RTF</span>
+            <span className="font-display font-bold text-cyan-400 text-sm">
+              RTF
+            </span>
           </div>
           <span className="font-display font-semibold text-text-primary text-lg hidden sm:block">
             Robo-Tech Forum
@@ -66,8 +73,8 @@ export default function Navbar() {
                   to={link.path}
                   className={`relative px-3 py-2 text-sm font-body font-medium transition-colors duration-200 rounded-button ${
                     isActive
-                      ? 'text-cyan-400'
-                      : 'text-text-secondary hover:text-text-primary'
+                      ? "text-cyan-400"
+                      : "text-text-secondary hover:text-text-primary"
                   }`}
                 >
                   {link.label}
@@ -75,7 +82,11 @@ export default function Navbar() {
                     <motion.span
                       layoutId="nav-underline"
                       className="absolute bottom-0 left-3 right-3 h-0.5 bg-cyan-400 rounded-full"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </Link>
@@ -84,19 +95,22 @@ export default function Navbar() {
           })}
         </ul>
 
-        {/* Desktop Login Button */}
-        <Link
-          to="/login"
-          className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-mono font-medium text-cyan-400 border border-cyan-500/30 rounded-button hover:bg-cyan-500/10 hover:border-cyan-400/50 transition-all duration-200"
-        >
-          MEMBER LOGIN
-        </Link>
+        {/* Desktop Theme Toggle + Login */}
+        <div className="hidden lg:flex items-center gap-3">
+          <ThemeToggle />
+          <Link
+            to="/login"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-mono font-medium text-cyan-400 border border-cyan-500/30 rounded-button hover:bg-cyan-500/10 hover:border-cyan-400/50 transition-all duration-200"
+          >
+            MEMBER LOGIN
+          </Link>
+        </div>
 
         {/* Mobile Hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="lg:hidden p-2 text-text-secondary hover:text-cyan-400 transition-colors"
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
         >
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -127,7 +141,9 @@ export default function Navbar() {
                       to={link.path}
                       onClick={() => setMobileOpen(false)}
                       className={`text-2xl font-display font-semibold transition-colors ${
-                        isActive ? 'text-cyan-400' : 'text-text-secondary hover:text-text-primary'
+                        isActive
+                          ? "text-cyan-400"
+                          : "text-text-secondary hover:text-text-primary"
                       }`}
                     >
                       {link.label}
@@ -135,12 +151,10 @@ export default function Navbar() {
                   </motion.div>
                 );
               })}
-              <motion.div variants={fadeUp} className="mt-6">
-                <Link
-                  to="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="px-6 py-3 text-sm font-mono font-medium text-cyan-400 border border-cyan-500/30 rounded-button hover:bg-cyan-500/10 transition-all"
-                >
+
+              <motion.div variants={fadeUp} className="flex flex-col items-center gap-4">
+                <ThemeToggle />
+                <Link to="/login" className="text-cyan-400 font-mono border border-cyan-500/30 px-6 py-2 rounded-button">
                   MEMBER LOGIN
                 </Link>
               </motion.div>
