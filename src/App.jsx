@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
@@ -42,6 +42,19 @@ function AnimatedRoutes() {
 export default function App() {
   const [introComplete, setIntroComplete] = useState(false);
 
+  const [showButton, setShowButton] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 400) {
+        setShowButton(true);
+      } else {
+        setShowButton(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   return (
     <Router>
       {!introComplete && <VideoIntro onComplete={() => setIntroComplete(true)} />}
@@ -50,7 +63,24 @@ export default function App() {
         <Navbar />
         <AnimatedRoutes />
         <Footer />
+        {showButton && (
+  <button
+    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+    className="fixed bottom-6 right-6 z-[999] w-12 h-12 rounded-full 
+               bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.8)] 
+               hover:shadow-[0_0_25px_rgba(6,182,212,1)] 
+               animate-pulse hover:animate-none transition-all 
+               duration-300 flex items-center justify-center 
+               border-2 border-cyan-300 cursor-pointer group"
+    title="Initiate Scroll to Top"
+  >
+    <span className="text-xl group-hover:-translate-y-1 transition-transform">
+      ▲
+    </span >
+  </button>
+)}
       </div>
     </Router>
   );
+  
 }
