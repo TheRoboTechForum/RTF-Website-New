@@ -23,6 +23,7 @@ export default function TerminalContact() {
     { type: 'system', text: '─────────────────────────────' },
     { type: 'system', text: 'Type your response after each prompt and press Enter.' },
     { type: 'system', text: '' },
+    { type: 'prompt', text: PROMPTS[0].prompt },
   ]);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({});
@@ -43,15 +44,6 @@ export default function TerminalContact() {
     }
   }, [isInView, step, submitted]);
 
-  // Show first prompt on mount
-  useEffect(() => {
-    if (step === 0 && !submitted) {
-      setHistory((h) => [
-        ...h,
-        { type: 'prompt', text: PROMPTS[0].prompt },
-      ]);
-    }
-  }, []);
 
   const handleSubmitLine = useCallback(
     (e) => {
