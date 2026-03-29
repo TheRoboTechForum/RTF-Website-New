@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
-import { Github, ExternalLink, Users } from 'lucide-react';
+import { ExternalLink, Users } from 'lucide-react';
+import { FaGithub } from 'react-icons/fa';
+
 import { fadeUp } from '../../lib/animations';
 
 /**
@@ -131,7 +133,7 @@ export default function ProjectCard({ project, onClick }) {
                 aria-label={`${title} GitHub repository`}
                 className="text-text-muted hover:text-cyan-400 transition-colors"
               >
-                <Github size={15} />
+                <FaGithub />
               </a>
             )}
             <ExternalLink

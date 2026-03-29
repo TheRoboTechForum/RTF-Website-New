@@ -5,7 +5,9 @@ import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import SectionHeader from '../components/ui/SectionHeader';
 import HoloCard from '../components/ui/HoloCard';
 import NeoButton from '../components/ui/NeoButton';
-import { Mail, MapPin, Clock, Send, Instagram, Linkedin, Facebook } from 'lucide-react';
+import { Mail, MapPin, Clock, Send } from 'lucide-react';
+import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
+
 import { contactInfo, socials } from '../data/stats';
 
 const contactCards = [
@@ -199,7 +201,7 @@ export default function Contact() {
                 aria-label="Facebook"
                 className="w-11 h-11 rounded-lg bg-surface border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
               >
-                <Facebook size={18} />
+                <FaFacebookF />
               </a>
             )}
             {socials.instagram && (
@@ -210,7 +212,7 @@ export default function Contact() {
                 aria-label="Instagram"
                 className="w-11 h-11 rounded-lg bg-surface border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
               >
-                <Instagram size={18} />
+                <FaInstagram />
               </a>
             )}
             {socials.linkedin && (
@@ -221,7 +223,7 @@ export default function Contact() {
                 aria-label="LinkedIn"
                 className="w-11 h-11 rounded-lg bg-surface border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
               >
-                <Linkedin size={18} />
+                <FaLinkedinIn />
               </a>
             )}
           </div>

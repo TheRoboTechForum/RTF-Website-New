@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Github, ExternalLink, Users, Trophy } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ExternalLink, Users, Trophy } from 'lucide-react';
+import { FaGithub } from 'react-icons/fa';
+
 import { pageTransition, fadeUp, staggerContainer, slideInRight } from '../lib/animations';
 import SectionHeader from '../components/ui/SectionHeader';
 import ProjectCard from '../components/ui/ProjectCard';
@@ -260,7 +262,7 @@ export default function Projects() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 text-xs font-mono font-semibold text-text-primary bg-elevated border border-border rounded-button hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
                     >
-                      <Github size={14} />
+                      <FaGithub />
                       VIEW SOURCE
                     </a>
                   )}
