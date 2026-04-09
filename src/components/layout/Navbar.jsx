@@ -44,7 +44,7 @@ export default function Navbar() {
           : 'bg-transparent'
         }`}
     >
-      <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+      <nav className="relative z-50 max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group" aria-label="RTF Home">
           <div className="w-9 h-9 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center group-hover:shadow-glow-cyan transition-shadow duration-300">
