@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence } from 'framer-motion';
 
 // Layout
+import ScrollToTop from './components/layout/ScrollToTop';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ScrollProgress from './components/layout/ScrollProgress';
@@ -57,6 +58,7 @@ export default function App() {
   }, []);
   return (
     <Router>
+      <ScrollToTop />
       {!introComplete && <VideoIntro onComplete={() => setIntroComplete(true)} />}
       <div className={`relative min-h-screen bg-deep text-text-primary overflow-x-hidden ${!introComplete ? 'invisible' : ''}`}>
         <ScrollProgress />
