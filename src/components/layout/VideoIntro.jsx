@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import introVideo from '../../assets/video/intro-video.mp4';
+import introVideo from '../../assets/Videos/intro-video.mp4';
 
 /**
  * VideoIntro — Fullscreen video splash on first visit.

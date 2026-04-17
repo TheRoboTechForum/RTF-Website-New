@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 /**
@@ -12,16 +12,33 @@ import { motion, useScroll, useTransform } from 'framer-motion';
  */
 export default function ParallaxImage({
   src,
+  images = [],
   alt,
   overlay,
   height = 60,
+  slideInterval = 3500,
   children,
 }) {
   const ref = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
   });
+
+  const imageList = (images.length > 0 ? images : [src]).filter(Boolean);
+
+  useEffect(() => {
+    if (imageList.length <= 1) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % imageList.length);
+    }, slideInterval);
+
+    return () => clearInterval(timer);
+  }, [imageList.length, slideInterval]);
 
   const y = useTransform(scrollYProgress, [0, 1], ['-15%', '15%']);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.4, 1, 1, 0.4]);
@@ -37,12 +54,16 @@ export default function ParallaxImage({
         style={{ y }}
         className="absolute inset-0 -top-[20%] -bottom-[20%]"
       >
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          className="w-full h-full object-cover"
-        />
+        {imageList.map((image, index) => (
+          <img
+            key={`${image}-${index}`}
+            src={image}
+            alt={alt}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out will-change-transform"
+            style={{ opacity: index === activeIndex ? 1 : 0 }}
+          />
+        ))}
       </motion.div>
 
       {/* Dark overlay for readability */}

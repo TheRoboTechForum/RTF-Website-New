@@ -1,21 +1,36 @@
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 /**
- * ScrollProgress — thin cyan line at the very top of the viewport
- * Grows from 0% to 100% width as the user scrolls the page.
+ * ScrollProgress — thin cyan line at the very top.
+ *
+ * Uses GSAP ScrollTrigger (which Lenis already keeps in sync) instead of
+ * Framer Motion's useScroll. Framer useScroll reads window.scrollY directly,
+ * which fights with Lenis's virtual scroll position and causes jank.
  */
 export default function ScrollProgress() {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
+  const barRef = useRef(null);
+
+  useEffect(() => {
+    const st = ScrollTrigger.create({
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        if (barRef.current) {
+          gsap.set(barRef.current, { scaleX: self.progress });
+        }
+      },
+    });
+
+    return () => st.kill();
+  }, []);
 
   return (
-    <motion.div
+    <div
+      ref={barRef}
       className="fixed top-0 left-0 right-0 h-[2px] bg-cyan-400 origin-left z-[60]"
-      style={{ scaleX }}
+      style={{ transform: 'scaleX(0)' }}
     />
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { useLenis } from './hooks/useLenis';
 
 // Layout
 import Navbar from './components/layout/Navbar';
@@ -41,8 +42,10 @@ function AnimatedRoutes() {
 
 export default function App() {
   const [introComplete, setIntroComplete] = useState(false);
-
   const [showButton, setShowButton] = useState(false);
+
+  // Buttery smooth scrolling via Lenis, synced to GSAP ScrollTrigger
+  useLenis();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,7 +61,7 @@ export default function App() {
   return (
     <Router>
       {!introComplete && <VideoIntro onComplete={() => setIntroComplete(true)} />}
-      <div className={`relative min-h-screen bg-deep text-text-primary overflow-x-hidden ${!introComplete ? 'invisible' : ''}`}>
+      <div className={`relative min-h-screen bg-deep text-text-primary ${!introComplete ? 'invisible' : ''}`} style={{ overflowX: 'clip' }}>
         <ScrollProgress />
         <Navbar />
         <AnimatedRoutes />
