@@ -22,7 +22,7 @@ export const projects = [
     ],
     github: null,
     demo: null,
-    achievements: 'Represented GCoEA at DD Robocon 2025, IIT Delhi',
+    achievements: ['Represented GCoEA at DD Robocon 2025, IIT Delhi'],
     featured: true,
   },
   {
@@ -41,7 +41,7 @@ export const projects = [
     ],
     github: 'https://github.com/rtf-gcoea/quadruped',
     demo: null,
-    achievements: 'Showcased at GCoEA Annual Tech Exhibition 2024',
+    achievements: ['Showcased at GCoEA Annual Tech Exhibition 2024'],
     featured: true,
   },
   {
@@ -61,7 +61,7 @@ export const projects = [
     ],
     github: null,
     demo: null,
-    achievements: 'Selected for ISRO IRoC-U National Round',
+    achievements: ['Selected for ISRO IRoC-U National Round'],
     featured: true,
   },
   {
@@ -97,7 +97,7 @@ export const projects = [
     images: ['https://picsum.photos/seed/holonomic1/800/450'],
     github: null,
     demo: null,
-    achievements: 'Core drive system used in Robocon bots',
+    achievements: ['Core drive system used in Robocon bots'],
     featured: false,
   },
   {
@@ -113,7 +113,7 @@ export const projects = [
     images: ['https://picsum.photos/seed/meshmerize1/800/450'],
     github: null,
     demo: null,
-    achievements: 'Competed at Techfest IIT Bombay 2023',
+    achievements: ['Competed at Techfest IIT Bombay 2023'],
     featured: false,
   },
   {
@@ -132,7 +132,7 @@ export const projects = [
     ],
     github: null,
     demo: null,
-    achievements: 'Won 1st Place at Tech Carvaan Line Follower Competition',
+    achievements: ['Won 1st Place at Tech Carvaan Line Follower Competition'],
     featured: false,
   },
   {
@@ -164,7 +164,7 @@ export const projects = [
     images: ['https://picsum.photos/seed/vtol1/800/450'],
     github: null,
     demo: null,
-    achievements: 'First VTOL aircraft built at GCoEA',
+    achievements: ['First VTOL aircraft built at GCoEA'],
     featured: false,
   },
   {
@@ -231,7 +231,7 @@ export const projects = [
     images: ['https://picsum.photos/seed/eyantra1/800/450'],
     github: null,
     demo: null,
-    achievements: 'Selected for E-Yantra 2024-25 National Finals',
+    achievements: ['Selected for E-Yantra 2024-25 National Finals'],
     featured: true,
   },
   {
@@ -247,7 +247,7 @@ export const projects = [
     images: ['https://picsum.photos/seed/rcplane1/800/450'],
     github: null,
     demo: null,
-    achievements: 'Successfully flew — first aero project in RTF history',
+    achievements: ['Successfully flew — first aero project in RTF history'],
     featured: false,
   },
   {
@@ -263,7 +263,7 @@ export const projects = [
     images: ['https://picsum.photos/seed/warehouse1/800/450'],
     github: 'https://github.com/rtf-gcoea/smart-warehouse',
     demo: null,
-    achievements: 'Showcased at AXIS, VNIT Nagpur 2024',
+    achievements: ['Showcased at AXIS, VNIT Nagpur 2024'],
     featured: false,
   },
 ];
