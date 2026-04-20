@@ -1,279 +1,140 @@
-/**
- * RTF Projects Data
- * Real projects from The Robo-Tech Forum, GCoEA Amravati
- * Source: therobotechforum.in
- */
+import { useState, useEffect, useCallback } from 'react';
+import { projects as fallbackProjects } from '../data/projects';
 
-export const projects = [
-  {
-    id: 1,
-    title: 'DD Robocon 2025 Bot',
-    category: 'ROBOTICS',
-    description:
-      'Dual-robot system (R1 & R2) designed for DD Robocon 2025 at IIT Delhi. Features advanced holonomic drive, pneumatic actuators, and real-time wireless coordination between both bots for competitive arena challenges.',
-    techStack: ['SolidWorks', 'Arduino', 'ROS', 'Pneumatics', 'C++'],
-    teamSize: 14,
-    year: 2025,
-    status: 'completed',
-    images: [
-      'https://picsum.photos/seed/robocon1/800/450',
-      'https://picsum.photos/seed/robocon2/800/450',
-      'https://picsum.photos/seed/robocon3/800/450',
-    ],
-    github: null,
-    demo: null,
-    achievements: ['Represented GCoEA at DD Robocon 2025, IIT Delhi'],
-    featured: true,
-  },
-  {
-    id: 2,
-    title: 'Quadruped Robot (Robo-Dog)',
-    category: 'ROBOTICS',
-    description:
-      'A four-legged walking robot inspired by Boston Dynamics Spot. Built with 12 servo motors for 3-DOF per leg, capable of walking, trotting, and basic terrain adaptation using inverse kinematics.',
-    techStack: ['Arduino', 'Servo Motors', 'C++', 'Inverse Kinematics', '3D Printing'],
-    teamSize: 6,
-    year: 2024,
-    status: 'completed',
-    images: [
-      'https://picsum.photos/seed/quadruped1/800/450',
-      'https://picsum.photos/seed/quadruped2/800/450',
-    ],
-    github: 'https://github.com/rtf-gcoea/quadruped',
-    demo: null,
-    achievements: ['Showcased at GCoEA Annual Tech Exhibition 2024'],
-    featured: true,
-  },
-  {
-    id: 3,
-    title: 'ISRO IRoC-U Rover — ANAV',
-    category: 'ROBOTICS',
-    description:
-      'Autonomous navigation rover built for ISRO\'s IRoC-U challenge at U R Rao Satellite Centre. Features LiDAR-based SLAM, autonomous path planning, and a custom drone base station for aerial surveying support.',
-    techStack: ['ROS2', 'Python', 'LiDAR', 'Raspberry Pi', 'Pixhawk'],
-    teamSize: 8,
-    year: 2024,
-    status: 'completed',
-    images: [
-      'https://picsum.photos/seed/irocu1/800/450',
-      'https://picsum.photos/seed/irocu2/800/450',
-      'https://picsum.photos/seed/irocu3/800/450',
-    ],
-    github: null,
-    demo: null,
-    achievements: ['Selected for ISRO IRoC-U National Round'],
-    featured: true,
-  },
-  {
-    id: 4,
-    title: 'Swerve Wheel Drive Bot',
-    category: 'ROBOTICS',
-    description:
-      'Advanced omnidirectional drive system where each wheel can independently rotate 360°. Provides superior maneuverability compared to traditional holonomic drives, designed for competitive robotics arenas.',
-    techStack: ['SolidWorks', 'Arduino', 'Stepper Motors', 'PID Control', 'CNC Machining'],
-    teamSize: 5,
-    year: 2024,
-    status: 'completed',
-    images: [
-      'https://picsum.photos/seed/swerve1/800/450',
-      'https://picsum.photos/seed/swerve2/800/450',
-      'https://picsum.photos/seed/swerve3/800/450',
-    ],
-    github: null,
-    demo: null,
-    achievements: null,
-    featured: false,
-  },
-  {
-    id: 5,
-    title: '3-Wheel Holonomic Base',
-    category: 'ROBOTICS',
-    description:
-      'RTF\'s first holonomic drive platform using three omni wheels at 120° apart. Enables smooth omnidirectional motion for competition bots with PID-controlled speed and heading stabilization.',
-    techStack: ['Arduino', 'Omni Wheels', 'PID', 'C++', 'Motor Drivers'],
-    teamSize: 4,
-    year: 2023,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/holonomic1/800/450'],
-    github: null,
-    demo: null,
-    achievements: ['Core drive system used in Robocon bots'],
-    featured: false,
-  },
-  {
-    id: 6,
-    title: 'Meshmerize — Cosmo Clench Bot',
-    category: 'ROBOTICS',
-    description:
-      'Competition robot designed for the Meshmerize challenge. Features a precision clamping mechanism, differential drive, and sensor-based autonomous navigation for arena object manipulation tasks.',
-    techStack: ['Arduino', 'IR Sensors', 'DC Motors', 'Acrylic Chassis', 'C++'],
-    teamSize: 5,
-    year: 2023,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/meshmerize1/800/450'],
-    github: null,
-    demo: null,
-    achievements: ['Competed at Techfest IIT Bombay 2023'],
-    featured: false,
-  },
-  {
-    id: 7,
-    title: 'Line Follower Bot — Competition Grade',
-    category: 'ELECTRONICS',
-    description:
-      'High-speed PID-controlled line follower using LSA-08 sensor array for precision tracking. Optimized for sharp turns, intersections, and speed with a custom lightweight PCB-based chassis.',
-    techStack: ['Arduino', 'LSA-08', 'PID Algorithm', 'PCB Design', 'C++'],
-    teamSize: 3,
-    year: 2023,
-    status: 'completed',
-    images: [
-      'https://picsum.photos/seed/linefollower1/800/450',
-      'https://picsum.photos/seed/linefollower2/800/450',
-    ],
-    github: null,
-    demo: null,
-    achievements: ['Won 1st Place at Tech Carvaan Line Follower Competition'],
-    featured: false,
-  },
-  {
-    id: 8,
-    title: 'RC Racing Boats',
-    category: 'ELECTRONICS',
-    description:
-      'Custom-built remote-controlled racing boats with waterproof brushless motor propulsion. Designed and fabricated hull from scratch using foam-board and fiberglass for optimal speed-to-weight ratio.',
-    techStack: ['Brushless Motors', 'ESC', 'FlySky RC', 'Fiberglass', 'Foam Board'],
-    teamSize: 4,
-    year: 2024,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/rcboat1/800/450'],
-    github: null,
-    demo: null,
-    achievements: null,
-    featured: false,
-  },
-  {
-    id: 9,
-    title: 'VTOL Aircraft',
-    category: 'ELECTRONICS',
-    description:
-      'Vertical Take-Off and Landing fixed-wing aircraft that combines the hover capability of a quadcopter with the efficiency of a traditional airplane. Uses tilt-rotor mechanism for smooth flight mode transitions.',
-    techStack: ['Pixhawk', 'ArduPilot', 'Tilt-Rotor', 'GPS', 'Telemetry'],
-    teamSize: 5,
-    year: 2024,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/vtol1/800/450'],
-    github: null,
-    demo: null,
-    achievements: ['First VTOL aircraft built at GCoEA'],
-    featured: false,
-  },
-  {
-    id: 10,
-    title: 'Custom Quadcopters',
-    category: 'ELECTRONICS',
-    description:
-      'Multiple custom-built quadcopter drones ranging from micro FPV racers to heavy-lift payload carriers. Features Speedy Bee flight controllers, GPS hold, and telemetry-based ground station monitoring.',
-    techStack: ['Speedy Bee FC', 'Betaflight', 'BLDC Motors', 'LiPo', 'FPV'],
-    teamSize: 4,
-    year: 2024,
-    status: 'ongoing',
-    images: [
-      'https://picsum.photos/seed/quadcopter1/800/450',
-      'https://picsum.photos/seed/quadcopter2/800/450',
-    ],
-    github: null,
-    demo: null,
-    achievements: null,
-    featured: false,
-  },
-  {
-    id: 11,
-    title: 'Delta Wing UAV',
-    category: 'ELECTRONICS',
-    description:
-      'Tailless delta wing unmanned aerial vehicle designed for high-speed flight and aerial survey missions. The swept wing design provides excellent stability at high speeds with minimal drag.',
-    techStack: ['ArduPilot', 'Servos', 'Foam Board', 'RC Transmitter', 'GPS'],
-    teamSize: 3,
-    year: 2023,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/deltawing1/800/450'],
-    github: null,
-    demo: null,
-    achievements: null,
-    featured: false,
-  },
-  {
-    id: 12,
-    title: 'Glider Aircraft',
-    category: 'ELECTRONICS',
-    description:
-      'Lightweight glider aircraft capable of sustained unpowered flight for extended durations. Built with balsa wood and monokote covering, optimized for thermal soaring and aerodynamic efficiency.',
-    techStack: ['Balsa Wood', 'Monokote', 'Servos', 'RC System'],
-    teamSize: 3,
-    year: 2023,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/glider1/800/450'],
-    github: null,
-    demo: null,
-    achievements: null,
-    featured: false,
-  },
-  {
-    id: 13,
-    title: 'E-Yantra Robotics Challenge Bot',
-    category: 'AI/ML',
-    description:
-      'Embedded systems and robotics solution for IIT Bombay\'s e-Yantra challenge. Combines image processing, path planning algorithms, and real-time embedded control to solve themed problem statements.',
-    techStack: ['Python', 'OpenCV', 'STM32', 'ROS', 'Embedded C'],
-    teamSize: 4,
-    year: 2025,
-    status: 'ongoing',
-    images: ['https://picsum.photos/seed/eyantra1/800/450'],
-    github: null,
-    demo: null,
-    achievements: ['Selected for E-Yantra 2024-25 National Finals'],
-    featured: true,
-  },
-  {
-    id: 14,
-    title: 'First RC Plane',
-    category: 'ELECTRONICS',
-    description:
-      'RTF\'s first fully scratch-built remote-controlled airplane. Hand-crafted from foam board with a custom motor mount, this project marked the beginning of RTF\'s aero division and inspired future UAV builds.',
-    techStack: ['Foam Board', 'Brushless Motor', 'ESC', 'FlySky Transmitter'],
-    teamSize: 3,
-    year: 2022,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/rcplane1/800/450'],
-    github: null,
-    demo: null,
-    achievements: ['Successfully flew — first aero project in RTF history'],
-    featured: false,
-  },
-  {
-    id: 15,
-    title: 'Smart Warehouse Automation System',
-    category: 'AUTOMATION',
-    description:
-      'An automated warehouse prototype using conveyor belts, robotic arms, and RFID-based inventory tracking. Demonstrates end-to-end industrial automation from sorting to dispatching with minimal human intervention.',
-    techStack: ['Arduino', 'RFID', 'Servo Arms', 'Conveyor Belt', 'MQTT'],
-    teamSize: 6,
-    year: 2024,
-    status: 'completed',
-    images: ['https://picsum.photos/seed/warehouse1/800/450'],
-    github: 'https://github.com/rtf-gcoea/smart-warehouse',
-    demo: null,
-    achievements: ['Showcased at AXIS, VNIT Nagpur 2024'],
-    featured: false,
-  },
-];
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Xfkn0g41BRKiutGca0_0Xb23k4_D9S_oq8czXLt4EX8/export?format=csv&gid=1394685927';
+const CACHE_KEY = 'rtf_projects_cache';
+const CACHE_TTL = 300000; // 5 minutes
 
-/** Get featured projects for homepage */
-export const getFeaturedProjects = () => projects.filter((p) => p.featured);
+const parseCSV = (text) => {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+  return lines.slice(1).map(line => {
+    // Handle commas inside quoted fields properly:
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQuotes = !inQuotes; }
+      else if (line[i] === ',' && !inQuotes) {
+        values.push(current.trim());
+        current = '';
+      } else { current += line[i]; }
+    }
+    values.push(current.trim());
 
-/** Get projects by category */
-export const getProjectsByCategory = (category) =>
-  category === 'ALL' ? projects : projects.filter((p) => p.category === category);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = values[i] || ''; });
+    return obj;
+  });
+};
 
-/** All unique categories */
-export const categories = ['ALL', 'ROBOTICS', 'AUTOMATION', 'AI/ML', 'ELECTRONICS', 'SOFTWARE'];
+const transformRow = (row) => ({
+  id: parseInt(row.id) || 0,
+  title: row.title || '',
+  category: row.category?.toUpperCase() || 'OTHER',
+  description: row.description || '',
+  techStack: row.techStack ? row.techStack.split(',').map(t => t.trim()).filter(Boolean) : [],
+  teamSize: parseInt(row.teamSize) || 1,
+  year: parseInt(row.year) || new Date().getFullYear(),
+  status: row.status?.toUpperCase() || 'COMPLETED',
+  images: [row.image1, row.image2, row.image3].filter(Boolean),
+  github: row.github || null,
+  demo: row.demo || null,
+  achievements: row.achievements ? row.achievements.split(',').map(a => a.trim()).filter(Boolean) : [],
+  featured: row.featured?.toLowerCase() === 'true',
+});
+
+export function useProjects() {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchProjects = useCallback(async (signal) => {
+    const startTime = Date.now();
+    const MIN_LOADING_TIME = 800;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Check session storage cache
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_TTL) {
+          const elapsed = Date.now() - startTime;
+          if (elapsed < MIN_LOADING_TIME) {
+            await new Promise((resolve, reject) => {
+              const t = setTimeout(resolve, MIN_LOADING_TIME - elapsed);
+              signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
+            });
+          }
+          setProjects(data);
+          setLoading(false);
+          return;
+        }
+      }
+
+      const response = await fetch(SHEET_URL, { signal });
+      if (!response.ok) {
+        throw new Error('Failed to fetch projects data');
+      }
+
+      const csvText = await response.text();
+      const parsedData = parseCSV(csvText);
+      const transformedData = parsedData.map(transformRow);
+
+      // Ensure minimum loading time for animation
+      const elapsed = Date.now() - startTime;
+      if (elapsed < MIN_LOADING_TIME) {
+        await new Promise((resolve, reject) => {
+          const t = setTimeout(resolve, MIN_LOADING_TIME - elapsed);
+          signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
+        });
+      }
+
+      setProjects(transformedData);
+      setLoading(false);
+
+      // Save to cache
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+        data: transformedData,
+        timestamp: Date.now()
+      }));
+
+    } catch (err) {
+      // Ignore abort errors — component unmounted, skip ALL state updates
+      if (err.name === 'AbortError') return;
+
+      setError(err.message);
+      // Enforce minimum skeleton delay even on error path
+      const elapsed = Date.now() - startTime;
+      if (elapsed < MIN_LOADING_TIME) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, MIN_LOADING_TIME - elapsed);
+        });
+      }
+      // Fallback to offline static data
+      setProjects(fallbackProjects);
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchProjects(controller.signal);
+
+    // Cleanup: abort fetch + cancel timers on unmount
+    return () => {
+      controller.abort();
+    };
+  }, [fetchProjects]);
+
+  // Manual refetch (creates its own controller, not tied to mount lifecycle)
+  const refetch = useCallback(() => {
+    const controller = new AbortController();
+    fetchProjects(controller.signal);
+  }, [fetchProjects]);
+
+  return { projects, loading, error, refetch };
+}
