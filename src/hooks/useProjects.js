@@ -49,7 +49,7 @@ export function useProjects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchProjects = useCallback(async () => {
+  const fetchProjects = useCallback(async (signal) => {
     const startTime = Date.now();
     const MIN_LOADING_TIME = 800;
 
@@ -62,14 +62,17 @@ export function useProjects() {
       if (cached) {
         const { data, timestamp } = JSON.parse(cached);
         if (Date.now() - timestamp < CACHE_TTL) {
-          await new Promise(resolve => setTimeout(resolve, MIN_LOADING_TIME));
+          await new Promise((resolve, reject) => {
+            const t = setTimeout(resolve, MIN_LOADING_TIME);
+            signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
+          });
           setProjects(data);
           setLoading(false);
           return;
         }
       }
 
-      const response = await fetch(SHEET_URL);
+      const response = await fetch(SHEET_URL, { signal });
       if (!response.ok) {
         throw new Error('Failed to fetch projects data');
       }
@@ -81,7 +84,10 @@ export function useProjects() {
       // Ensure minimum loading time for animation
       const elapsed = Date.now() - startTime;
       if (elapsed < MIN_LOADING_TIME) {
-        await new Promise(resolve => setTimeout(resolve, MIN_LOADING_TIME - elapsed));
+        await new Promise((resolve, reject) => {
+          const t = setTimeout(resolve, MIN_LOADING_TIME - elapsed);
+          signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
+        });
       }
 
       setProjects(transformedData);
@@ -93,11 +99,17 @@ export function useProjects() {
       }));
 
     } catch (err) {
+      // Ignore abort errors — component unmounted, no state updates needed
+      if (err.name === 'AbortError') return;
+
       setError(err.message);
       // Enforce minimum skeleton delay even on error path
       const elapsed = Date.now() - startTime;
       if (elapsed < MIN_LOADING_TIME) {
-        await new Promise(resolve => setTimeout(resolve, MIN_LOADING_TIME - elapsed));
+        await new Promise((resolve, reject) => {
+          const t = setTimeout(resolve, MIN_LOADING_TIME - elapsed);
+          signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
+        }).catch(() => { return; }); // swallow abort on error-path delay too
       }
       // Fallback to offline static data
       setProjects(fallbackProjects);
@@ -107,8 +119,20 @@ export function useProjects() {
   }, []);
 
   useEffect(() => {
-    fetchProjects();
+    const controller = new AbortController();
+    fetchProjects(controller.signal);
+
+    // Cleanup: abort fetch + cancel timers on unmount
+    return () => {
+      controller.abort();
+    };
   }, [fetchProjects]);
 
-  return { projects, loading, error, refetch: fetchProjects };
+  // Manual refetch (creates its own controller, not tied to mount lifecycle)
+  const refetch = useCallback(() => {
+    const controller = new AbortController();
+    fetchProjects(controller.signal);
+  }, [fetchProjects]);
+
+  return { projects, loading, error, refetch };
 }
