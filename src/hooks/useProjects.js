@@ -91,6 +91,7 @@ export function useProjects() {
       }
 
       setProjects(transformedData);
+      setLoading(false);
 
       // Save to cache
       sessionStorage.setItem(CACHE_KEY, JSON.stringify({
@@ -99,21 +100,19 @@ export function useProjects() {
       }));
 
     } catch (err) {
-      // Ignore abort errors — component unmounted, no state updates needed
+      // Ignore abort errors — component unmounted, skip ALL state updates
       if (err.name === 'AbortError') return;
 
       setError(err.message);
       // Enforce minimum skeleton delay even on error path
       const elapsed = Date.now() - startTime;
       if (elapsed < MIN_LOADING_TIME) {
-        await new Promise((resolve, reject) => {
-          const t = setTimeout(resolve, MIN_LOADING_TIME - elapsed);
-          signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
-        }).catch(() => { return; }); // swallow abort on error-path delay too
+        await new Promise((resolve) => {
+          setTimeout(resolve, MIN_LOADING_TIME - elapsed);
+        });
       }
       // Fallback to offline static data
       setProjects(fallbackProjects);
-    } finally {
       setLoading(false);
     }
   }, []);
