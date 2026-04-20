@@ -28,9 +28,9 @@ export default function ProjectCard({ project, onOpenDetail, index = 0 }) {
   };
 
   const statusConfig = {
-    COMPLETED: { color: '#22C55E', bgColor: 'bg-green-500' },
-    ONGOING:   { color: '#F59E0B', bgColor: 'bg-amber-500', pulse: true },
-    PROTOTYPE: { color: '#64748B', bgColor: 'bg-slate-500' }
+    COMPLETED: { bgColor: 'bg-green-500' },
+    ONGOING:   { bgColor: 'bg-amber-500', pulse: true },
+    PROTOTYPE: { bgColor: 'bg-slate-500' }
   };
 
   const badgeClass = categoryColors[category] || categoryColors.DEFAULT;
