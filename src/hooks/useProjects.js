@@ -62,10 +62,13 @@ export function useProjects() {
       if (cached) {
         const { data, timestamp } = JSON.parse(cached);
         if (Date.now() - timestamp < CACHE_TTL) {
-          await new Promise((resolve, reject) => {
-            const t = setTimeout(resolve, MIN_LOADING_TIME);
-            signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
-          });
+          const elapsed = Date.now() - startTime;
+          if (elapsed < MIN_LOADING_TIME) {
+            await new Promise((resolve, reject) => {
+              const t = setTimeout(resolve, MIN_LOADING_TIME - elapsed);
+              signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
+            });
+          }
           setProjects(data);
           setLoading(false);
           return;
