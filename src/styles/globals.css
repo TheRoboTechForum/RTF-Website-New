@@ -1,275 +1,423 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ChevronLeft, ChevronRight, ExternalLink, Users, Trophy, Search, AlertTriangle, RefreshCw } from 'lucide-react';
+import { FaGithub } from 'react-icons/fa';
 
-/* ============================================
-   RTF DESIGN SYSTEM — CSS Custom Properties
-   ============================================ */
+import { pageTransition, staggerContainer, slideInRight } from '../lib/animations';
+import SectionHeader from '../components/ui/SectionHeader';
+import ProjectCard from '../components/ui/ProjectCard';
+import { useProjects } from '../hooks/useProjects';
+import { getDetailImage } from '../lib/cloudinary';
 
-:root {
-  /* Backgrounds */
-  --bg-void:      #020408;
-  --bg-deep:      #080D14;
-  --bg-surface:   #0D1520;
-  --bg-elevated:  #141E2E;
-  --bg-border:    #1E2D42;
+export default function Projects() {
+  const { projects, loading, error, refetch } = useProjects();
+  const [activeCategory, setActiveCategory] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [imageIndex, setImageIndex] = useState(0);
 
-  /* Primary Accent — Cyan */
-  --cyan-500:     #06B6D4;
-  --cyan-400:     #22D3EE;
-  --cyan-300:     #67E8F9;
-  --cyan-glow:    rgba(6, 182, 212, 0.35);
+  // Derived filter categories from projects
+  const uniqueCategories = useMemo(() => {
+    const cats = new Set(projects.map(p => p.category));
+    return ['ALL', ...Array.from(cats)].filter(c => c !== 'OTHER');
+  }, [projects]);
 
-  /* Secondary Accent — Amber */
-  --amber-500:    #F59E0B;
-  --amber-400:    #FBBF24;
-  --amber-glow:   rgba(245, 158, 11, 0.35);
+  // Keep ALL first and preserve the preferred order for known categories,
+  // while still rendering any additional categories coming from the CMS.
+  const preferredCategoryOrder = ['ALL', 'ROBOTICS', 'ELECTRONICS', 'AI/ML', 'AUTOMATION', 'SOFTWARE'];
+  const allCategories = useMemo(() => {
+    const orderedKnownCategories = preferredCategoryOrder.filter(c => uniqueCategories.includes(c));
+    const additionalCategories = uniqueCategories.filter(c => !preferredCategoryOrder.includes(c));
+    return [...orderedKnownCategories, ...additionalCategories];
+  }, [uniqueCategories]);
 
-  /* Tertiary — Electric Purple */
-  --purple-500:   #7C3AED;
-  --purple-400:   #8B5CF6;
-  --purple-glow:  rgba(124, 58, 237, 0.3);
+  // Compute category counts
+  const categoryCounts = useMemo(() => {
+    const counts = { ALL: projects.length };
+    projects.forEach(p => {
+      counts[p.category] = (counts[p.category] || 0) + 1;
+    });
+    return counts;
+  }, [projects]);
 
-  /* Text */
-  --text-primary:   #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted:     #475569;
-  --text-accent:    #22D3EE;
+  const filtered = useMemo(() => {
+    return projects.filter((p) => {
+      const matchCategory = activeCategory === 'ALL' || p.category === activeCategory;
+      const q = searchQuery.toLowerCase();
+      const matchSearch = q === '' ||
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.techStack.some(t => t.toLowerCase().includes(q));
 
-  /* Semantic */
-  --success: #10B981;
-  --error:   #EF4444;
-  --warning: #F59E0B;
+      return matchCategory && matchSearch;
+    });
+  }, [projects, activeCategory, searchQuery]);
 
-  /* Component Tokens */
-  --radius-card:   12px;
-  --radius-button: 8px;
-  --radius-badge:  4px;
+  // Close modal on Escape
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Escape') setSelectedProject(null);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
-  --shadow-card:        0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px var(--bg-border);
-  --shadow-glow-cyan:   0 0 30px var(--cyan-glow);
-  --shadow-glow-amber:  0 0 30px var(--amber-glow);
-  --shadow-glow-purple: 0 0 30px var(--purple-glow);
+  // Lock body scroll when modal open
+  useEffect(() => {
+    document.body.style.overflow = selectedProject ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedProject]);
 
-  --transition-fast:   150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow:   400ms cubic-bezier(0.16, 1, 0.3, 1);
-}
+  const openProject = useCallback((project) => {
+    setImageIndex(0);
+    setSelectedProject(project);
+  }, []);
 
-/* ============================================
-   BASE STYLES
-   ============================================ */
+  return (
+    <motion.main
+      id="main-content"
+      variants={pageTransition}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="pt-28 pb-24 px-6 min-h-screen"
+    >
+      <SectionHeader
+        label="// OUR PORTFOLIO"
+        title="Projects"
+        subtitle="From autonomous rovers to competition-winning robots — explore projects built by RTF engineers."
+      />
 
-@layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+      {/* Error state with fallback indicator */}
+      {error && projects.length > 0 && (
+        <div className="max-w-7xl mx-auto mb-6 bg-cyan-900/20 border border-cyan-800/50 rounded p-3 flex justify-center text-xs font-mono text-cyan-300">
+          Showing offline fallback data
+        </div>
+      )}
 
-  html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+      {/* Search and Filters */}
+      <div className="max-w-7xl mx-auto mb-10">
+        <div className="flex flex-col md:flex-row gap-6 items-center justify-between mb-8">
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-deep);
-    color: var(--text-primary);
-    line-height: 1.7;
-    overflow-x: hidden;
-  }
+          {/* Search Bar */}
+          <div className="relative w-full max-w-[320px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#475569]" size={16} />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#0D1520] border border-[#1E2D42] text-[#F1F5F9] font-mono text-[13px] py-[10px] pr-4 pl-10 rounded-md focus:outline-none focus:border-[#22D3EE] focus:ring-[3px] focus:ring-[rgba(34,211,238,0.1)] transition-all"
+            />
+          </div>
 
-  /* Selection */
-  ::selection {
-    background-color: rgba(6, 182, 212, 0.3);
-    color: #F1F5F9;
-  }
+          {/* Filter Tabs */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {(allCategories.length > 1 ? allCategories : ['ALL']).map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-[18px] py-[8px] text-[11px] font-mono tracking-[0.1em] rounded-[4px] border transition-all duration-200 ${activeCategory === cat
+                  ? 'bg-[rgba(34,211,238,0.1)] text-[#22D3EE] border-[#22D3EE] shadow-[0_0_16px_rgba(34,211,238,0.1)]'
+                  : 'bg-transparent text-[#475569] border-[#1E2D42] hover:text-[#94A3B8] hover:border-[rgba(34,211,238,0.3)]'
+                  }`}
+              >
+                {cat} ({categoryCounts[cat] || 0})
+              </button>
+            ))}
+          </div>
 
-  /* Focus ring for accessibility */
-  :focus-visible {
-    outline: 2px solid var(--cyan-400);
-    outline-offset: 2px;
-  }
+        </div>
 
-  /* Scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
+        {/* Results count text */}
+        {!loading && projects.length > 0 && (
+          <div className="text-[12px] font-mono text-[#475569] mb-4">
+            Showing {filtered.length} of {projects.length} projects
+          </div>
+        )}
+      </div>
 
-  ::-webkit-scrollbar-track {
-    background: var(--bg-deep);
-  }
+      {loading ? (
+        // Loading State: Skeletons
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-[#0D1520] rounded-xl border border-[#1E2D42] h-[400px] overflow-hidden flex flex-col">
+              <div className="skeleton-shimmer h-[200px] w-full relative" />
+              <div className="p-5 flex flex-col flex-1 gap-4">
+                <div className="skeleton-shimmer h-[20px] w-[70%] rounded-[4px]" />
+                <div className="flex flex-col gap-2">
+                  <div className="skeleton-shimmer h-[14px] w-[90%] rounded-[2px]" />
+                  <div className="skeleton-shimmer h-[14px] w-[60%] rounded-[2px]" />
+                </div>
+                <div className="flex gap-2 mt-auto">
+                  {Array.from({ length: 3 }).map((_, j) => (
+                    <div
+                      key={j}
+                      className="skeleton-shimmer h-[20px] w-[50px] rounded-[3px]"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : error && projects.length === 0 ? (
+        // Error state (no fallback data)
+        <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl bg-[#0D1520] border border-[#1E2D42] max-w-2xl mx-auto">
+          <AlertTriangle className="text-[#FBBF24] mb-4" size={40} />
+          <h3 className="font-['Space_Grotesk'] text-2xl text-[#F1F5F9] mb-2">Unable to load projects</h3>
+          <p className="font-mono text-[#94A3B8] mb-6">Please try again</p>
+          <button
+            onClick={refetch}
+            className="flex items-center gap-2 px-6 py-2 bg-[rgba(34,211,238,0.1)] text-[#22D3EE] border border-[#22D3EE] rounded font-mono tracking-wider hover:bg-[rgba(34,211,238,0.2)]"
+          >
+            <RefreshCw size={16} />
+            RETRY
+          </button>
+        </div>
+      ) : (
+        // Project Grid
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            layout
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))'
+            }}
+          >
+            <AnimatePresence mode="popLayout">
+              {filtered.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onOpenDetail={openProject}
+                  index={index}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--bg-border);
-    border-radius: 4px;
-  }
+          {/* No results state */}
+          {filtered.length === 0 && (
+            <div className="flex flex-col items-center justify-center p-12 text-center mt-8">
+              <p className="text-xl text-[#F1F5F9] font-['Space_Grotesk'] mb-2">
+                No projects found for "{searchQuery}"
+              </p>
+              <p className="text-[#94A3B8] font-['Inter'] mb-6">
+                Try a different search or category
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setActiveCategory('ALL');
+                }}
+                className="px-4 py-2 font-mono text-[13px] bg-transparent text-[#22D3EE] border border-[#22D3EE] rounded hover:bg-[rgba(34,211,238,0.1)] transition-colors"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--cyan-500);
-  }
-}
+      {/* ─── Detail Modal (slide-in panel from right) ─── */}
+      <AnimatePresence>
+        {selectedProject && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedProject(null)}
+              className="fixed inset-0 z-50 bg-[#060B12]/80 backdrop-blur-sm"
+            />
 
-/* ============================================
-   TYPOGRAPHY SCALE
-   ============================================ */
+            {/* Panel */}
+            <motion.aside
+              variants={slideInRight}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed top-0 right-0 z-50 h-full w-full max-w-xl bg-[#0D1520] border-l border-[#1E2D42] overflow-y-auto"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedProject(null)}
+                aria-label="Close project details"
+                className="absolute top-4 right-4 z-10 w-10 h-10 rounded-lg bg-[rgba(15,23,42,0.6)] backdrop-blur-md border border-[#1E2D42] flex items-center justify-center text-[#94A3B8] hover:text-[#22D3EE] hover:border-[rgba(34,211,238,0.4)] transition-all"
+              >
+                <X size={18} />
+              </button>
 
-@layer components {
-  .text-display {
-    font: 700 clamp(3rem, 7vw, 6rem)/1.0 'Space Grotesk', sans-serif;
-    letter-spacing: -0.02em;
-  }
+              {/* Image Gallery */}
+              <div className="relative h-64 sm:h-80 bg-[#141E2E] overflow-hidden">
+                <AnimatePresence mode="wait">
+                  {selectedProject.images && selectedProject.images.length > 0 ? (
+                    <motion.img
+                      key={imageIndex}
+                      src={getDetailImage(selectedProject.images[imageIndex])}
+                      alt={`${selectedProject.title} image ${imageIndex + 1}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#0D1520] to-[#141E2E]" />
+                  )}
+                </AnimatePresence>
 
-  .text-h1 {
-    font: 700 clamp(2rem, 4vw, 3.5rem)/1.1 'Space Grotesk', sans-serif;
-    letter-spacing: -0.01em;
-  }
+                {/* Prev / Next arrows */}
+                {selectedProject.images && selectedProject.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={() =>
+                        setImageIndex((i) =>
+                          i === 0 ? selectedProject.images.length - 1 : i - 1
+                        )
+                      }
+                      aria-label="Previous image"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[rgba(6,11,18,0.6)] backdrop-blur-sm border border-[#1E2D42] flex items-center justify-center text-[#94A3B8] hover:text-[#22D3EE] transition-colors"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button
+                      onClick={() =>
+                        setImageIndex((i) =>
+                          i === selectedProject.images.length - 1 ? 0 : i + 1
+                        )
+                      }
+                      aria-label="Next image"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[rgba(6,11,18,0.6)] backdrop-blur-sm border border-[#1E2D42] flex items-center justify-center text-[#94A3B8] hover:text-[#22D3EE] transition-colors"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </>
+                )}
 
-  .text-h2 {
-    font: 600 clamp(1.5rem, 3vw, 2.5rem)/1.2 'Space Grotesk', sans-serif;
-  }
+                {/* Dot navigation */}
+                {selectedProject.images && selectedProject.images.length > 1 && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {selectedProject.images.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setImageIndex(i)}
+                        aria-label={`Go to image ${i + 1}`}
+                        className={`w-2 h-2 rounded-full transition-all ${i === imageIndex
+                          ? 'bg-[#22D3EE] w-5'
+                          : 'bg-[#475569]/60 hover:bg-[#475569]'
+                          }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
 
-  .text-h3 {
-    font: 600 clamp(1.2rem, 2vw, 1.75rem)/1.3 'Space Grotesk', sans-serif;
-  }
+              {/* Content */}
+              <div className="p-6 sm:p-8">
+                {/* Category + Year */}
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <span className="px-2.5 py-1 text-[10px] font-mono font-semibold tracking-wider uppercase bg-[rgba(34,211,238,0.15)] text-[#22D3EE] border border-[rgba(34,211,238,0.3)] rounded">
+                    {selectedProject.category}
+                  </span>
+                  <span className="text-xs font-mono text-[#475569]">
+                    {selectedProject.year}
+                  </span>
+                  {String(selectedProject.status).toUpperCase() === 'ONGOING' && (
+                    <span className="px-2.5 py-1 text-[10px] font-mono font-semibold tracking-wider uppercase bg-[rgba(245,158,11,0.15)] text-[#F59E0B] border border-[rgba(245,158,11,0.3)] rounded flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
+                      ONGOING
+                    </span>
+                  )}
+                  {String(selectedProject.status).toUpperCase() === 'PROTOTYPE' && (
+                    <span className="px-2.5 py-1 text-[10px] font-mono font-semibold tracking-wider uppercase bg-[rgba(100,116,139,0.15)] text-[#94A3B8] border border-[rgba(100,116,139,0.3)] rounded">
+                      PROTOTYPE
+                    </span>
+                  )}
+                </div>
 
-  .text-body {
-    font: 400 1rem/1.7 'Inter', sans-serif;
-  }
+                <h2 className="font-['Space_Grotesk'] text-[28px] font-bold text-[#F1F5F9] mb-4">
+                  {selectedProject.title}
+                </h2>
 
-  .text-mono {
-    font: 400 0.875rem/1.6 'JetBrains Mono', monospace;
-  }
+                <p className="font-['Inter'] text-[15px] text-[#94A3B8] leading-[1.7] mb-6">
+                  {selectedProject.description}
+                </p>
 
-  .text-label {
-    font: 600 0.75rem/1 'JetBrains Mono', monospace;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-}
+                {/* Achievements */}
+                {selectedProject.achievements && selectedProject.achievements.length > 0 && (
+                  <div className="mb-6 flex flex-col gap-2">
+                    {selectedProject.achievements.map((achievement, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3.5 bg-[rgba(34,211,238,0.05)] border border-[rgba(34,211,238,0.15)] rounded-lg">
+                        <Trophy size={16} className="text-[#22D3EE] mt-0.5 shrink-0" />
+                        <p className="text-sm text-[#22D3EE] font-mono">
+                          {achievement}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
+                {/* Tech Stack */}
+                {selectedProject.techStack && selectedProject.techStack.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-[11px] font-mono font-bold tracking-wider text-[#475569] mb-3 uppercase">TECH STACK</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProject.techStack.map((tech) => (
+                        <span
+                          key={tech}
+                          className="px-3 py-1 text-xs font-mono text-[#94A3B8] bg-[#141E2E] border border-[#1E2D42] rounded"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-@layer utilities {
-  /* Glassmorphism base */
-  .glass {
-    background: rgba(13, 21, 32, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(30, 45, 66, 0.5);
-  }
+                {/* Team Size */}
+                <div className="flex items-center gap-2 mb-8 text-[#94A3B8]">
+                  <Users size={16} />
+                  <span className="text-sm font-mono">
+                    {selectedProject.teamSize} team members
+                  </span>
+                </div>
 
-  /* Grid background pattern */
-  .bg-grid {
-    background-image:
-      linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-
-  /* Glow effects */
-  .glow-cyan {
-    box-shadow: var(--shadow-glow-cyan);
-  }
-
-  .glow-amber {
-    box-shadow: var(--shadow-glow-amber);
-  }
-
-  .glow-purple {
-    box-shadow: var(--shadow-glow-purple);
-  }
-
-  /* Text gradient */
-  .text-gradient-cyan {
-    background: linear-gradient(135deg, var(--cyan-400), var(--cyan-300));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-amber {
-    background: linear-gradient(135deg, var(--amber-500), var(--amber-400));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Skip to content — accessibility */
-  .skip-to-content {
-    position: absolute;
-    top: -100%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999;
-    padding: 0.75rem 1.5rem;
-    background: var(--cyan-500);
-    color: var(--bg-void);
-    font-weight: 700;
-    border-radius: var(--radius-button);
-    transition: top var(--transition-fast);
-  }
-
-  .skip-to-content:focus {
-    top: 1rem;
-  }
-
-  /* Thin scrollbar for terminal-style elements */
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: var(--bg-border);
-    border-radius: 2px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: var(--cyan-500);
-  }
-}
-
-/* ============================================
-   ANIMATION KEYFRAMES
-   ============================================ */
-
-@keyframes rtf-scan-down {
-  0%   { top: 0; opacity: 1; }
-  100% { top: 100%; opacity: 0; }
-}
-
-@keyframes rtf-cursor-blink {
-  0%, 49%  { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-/* Skeleton loading shimmer — used in Projects page */
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-
-/* ============================================
-   REDUCED MOTION — Accessibility
-   ============================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+                {/* Links */}
+                <div className="flex flex-wrap gap-3 mt-8 pt-6 border-t border-[#1E2D42]">
+                  {selectedProject.github && (
+                    <a
+                      href={selectedProject.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] font-mono font-semibold tracking-wider text-[#F1F5F9] bg-[#141E2E] border border-[#1E2D42] rounded hover:border-[rgba(34,211,238,0.4)] hover:text-[#22D3EE] hover:bg-[rgba(34,211,238,0.05)] transition-all"
+                    >
+                      <FaGithub size={16} />
+                      VIEW SOURCE
+                    </a>
+                  )}
+                  {selectedProject.demo && (
+                    <a
+                      href={selectedProject.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] font-mono font-semibold tracking-wider text-[#060B12] bg-[#22D3EE] border border-transparent rounded hover:bg-[#06B6D4] shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all"
+                    >
+                      <ExternalLink size={16} />
+                      LIVE DEMO
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </motion.main>
+  );
 }
