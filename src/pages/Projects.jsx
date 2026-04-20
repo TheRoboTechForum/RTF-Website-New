@@ -22,9 +22,14 @@ export default function Projects() {
     return ['ALL', ...Array.from(cats)].filter(c => c !== 'OTHER');
   }, [projects]);
 
-  // Make sure ALL is first, then ROBOTICS, etc.
-  const categoriesToRender = ['ALL', 'ROBOTICS', 'ELECTRONICS', 'AI/ML', 'AUTOMATION', 'SOFTWARE'];
-  const allCategories = categoriesToRender.filter(c => uniqueCategories.includes(c) || c === 'ALL');
+  // Keep ALL first and preserve the preferred order for known categories,
+  // while still rendering any additional categories coming from the CMS.
+  const preferredCategoryOrder = ['ALL', 'ROBOTICS', 'ELECTRONICS', 'AI/ML', 'AUTOMATION', 'SOFTWARE'];
+  const allCategories = useMemo(() => {
+    const orderedKnownCategories = preferredCategoryOrder.filter(c => uniqueCategories.includes(c));
+    const additionalCategories = uniqueCategories.filter(c => !preferredCategoryOrder.includes(c));
+    return [...orderedKnownCategories, ...additionalCategories];
+  }, [uniqueCategories]);
 
   // Compute category counts
   const categoryCounts = useMemo(() => {
