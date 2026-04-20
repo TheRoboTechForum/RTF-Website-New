@@ -39,8 +39,10 @@ export default function ProjectCard({ project, onOpenDetail, index = 0 }) {
 
   return (
     <motion.article
+      layout
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
       transition={{ 
         duration: 0.4, 
         ease: [0.22, 1, 0.36, 1],
@@ -140,7 +142,7 @@ export default function ProjectCard({ project, onOpenDetail, index = 0 }) {
             <span>{year}</span>
           </div>
 
-          <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200">
             {github && (
               <a
                 href={github}
@@ -148,6 +150,7 @@ export default function ProjectCard({ project, onOpenDetail, index = 0 }) {
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 title="GitHub Repo"
+                aria-label={`${title} GitHub repository`}
                 className="text-[#475569] hover:text-[#22D3EE] transition-colors"
               >
                 <FaGithub size={16} />
@@ -160,6 +163,7 @@ export default function ProjectCard({ project, onOpenDetail, index = 0 }) {
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 title="Live Demo"
+                aria-label={`${title} live demo`}
                 className="text-[#475569] hover:text-[#22D3EE] transition-colors"
               >
                 <ExternalLink size={16} />
@@ -167,6 +171,7 @@ export default function ProjectCard({ project, onOpenDetail, index = 0 }) {
             )}
             <div 
               title="View Details"
+              aria-label={`View details for ${title}`}
               className="text-[#475569] group-hover:text-[#22D3EE] transition-colors"
             >
               <ArrowRight size={16} />
