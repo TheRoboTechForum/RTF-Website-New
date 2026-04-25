@@ -33,7 +33,7 @@ export default function HeroSection() {
   const headRef    = useRef(null); // full headline block
   const subRef     = useRef(null); // tagline + meta
   const ctaRef     = useRef(null); // buttons
-  const logoRef    = useRef(null); // logo ring
+  const logoRef    = useRef(null); // logo on right
   const glowRef    = useRef(null); // central glow orb
   const gridRef    = useRef(null); // background grid
   const scrollRef  = useRef(null); // scroll indicator
@@ -238,54 +238,19 @@ export default function HeroSection() {
               </div>
             </div>
 
-            {/* Right: logo visual (2 cols) */}
+            {/* Right: logo (2 cols) — simple, no decorative rings */}
             <div
               ref={logoRef}
               className="lg:col-span-2 hidden lg:flex items-center justify-center"
               style={{ willChange: 'transform, opacity' }}
             >
-              {/* Concentric glow rings */}
-              <div className="relative flex items-center justify-center">
-                {/* Outer ring */}
-                <div className="absolute w-[320px] h-[320px] rounded-full border border-cyan-500/10
-                               animate-[spin_20s_linear_infinite]" />
-                {/* Middle ring with dashes */}
-                <div
-                  className="absolute w-[260px] h-[260px] rounded-full border border-cyan-500/20"
-                  style={{
-                    borderStyle: 'dashed',
-                    animation: 'spin 14s linear infinite reverse',
-                  }}
+              <div className="w-[180px] h-[180px] rounded-xl overflow-hidden border border-cyan-500/40"
+                   style={{ boxShadow: '0 0 30px rgba(6,182,212,0.3)' }}>
+                <img
+                  src={rtfLogo}
+                  alt="RTF Logo"
+                  className="w-full h-full object-cover"
                 />
-                {/* Inner glow */}
-                <div className="absolute w-[180px] h-[180px] rounded-full"
-                     style={{
-                       background: 'radial-gradient(circle, rgba(6,182,212,0.25) 0%, transparent 70%)',
-                       filter: 'blur(20px)',
-                     }} />
-
-                {/* Logo */}
-                <div className="relative z-10 w-[140px] h-[140px] rounded-2xl overflow-hidden
-                               border-2 border-cyan-500/40"
-                     style={{ boxShadow: '0 0 40px rgba(6,182,212,0.4), 0 0 80px rgba(6,182,212,0.15)' }}>
-                  <img
-                    src={rtfLogo}
-                    alt="RTF Logo"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                {/* Orbital dots */}
-                {[0, 90, 180, 270].map((deg) => (
-                  <div
-                    key={deg}
-                    className="absolute w-2.5 h-2.5 rounded-full bg-cyan-400"
-                    style={{
-                      transform: `rotate(${deg}deg) translateX(130px)`,
-                      boxShadow: '0 0 8px rgba(34,211,238,0.8)',
-                    }}
-                  />
-                ))}
               </div>
             </div>
 

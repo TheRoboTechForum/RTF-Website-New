@@ -51,7 +51,7 @@ export default function Home() {
           ]}
           alt="Robotics workshop"
           overlay="We don't just study engineering — we live it."
-          height={80}
+          height={120}
         />
 
         <FeaturedProjects />
@@ -61,7 +61,7 @@ export default function Home() {
           src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80"
           alt="Circuit boards and electronics"
           overlay="From breadboards to national stages — built by students."
-          height={50}
+          height={100}
         />
 
         {/* Terminal contact form */}
