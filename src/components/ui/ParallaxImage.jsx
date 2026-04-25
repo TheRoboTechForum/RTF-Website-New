@@ -120,10 +120,10 @@ export default function ParallaxImage({
         style={{
           y: isMobile ? 0 : textY,
         }}
-        className="relative z-20 h-full flex flex-col items-center justify-center px-6 md:px-8 will-change-transform"
+        className="relative z-20 h-full flex flex-col items-center justify-center px-6 will-change-transform"
       >
         {overlay && !children && (
-          <p className="text-lg md:text-2xl lg:text-3xl text-white font-light tracking-wide text-center max-w-2xl leading-relaxed drop-shadow-lg">
+          <p className="font-mono text-sm text-cyan-400/80 tracking-widest uppercase text-center max-w-xl">
             {overlay}
           </p>
         )}
