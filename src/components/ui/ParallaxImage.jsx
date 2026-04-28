@@ -1,48 +1,64 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 /**
- * ParallaxImage — Full-width sticky image section that scrolls behind content.
- * Creates a "scroll over image" effect between sections.
- *
- * @param {string} src — Image URL
- * @param {string} alt — Alt text
- * @param {string} [overlay] — Optional text overlay
- * @param {number} [height] — Section height in vh (default 60)
+ * ParallaxImage — Refined parallax section with intentional design.
+ * Subtle, layered motion with proper spacing and mobile responsiveness.
  */
 export default function ParallaxImage({
   src,
+  images = [],
   alt,
   overlay,
-  height = 60,
+  height = 120,
+  slideInterval = 4000,
   children,
 }) {
   const ref = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
   });
 
+  const imageList = (images.length > 0 ? images : [src]).filter(Boolean);
+
+  // Image carousel
+  useEffect(() => {
+    if (imageList.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % imageList.length);
+    }, slideInterval);
+    return () => clearInterval(timer);
+  }, [imageList.length, slideInterval]);
+
+  // Parallax effect
   const y = useTransform(scrollYProgress, [0, 1], ['-15%', '15%']);
+
+  // Opacity envelope: subtle fade in/out
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.4, 1, 1, 0.4]);
 
   return (
     <section
       ref={ref}
       className="relative overflow-hidden"
-      style={{ height: `${height}vh` }}
+      style={{ minHeight: `${height}vh` }}
     >
       {/* Parallax image */}
       <motion.div
         style={{ y }}
         className="absolute inset-0 -top-[20%] -bottom-[20%]"
       >
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          className="w-full h-full object-cover"
-        />
+        {imageList.map((image, index) => (
+          <img
+            key={`${image}-${index}`}
+            src={image}
+            alt={alt}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out will-change-transform"
+            style={{ opacity: index === activeIndex ? 1 : 0 }}
+          />
+        ))}
       </motion.div>
 
       {/* Dark overlay for readability */}
@@ -55,7 +71,7 @@ export default function ParallaxImage({
       <div className="absolute inset-0 bg-grid opacity-30" />
 
       {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center px-6">
+      <div className="absolute inset-0 z-10 flex items-center justify-center px-6">
         {overlay && !children && (
           <p className="font-mono text-sm text-cyan-400/80 tracking-widest uppercase text-center max-w-xl">
             {overlay}
@@ -64,7 +80,7 @@ export default function ParallaxImage({
         {children}
       </div>
 
-      {/* Top & bottom fade into dark bg */}
+      {/* FADE EDGES — Soft transitions to surrounding sections */}
       <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-deep to-transparent z-[5]" />
       <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-deep to-transparent z-[5]" />
     </section>

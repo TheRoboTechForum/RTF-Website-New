@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Instagram, Linkedin, Facebook, ArrowRight } from "lucide-react";
+import {  ArrowRight } from "lucide-react";
+import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
 import { socials, contactInfo } from "../../data/stats";
 
 const quickLinks = [
@@ -49,7 +50,7 @@ export default function Footer() {
                   aria-label="RTF on Facebook"
                   className="w-9 h-9 rounded-lg bg-elevated border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
                 >
-                  <Facebook size={16} />
+                  <FaFacebookF />
                 </a>
               )}
               {socials.instagram && (
@@ -60,7 +61,8 @@ export default function Footer() {
                   aria-label="RTF on Instagram"
                   className="w-9 h-9 rounded-lg bg-elevated border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
                 >
-                  <Instagram size={16} />
+                  <FaInstagram />
+                  
                 </a>
               )}
               {socials.linkedin && (
@@ -71,7 +73,8 @@ export default function Footer() {
                   aria-label="RTF on LinkedIn"
                   className="w-9 h-9 rounded-lg bg-elevated border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
                 >
-                  <Linkedin size={16} />
+                  <FaLinkedinIn />
+                  
                 </a>
               )}
             </div>

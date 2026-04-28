@@ -1,33 +1,9 @@
 import { motion } from 'framer-motion';
-import { Github, ExternalLink, Users } from 'lucide-react';
-import { fadeUp } from '../../lib/animations';
+import { ExternalLink, Users, ArrowRight } from 'lucide-react';
+import { FaGithub } from 'react-icons/fa';
+import { getCardImage } from '../../lib/cloudinary';
 
-/**
- * ProjectCard — Full card with image, category badge, tech tags, hover glow
- * @param {object} props
- * @param {object} props.project - Project data object from projects.js
- * @param {string} props.project.title - Project title
- * @param {string} props.project.category - Category badge text
- * @param {string} props.project.description - Short description
- * @param {string[]} props.project.techStack - Array of tech tags
- * @param {number} props.project.teamSize - Number of team members
- * @param {number} props.project.year - Project year
- * @param {string} props.project.status - 'completed' | 'ongoing'
- * @param {string[]} props.project.images - Array of image URLs
- * @param {string|null} props.project.github - GitHub repo URL
- * @param {string|null} props.project.achievements - Achievement text
- * @param {function} [props.onClick] - Click handler for opening detail modal
- */
-
-const categoryColors = {
-  ROBOTICS: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-  AUTOMATION: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-  'AI/ML': 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-  ELECTRONICS: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-  SOFTWARE: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-};
-
-export default function ProjectCard({ project, onClick }) {
+export default function ProjectCard({ project, onOpenDetail, index = 0 }) {
   const {
     title,
     category,
@@ -38,106 +14,168 @@ export default function ProjectCard({ project, onClick }) {
     status,
     images,
     github,
-    achievements,
+    demo,
+    featured
   } = project;
 
-  const colorClass = categoryColors[category] || categoryColors.ROBOTICS;
+  const categoryColors = {
+    ROBOTICS:    'bg-[rgba(34,211,238,0.15)] text-[#22D3EE] border-[rgba(34,211,238,0.3)]',
+    ELECTRONICS: 'bg-[rgba(139,92,246,0.15)] text-[#8B5CF6] border-[rgba(139,92,246,0.3)]',
+    'AI/ML':     'bg-[rgba(251,191,36,0.15)] text-[#FBBF24] border-[rgba(251,191,36,0.3)]',
+    AUTOMATION:  'bg-[rgba(34,211,238,0.15)] text-[#06B6D4] border-[rgba(6,182,212,0.3)]',
+    SOFTWARE:    'bg-[rgba(139,92,246,0.15)] text-[#A78BFA] border-[rgba(167,139,250,0.3)]',
+    DEFAULT:     'bg-[rgba(148,163,184,0.15)] text-[#94A3B8] border-[rgba(148,163,184,0.3)]'
+  };
+
+  const statusConfig = {
+    COMPLETED: { bgColor: 'bg-green-500' },
+    ONGOING:   { bgColor: 'bg-amber-500', pulse: true },
+    PROTOTYPE: { bgColor: 'bg-slate-500' }
+  };
+
+  const badgeClass = categoryColors[category] || categoryColors.DEFAULT;
+  const normalizedStatus = String(status).toUpperCase();
+  const statusDisplay = statusConfig[normalizedStatus] || statusConfig.COMPLETED;
 
   return (
     <motion.article
-      variants={fadeUp}
-      onClick={onClick}
-      className="group relative bg-surface/60 backdrop-blur-xl border border-border/50 rounded-card shadow-card overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-glow-cyan hover:border-cyan-500/30 hover:-translate-y-1"
+      layout
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ 
+        duration: 0.4, 
+        ease: [0.22, 1, 0.36, 1],
+        delay: index * 0.06
+      }}
+      onClick={() => onOpenDetail?.(project)}
+      className="group relative bg-[#0D1520] border border-[#1E2D42] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:border-[rgba(34,211,238,0.4)] hover:-translate-y-1 hover:shadow-[0_0_0_1px_rgba(34,211,238,0.15),0_20px_40px_rgba(0,0,0,0.4),0_0_60px_rgba(34,211,238,0.05)] flex flex-col h-full"
     >
-      {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-elevated">
-        <img
-          src={images[0]}
-          alt={`${title} project thumbnail`}
-          loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+      {/* IMAGE SECTION */}
+      <div className="relative overflow-hidden h-[200px] shrink-0">
+        {images && images.length > 0 ? (
+          <img
+            src={getCardImage(images[0])}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-[#0D1520] to-[#141E2E] flex items-center justify-center">
+            <svg 
+              className="w-10 h-10 text-[#1E2D42]" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+        )}
+        
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
-
-        {/* Category badge */}
-        <span
-          className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] font-mono font-semibold tracking-wider uppercase border rounded-badge ${colorClass}`}
-        >
+        <div className="absolute bottom-0 left-0 right-0 h-[80px] bg-gradient-to-t from-[#0D1520] to-transparent pointer-events-none" />
+        
+        {/* Top-Left Category Badge */}
+        <span className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] uppercase font-mono font-semibold tracking-[0.1em] rounded border ${badgeClass}`}>
           {category}
         </span>
 
-        {/* Status badge */}
-        {status === 'ongoing' && (
-          <span className="absolute top-3 right-3 px-2.5 py-1 text-[10px] font-mono font-semibold tracking-wider uppercase bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded-badge">
-            ONGOING
+        {/* Top-Right Status Badge */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-1 rounded bg-[rgba(15,23,42,0.6)] backdrop-blur-[2px] border border-[rgba(30,41,59,0.8)]">
+          <span 
+            className={`w-[6px] h-[6px] rounded-full ${statusDisplay.bgColor} ${statusDisplay.pulse ? 'animate-pulse' : ''}`}
+            style={{ opacity: statusDisplay.pulse ? undefined : 0.8 }}
+          />
+          <span className="text-[9px] uppercase font-mono tracking-[0.08em] text-[#E2E8F0]">
+            {normalizedStatus}
+          </span>
+        </div>
+
+        {/* Top-Center Featured Badge */}
+        {featured && (
+          <span className="absolute top-3 left-1/2 -translate-x-1/2 px-2 py-1 bg-[rgba(251,191,36,0.2)] text-[#FBBF24] border border-[rgba(251,191,36,0.4)] text-[9px] uppercase font-mono rounded whitespace-nowrap">
+            ★ FEATURED
           </span>
         )}
       </div>
 
-      {/* Content */}
-      <div className="p-5">
-        {/* Title + Year */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-h3 text-text-primary leading-tight line-clamp-2 text-base">
-            {title}
-          </h3>
-          <span className="text-xs font-mono text-text-muted shrink-0">{year}</span>
-        </div>
-
-        {/* Description */}
-        <p className="text-sm text-text-secondary leading-relaxed line-clamp-2 mb-4">
+      {/* CONTENT SECTION */}
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="font-['Space_Grotesk'] text-[18px] font-semibold text-[#F1F5F9] mb-2 group-hover:text-[#22D3EE] transition-colors duration-200">
+          {title}
+        </h3>
+        
+        <p className="font-['Inter'] text-[14px] text-[#94A3B8] leading-[1.6] mb-4 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
           {description}
         </p>
 
-        {/* Tech tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        {/* Tech Stack tags */}
+        <div className="flex flex-wrap gap-[6px] mb-4">
           {techStack.slice(0, 4).map((tech) => (
             <span
               key={tech}
-              className="px-2 py-0.5 text-[10px] font-mono text-text-muted bg-elevated border border-border rounded-badge"
+              className="font-mono text-[11px] text-[#475569] bg-[rgba(30,45,66,0.6)] border border-[#1E2D42] px-2 py-[3px] rounded-[3px]"
             >
               {tech}
             </span>
           ))}
           {techStack.length > 4 && (
-            <span className="px-2 py-0.5 text-[10px] font-mono text-text-muted bg-elevated border border-border rounded-badge">
-              +{techStack.length - 4}
+            <span className="font-mono text-[11px] text-[#22D3EE] bg-[rgba(30,45,66,0.6)] border border-[rgba(34,211,238,0.2)] px-2 py-[3px] rounded-[3px]">
+              +{techStack.length - 4} more
             </span>
           )}
         </div>
 
-        {/* Achievement */}
-        {achievements && (
-          <p className="text-xs text-cyan-400/80 font-mono mb-3 line-clamp-1">
-            ★ {achievements}
-          </p>
-        )}
+        {/* Spacer to push footer to bottom */}
+        <div className="flex-1"></div>
 
-        {/* Footer row */}
-        <div className="flex items-center justify-between pt-3 border-t border-border/50">
-          <div className="flex items-center gap-1.5 text-text-muted">
-            <Users size={13} />
-            <span className="text-xs font-mono">{teamSize} members</span>
+        {/* FOOTER ROW */}
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#1E2D42]/50">
+          <div className="flex items-center gap-[6px] text-[11px] font-mono text-[#475569]">
+            <Users size={12} className="shrink-0" />
+            <span>{teamSize} members</span>
+            <span className="mx-0.5">·</span>
+            <span>{year}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200">
             {github && (
               <a
                 href={github}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
+                title="GitHub Repo"
                 aria-label={`${title} GitHub repository`}
-                className="text-text-muted hover:text-cyan-400 transition-colors"
+                className="text-[#475569] hover:text-[#22D3EE] transition-colors"
               >
-                <Github size={15} />
+                <FaGithub size={16} />
               </a>
             )}
-            <ExternalLink
-              size={15}
-              className="text-text-muted group-hover:text-cyan-400 transition-colors"
-            />
+            {demo && (
+              <a
+                href={demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title="Live Demo"
+                aria-label={`${title} live demo`}
+                className="text-[#475569] hover:text-[#22D3EE] transition-colors"
+              >
+                <ExternalLink size={16} />
+              </a>
+            )}
+            <div 
+              title="View Details"
+              aria-label={`View details for ${title}`}
+              className="text-[#475569] group-hover:text-[#22D3EE] transition-colors"
+            >
+              <ArrowRight size={16} />
+            </div>
           </div>
         </div>
       </div>

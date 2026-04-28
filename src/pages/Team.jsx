@@ -3,7 +3,8 @@ import { pageTransition, fadeUp, staggerContainer } from '../lib/animations';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import SectionHeader from '../components/ui/SectionHeader';
 import HoloCard from '../components/ui/HoloCard';
-import { Linkedin, Quote } from 'lucide-react';
+import { Quote } from 'lucide-react';
+import { FaLinkedinIn } from 'react-icons/fa';
 import { teamMembers, getTeamByType, testimonials } from '../data/team';
 
 const typeLabels = {
@@ -50,7 +51,7 @@ function MemberCard({ member }) {
             aria-label={`${member.name} LinkedIn`}
             className="mt-3 w-8 h-8 rounded-lg bg-elevated border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all"
           >
-            <Linkedin size={14} />
+            <FaLinkedinIn />
           </a>
         )}
       </HoloCard>
