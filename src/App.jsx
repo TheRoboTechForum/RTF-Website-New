@@ -3,12 +3,11 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence } from 'framer-motion';
 
 // Layout
-import ScrollToTop from './components/layout/ScrollToTop';
+import ScrollToTop from './components/layout/ScrollToTop'; 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ScrollProgress from './components/layout/ScrollProgress';
 import VideoIntro from './components/layout/VideoIntro';
-
 // Pages
 import Home from './pages/Home';
 import About from './pages/About';
