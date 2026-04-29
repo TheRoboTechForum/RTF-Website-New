@@ -6,10 +6,14 @@ import FeaturedProjects from '../components/sections/FeaturedProjects';
 import SponsorShowcase from '../components/sections/SponsorShowcase';
 import ParallaxImage from '../components/ui/ParallaxImage';
 import TerminalContact from '../components/sections/TerminalContact';
+import roboconWorkshopImage from '../assets/img/Robocon 2025/20250713_183423 - Copy.webp';
+import collegeWorkshopImage from '../assets/img/College Programs/20241012_085453.webp';
+
+const MotionMain = motion.main;
 
 export default function Home() {
   return (
-    <motion.main
+    <MotionMain
       id="main-content"
       variants={pageTransition}
       initial="initial"
@@ -23,11 +27,8 @@ export default function Home() {
 
         {/* Parallax break — workshop / lab image */}
         <ParallaxImage
-          src="https://therobotechforum.in/assets/img/Robocon%202025/20250713_183423%20-%20Copy.webp"
-          images={[
-            'https://therobotechforum.in/assets/img/Robocon%202025/20250713_183423%20-%20Copy.webp',
-            'https://therobotechforum.in/assets/img/College%20Programs/20241012_085453.webp',
-          ]}
+          src={roboconWorkshopImage}
+          images={[roboconWorkshopImage, collegeWorkshopImage]}
           alt="Robotics workshop"
           overlay="We don't just study engineering — we live it."
           height={95}
@@ -48,6 +49,6 @@ export default function Home() {
         {/* Terminal contact form */}
         <TerminalContact />
       </div>
-    </motion.main>
+    </MotionMain>
   );
 }

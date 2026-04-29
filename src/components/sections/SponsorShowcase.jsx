@@ -40,9 +40,9 @@ export default function SponsorShowcase() {
         variants={staggerContainer}
         className="relative z-10 mx-auto max-w-7xl"
       >
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-14">
-          <MotionDiv variants={fadeUp}>
-            <span className="text-label text-cyan-400 mb-4 block">
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-14 min-w-0">
+          <MotionDiv variants={fadeUp} className="min-w-0">
+            <span className="text-label text-cyan-400 mb-4 block whitespace-nowrap">
               // PARTNER VISIBILITY
             </span>
             <h2 className="text-h2 text-text-primary mb-5 font-display font-bold leading-tight">
@@ -58,7 +58,7 @@ export default function SponsorShowcase() {
               {['Website presence', 'Event visibility', 'Student reach'].map((item) => (
                 <span
                   key={item}
-                  className="inline-flex items-center gap-2 rounded-button border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-xs font-mono uppercase tracking-wider text-cyan-300"
+                  className="inline-flex items-center gap-2 rounded-button border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-xs font-mono uppercase tracking-wider text-cyan-300 whitespace-nowrap"
                 >
                   <BadgeCheck size={14} />
                   {item}
@@ -71,8 +71,8 @@ export default function SponsorShowcase() {
             </NeoButton>
           </MotionDiv>
 
-          <MotionDiv variants={fadeUp} className="relative">
-            <div className="absolute -inset-6 rounded-full bg-cyan-500/10 blur-3xl" />
+          <MotionDiv variants={fadeUp} className="relative min-w-0">
+            <div className="absolute -inset-6 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
 
             <div className="relative overflow-hidden rounded-card border border-cyan-500/20 bg-surface/70 py-8 shadow-card backdrop-blur-xl">
               <div className="mb-7 flex items-center justify-between gap-4 px-5 sm:px-7">
@@ -82,7 +82,6 @@ export default function SponsorShowcase() {
                     Brand visibility in motion
                   </h3>
                 </div>
-                <Sparkles className="text-cyan-300" size={24} />
               </div>
 
               <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-surface via-surface/80 to-transparent" />
