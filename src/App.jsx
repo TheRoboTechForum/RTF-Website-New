@@ -5,6 +5,7 @@ import { useLoadingManager } from './hooks/useLoadingManager';
 import { LoadingProvider, useLoading } from './context/LoadingContext';
 
 // Layout
+import ScrollToTop from './components/layout/ScrollToTop'; 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import VideoIntroEnhanced from './components/layout/VideoIntroEnhanced';
