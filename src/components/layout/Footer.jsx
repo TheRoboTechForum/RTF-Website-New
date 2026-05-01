@@ -1,179 +1,187 @@
 import { Link } from "react-router-dom";
-import {  ArrowRight } from "lucide-react";
 import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
-import { socials, contactInfo } from "../../data/stats";
+import { ArrowUpRight, Mail, MapPin, Clock } from 'lucide-react';
+import { contactInfo, socials, stats } from "../../data/stats";
 
-const quickLinks = [
-  { path: "/", label: "Home" },
-  { path: "/about", label: "About" },
+const exploreLinks = [
   { path: "/projects", label: "Projects" },
-  { path: "/team", label: "Team" },
+  { path: "/gallery", label: "Gallery" },
+  { path: "/timeline", label: "Timeline" },
+  { path: "/achievement", label: "Achievements" },
 ];
 
-const resourceLinks = [
-  { path: "/timeline", label: "Timeline" },
-  { path: "/gallery", label: "Gallery" },
+const communityLinks = [
+  { path: "/about", label: "About" },
+  { path: "/team", label: "Team" },
+  { path: "/sponsors", label: "Sponsors" },
   { path: "/contact", label: "Contact" },
+];
+
+const memberLinks = [
   { path: "/login", label: "Member Portal" },
+  { path: "/contact", label: "Join RTF" },
+  { path: "/sponsors", label: "Partner With Us" },
+];
+
+const socialLinks = [
+  { href: socials.facebook, label: "Facebook", icon: FaFacebookF },
+  { href: socials.instagram, label: "Instagram", icon: FaInstagram },
+  { href: socials.linkedin, label: "LinkedIn", icon: FaLinkedinIn },
+];
+
+const contactItems = [
+  { icon: Mail, label: contactInfo.email, href: `mailto:${contactInfo.email}` },
+  { icon: MapPin, label: "GCoEA, Amravati", href: "/contact" },
+  { icon: Clock, label: contactInfo.hours, href: "/contact" },
 ];
 
 export default function Footer() {
+  const linkGroups = [
+    { title: "Explore", links: exploreLinks },
+    { title: "Community", links: communityLinks },
+    { title: "Members", links: memberLinks },
+  ];
+
   return (
-    <footer className="relative bg-surface border-t border-cyan-500/20">
-      {/* Cyan top-border glow line */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+    <footer className="relative bg-deep px-4 pb-8 pt-20 sm:px-8 lg:pt-28 overflow-hidden z-10">
+      <div className="absolute inset-0 bg-grid opacity-70 pointer-events-none" />
+      <div className="absolute left-1/2 top-8 h-48 w-[min(90vw,720px)] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          {/* Column 1 — Brand */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center">
-                <span className="font-display font-bold text-cyan-400 text-xs">
-                  RTF
-                </span>
+      <div className="absolute inset-x-0 bottom-0 flex justify-center items-end pointer-events-none select-none z-0 opacity-[0.035]">
+        <span className="font-display font-black text-[28vw] leading-[0.72] text-white whitespace-nowrap">
+          RTF
+        </span>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        <div className="bg-surface/80 backdrop-blur-xl border border-cyan-500/20 rounded-card p-6 sm:p-10 lg:p-12 shadow-card">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.5fr] lg:gap-16">
+            <div>
+              <Link to="/" className="group inline-flex items-center gap-3 mb-6" aria-label="Robo-Tech Forum home">
+                <div className="w-11 h-11 rounded-button bg-cyan-500/15 border border-cyan-500/40 flex items-center justify-center transition-all duration-300 group-hover:bg-cyan-500/25 group-hover:shadow-glow-cyan">
+                  <span className="font-display font-bold text-cyan-300 text-sm">
+                    RTF
+                  </span>
+                </div>
+                <div>
+                  <span className="block font-display font-semibold text-text-primary text-xl leading-tight">
+                    Robo-Tech Forum
+                  </span>
+                  <span className="block text-xs text-text-muted">
+                    Government College of Engineering, Amravati
+                  </span>
+                </div>
+              </Link>
+
+              <p className="max-w-md text-text-secondary text-sm leading-relaxed mb-8">
+                A student-driven robotics community building competition-ready machines,
+                project culture, and hands-on engineering confidence.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3">
+                {socialLinks.map((socialLink) => {
+                  const SocialIcon = socialLink.icon;
+
+                  return socialLink.href && (
+                    <a
+                      key={socialLink.label}
+                      href={socialLink.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={socialLink.label}
+                      className="h-10 w-10 rounded-button border border-border/80 bg-deep/40 text-text-secondary flex items-center justify-center transition-all duration-200 hover:border-cyan-500/50 hover:bg-cyan-500/10 hover:text-cyan-300"
+                    >
+                      <SocialIcon size={17} />
+                    </a>
+                  );
+                })}
               </div>
-              <span className="font-display font-semibold text-text-primary">
-                Robo-Tech Forum
-              </span>
-            </Link>
-            <p className="text-text-secondary text-sm leading-relaxed mb-6 max-w-xs">
-              Engineering excellence. Built by students. Recognized by industry.
-              The premier robotics club at GCoEA, Amravati.
-            </p>
-            <div className="flex items-center gap-3">
-              {socials.facebook && (
-                <a
-                  href={socials.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="RTF on Facebook"
-                  className="w-9 h-9 rounded-lg bg-elevated border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
-                >
-                  <FaFacebookF />
-                </a>
-              )}
-              {socials.instagram && (
-                <a
-                  href={socials.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="RTF on Instagram"
-                  className="w-9 h-9 rounded-lg bg-elevated border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
-                >
-                  <FaInstagram />
-                  
-                </a>
-              )}
-              {socials.linkedin && (
-                <a
-                  href={socials.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="RTF on LinkedIn"
-                  className="w-9 h-9 rounded-lg bg-elevated border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
-                >
-                  <FaLinkedinIn />
-                  
-                </a>
-              )}
+            </div>
+
+            <div className="space-y-9">
+              <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:gap-10">
+                {linkGroups.map((group) => (
+                  <nav key={group.title} aria-label={`${group.title} links`}>
+                    <h4 className="text-label text-cyan-300/90 mb-5">{group.title}</h4>
+                    <ul className="space-y-3">
+                      {group.links.map((link) => (
+                        <li key={`${group.title}-${link.path}-${link.label}`}>
+                          <Link
+                            to={link.path}
+                            className="group inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-cyan-300"
+                          >
+                            <span>{link.label}</span>
+                            <ArrowUpRight size={13} className="opacity-0 -translate-x-1 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                ))}
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                {contactItems.map((item) => {
+                  const ContactIcon = item.icon;
+                  const isExternal = item.href.startsWith("mailto:");
+                  const content = (
+                    <>
+                      <ContactIcon size={17} className="mt-0.5 flex-shrink-0 text-cyan-300" />
+                      <span className="min-w-0 break-words text-xs leading-relaxed text-text-secondary">{item.label}</span>
+                    </>
+                  );
+
+                  return isExternal ? (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="flex min-h-[64px] min-w-0 items-start gap-3 rounded-card border border-border/70 bg-deep/35 px-4 py-3 transition-colors hover:border-cyan-500/40"
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className="flex min-h-[64px] min-w-0 items-start gap-3 rounded-card border border-border/70 bg-deep/35 px-4 py-3 transition-colors hover:border-cyan-500/40"
+                    >
+                      {content}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Column 2 — Quick Links */}
-          <div>
-            <h4 className="text-label text-text-muted mb-4">Quick Links</h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    className="text-sm text-text-secondary hover:text-cyan-400 transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div className="my-8 h-px w-full bg-border/60" />
 
-          {/* Column 3 — Resources */}
-          <div>
-            <h4 className="text-label text-text-muted mb-4">Resources</h4>
-            <ul className="space-y-3">
-              {resourceLinks.map((link) => (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    className="text-sm text-text-secondary hover:text-cyan-400 transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 4 — Contact + Sponsor CTA */}
-          <div>
-            <h4 className="text-label text-text-muted mb-4">Get In Touch</h4>
-            <ul className="space-y-3 mb-6">
-            <li>
-  <a
-    href="https://mail.google.com/mail/?view=cm&fs=1&to=robotechforum@gcoea.ac.in"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-sm text-text-secondary hover:text-cyan-400 transition-colors duration-200 break-all"
-  >
-    {contactInfo.email}
-  </a>
-</li>
-              <li className="text-sm text-text-secondary leading-relaxed">
-                {contactInfo.address}
-              </li>
-            </ul>
-
-            {/* Google Map - Between Address and Hours */}
-            <div className="rounded-lg overflow-hidden border border-border h-48 mb-4">
-              <iframe
-                src="https://www.google.com/maps?q=Government+College+of+Engineering+Amravati&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen=""
-                loading="lazy"
-                title="GCoEA Location with Marker"
-              />
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs text-text-muted">
+                © {new Date().getFullYear()} The Robo-Tech Forum. All rights reserved.
+              </p>
+              <p className="mt-1 text-xs text-text-muted">
+                Founded in {stats.founded}. Built by students, for builders.
+              </p>
             </div>
 
-            <ul className="space-y-3 mb-6">
-              <li className="text-sm text-text-secondary">
-                {contactInfo.hours}
-              </li>
-            </ul>
-
-            <Link
-              to="/sponsors"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-semibold tracking-wider text-deep bg-amber-500 rounded-button hover:bg-amber-400 transition-colors duration-200 group"
-            >
-              BECOME A SPONSOR
-              <ArrowRight
-                size={14}
-                className="group-hover:translate-x-0.5 transition-transform"
-              />
-            </Link>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center gap-2 rounded-button border border-cyan-500/30 px-4 py-2 text-sm font-medium text-cyan-300 transition-all hover:border-cyan-400/60 hover:bg-cyan-500/10"
+              >
+                Contact Team
+                <ArrowUpRight size={15} />
+              </Link>
+              <Link
+                to="/sponsors"
+                className="inline-flex items-center justify-center gap-2 rounded-button bg-cyan-500 px-4 py-2 text-sm font-semibold text-deep shadow-glow-cyan transition-all hover:bg-cyan-400"
+              >
+                Sponsor RTF
+                <ArrowUpRight size={15} />
+              </Link>
+            </div>
           </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-text-muted text-center sm:text-left">
-            © {new Date().getFullYear()} The Robo-Tech Forum, GCoEA Amravati.
-            All rights reserved.
-          </p>
-          <p className="text-xs text-text-muted">
-            We Learn. We Create. We Teach.
-          </p>
         </div>
       </div>
     </footer>

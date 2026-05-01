@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🤖 ROBO-TECH FORUM — Official Website
+# 🤖 THE  ROBO-TECH FORUM — Official Website
 
-**The official website of Robo-Tech Forum (RTF), Government College of Engineering, Amravati.**
+**The official website of THE  ROBO-TECH FORUM (RTF), Government College of Engineering, Amravati.**
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite&logoColor=white)](https://vite.dev)
@@ -45,7 +45,7 @@
 
 ## 🧭 About the Project
 
-RTF (Robo-Tech Forum) is a student-led robotics club at Government College of Engineering, Amravati. This website serves as our digital identity — showcasing projects, team, achievements, and providing a platform for potential sponsors and collaborators to learn about what we do.
+RTF (THE  ROBO-TECH FORUM) is a student-led robotics club at Government College of Engineering, Amravati. This website serves as our digital identity — showcasing projects, team, achievements, and providing a platform for potential sponsors and collaborators to learn about what we do.
 
 ### Goals
 
@@ -202,7 +202,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-**Built with ❤️ by the students of Robo-Tech Forum, GCoEA Amravati.**
+**Built with ❤️ by the students of THE  ROBO-TECH FORUM, GCoEA Amravati.**
 
 ⭐ Star this repo if you find it useful — it helps us attract contributors and sponsors!
 

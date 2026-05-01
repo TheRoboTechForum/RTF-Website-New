@@ -4,15 +4,21 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { pageTransition, fadeUp, staggerContainer } from '../lib/animations';
 import SectionHeader from '../components/ui/SectionHeader';
 import { galleryItems, galleryCategories } from '../data/gallery';
+import { SkeletonCard } from '../components/ui/Skeletons';
 
 export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [lightbox, setLightbox] = useState(null); // index into filtered array
+  const [imagesLoaded, setImagesLoaded] = useState({}); // track loaded state of images
 
   const filtered =
     activeCategory === 'ALL'
       ? galleryItems
       : galleryItems.filter((item) => item.category === activeCategory);
+
+  const handleImageLoad = (id) => {
+    setImagesLoaded((prev) => ({ ...prev, [id]: true }));
+  };
 
   // Close lightbox on Escape
   useEffect(() => {
@@ -83,14 +89,22 @@ export default function Gallery() {
               animate="visible"
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
-              className="break-inside-avoid group cursor-pointer"
+              className="break-inside-avoid group cursor-pointer relative"
               onClick={() => setLightbox(index)}
             >
-              <div className="relative overflow-hidden rounded-card border border-border/30 hover:border-cyan-500/30 hover:shadow-glow-cyan transition-all duration-300">
+              {/* Skeleton showing before image loads */}
+              {!imagesLoaded[item.id] && (
+                <div className="absolute inset-0 z-10 bg-deep/40 rounded-card overflow-hidden">
+                  <div className="w-full h-full bg-gray-800/50 animate-pulse min-h-[250px]" />
+                </div>
+              )}
+
+              <div className={`relative overflow-hidden rounded-card border border-border/30 hover:border-cyan-500/30 hover:shadow-glow-cyan transition-all duration-300 ${!imagesLoaded[item.id] ? 'opacity-0' : 'opacity-100'}`}>
                 <img
                   src={item.image}
                   alt={item.title}
                   loading="lazy"
+                  onLoad={() => handleImageLoad(item.id)}
                   className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 {/* Overlay */}
