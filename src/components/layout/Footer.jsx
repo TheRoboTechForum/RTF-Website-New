@@ -31,7 +31,7 @@ const socialLinks = [
 
 const contactItems = [
   { icon: Mail, label: contactInfo.email, href: `mailto:${contactInfo.email}` },
-  { icon: MapPin, label: "GCoEA, Amravati", href: "/contact" },
+  { icon: MapPin, label: "GCoEA, Amravati", href: "https://maps.google.com/maps?q=Government+College+of+Engineering,+Amravati,+Maharashtra,+India" },
   { icon: Clock, label: contactInfo.hours, href: "/contact" },
 ];
 
