@@ -108,7 +108,7 @@ export const socials = {
   facebook: 'https://www.facebook.com/robotechforum',
   instagram: 'https://www.instagram.com/the_robo_tech_forum_gcoea/',
   linkedin: 'https://www.linkedin.com/company/the-robo-tech-forum/',
-  github: null,
+  github: 'https://github.com/TheRoboTechForum/RTF-Website-New',
   website: 'https://therobotechforum.in',
 };
 

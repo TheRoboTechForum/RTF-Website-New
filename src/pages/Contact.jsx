@@ -6,7 +6,7 @@ import SectionHeader from '../components/ui/SectionHeader';
 import HoloCard from '../components/ui/HoloCard';
 import NeoButton from '../components/ui/NeoButton';
 import { Mail, MapPin, Clock, Send } from 'lucide-react';
-import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
+import { FaInstagram, FaFacebookF, FaLinkedinIn,FaGithub } from 'react-icons/fa';
 
 import { contactInfo, socials } from '../data/stats';
 
@@ -191,7 +191,7 @@ export default function Contact() {
 
         {/* Social Links */}
         <div className="mt-12 text-center">
-          <p className="text-label text-text-muted mb-4">OR FIND US ON</p>
+          <p className="text-label text-text-muted mb-4"> FIND US ON</p>
           <div className="flex items-center justify-center gap-4">
             {socials.facebook && (
               <a
@@ -226,9 +226,29 @@ export default function Contact() {
                 <FaLinkedinIn />
               </a>
             )}
+            </div>
+
+          {/* GitHub Contribution */}
+          <div className="mt-10 text-center">
+            <p className="text-label text-text-muted mb-2">WANT TO CONTRIBUTE?</p>
+            <p className="text-sm text-text-secondary mb-4 max-w-sm mx-auto">
+              RTF's website is open source. Found a bug or have an idea? We welcome pull requests.
+            </p>
+            {socials.github && (
+              <a
+                href={socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-button bg-surface border border-border text-text-secondary hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-elevated transition-all duration-200 text-sm font-mono"
+              >
+                <FaGithub size={18} />
+                View on GitHub
+              </a>
+            )}
           </div>
         </div>
       </div>
-    </motion.main>
+    </motion.main>    
   );
 }

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
+import { FaInstagram, FaFacebookF, FaLinkedinIn,FaGithub } from 'react-icons/fa';
 import { ArrowUpRight, Mail, MapPin, Clock } from 'lucide-react';
 import { contactInfo, socials, stats } from "../../data/stats";
 
@@ -27,6 +27,7 @@ const socialLinks = [
   { href: socials.facebook, label: "Facebook", icon: FaFacebookF },
   { href: socials.instagram, label: "Instagram", icon: FaInstagram },
   { href: socials.linkedin, label: "LinkedIn", icon: FaLinkedinIn },
+  { href: socials.github, label: 'GitHub', icon: FaGithub },
 ];
 
 const contactItems = [
