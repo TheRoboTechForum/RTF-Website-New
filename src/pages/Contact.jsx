@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { pageTransition, fadeUp, staggerContainer } from '../lib/animations';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import SectionHeader from '../components/ui/SectionHeader';
 import HoloCard from '../components/ui/HoloCard';
 import NeoButton from '../components/ui/NeoButton';
 import { Mail, MapPin, Clock, Send } from 'lucide-react';
-import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
+import { FaInstagram, FaFacebookF, FaLinkedinIn, FaGithub } from 'react-icons/fa';
 
 import { contactInfo, socials } from '../data/stats';
 
@@ -54,7 +54,7 @@ export default function Contact() {
   };
 
   return (
-    <motion.main
+    <Motion.main
       id="main-content"
       variants={pageTransition}
       initial="initial"
@@ -226,9 +226,38 @@ export default function Contact() {
                 <FaLinkedinIn />
               </a>
             )}
+            {socials.github && (
+              <a
+                href={socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="w-11 h-11 rounded-lg bg-surface border border-border flex items-center justify-center text-text-muted hover:text-cyan-400 hover:border-cyan-500/40 transition-all duration-200"
+              >
+                <FaGithub />
+              </a>
+            )}
           </div>
         </div>
+
+        {socials.github && (
+          <div className="mt-8">
+            <HoloCard glow="cyan" className="p-6 text-center">
+              <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-4">
+                <FaGithub size={22} className="text-cyan-400" />
+              </div>
+              <h3 className="text-h3 text-text-primary mb-3">Want to Contribute?</h3>
+              <p className="max-w-xl mx-auto text-sm text-text-secondary leading-relaxed mb-6">
+                Explore the open-source website, report issues, or help improve the
+                Robo-Tech Forum web experience.
+              </p>
+              <NeoButton href={socials.github} variant="secondary" arrow>
+                VISIT GITHUB
+              </NeoButton>
+            </HoloCard>
+          </div>
+        )}
       </div>
-    </motion.main>
+    </Motion.main>
   );
 }
