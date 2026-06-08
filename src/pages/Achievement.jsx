@@ -190,14 +190,20 @@ const STYLES = `
   .vtl-dot {
     width: 9px; height: 9px;
     border-radius: 50%;
+    background: rgba(34, 211, 238, 0.2); /* Muted, low-opacity matching cyan */
+    border: 2px solid rgba(34, 211, 238, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    flex-shrink: 0;
+  }
+  
+  /* ONLY active items pulse and have colorful backgrounds */
+  .vtl-item.active .vtl-dot {
     background: rgba(34,211,238,0.75);
     border: 2px solid rgba(34,211,238,0.25);
     box-shadow: 0 0 8px rgba(34,211,238,0.35);
-    transition: transform 0.2s, box-shadow 0.2s;
     animation: tlDotPulse 2.5s ease-in-out infinite;
-    flex-shrink: 0;
   }
-  .vtl-dot-gold {
+  .vtl-item.active .vtl-dot-gold {
     background: rgba(251,191,36,0.9);
     border-color: rgba(251,191,36,0.35);
     box-shadow: 0 0 12px rgba(251,191,36,0.45);
@@ -206,12 +212,10 @@ const STYLES = `
   .vtl-item:hover .vtl-dot,
   .vtl-item.active .vtl-dot {
     transform: scale(1.6);
-    box-shadow: 0 0 16px rgba(34,211,238,0.75);
   }
   .vtl-item:hover .vtl-dot-gold,
   .vtl-item.active .vtl-dot-gold {
     transform: scale(1.6);
-    box-shadow: 0 0 20px rgba(251,191,36,0.85);
   }
   .vtl-label {
     display: flex;
@@ -248,22 +252,23 @@ const STYLES = `
   }
   /* light vtl overrides */
   .light .vtl-dot {
+    background: rgba(14, 165, 233, 0.25); /* Muted, light mode sky blue */
+  }
+  .light .vtl-item.active .vtl-dot {
     background: rgba(14,165,233,0.85);
     border-color: rgba(14,165,233,0.3);
     box-shadow: 0 0 8px rgba(14,165,233,0.35);
     animation: tlDotPulseLight 2.5s ease-in-out infinite;
   }
-  .light .vtl-dot-gold {
+  .light .vtl-item.active .vtl-dot-gold {
     background: rgba(251,191,36,0.9);
     border-color: rgba(251,191,36,0.35);
     box-shadow: 0 0 12px rgba(251,191,36,0.45);
     animation: tlDotPulseGoldLight 2s ease-in-out infinite;
   }
-  .light .vtl-item:hover .vtl-dot,
   .light .vtl-item.active .vtl-dot {
     box-shadow: 0 0 16px rgba(14,165,233,0.75);
   }
-  .light .vtl-item:hover .vtl-dot-gold,
   .light .vtl-item.active .vtl-dot-gold {
     box-shadow: 0 0 20px rgba(251,191,36,0.85);
   }
@@ -620,6 +625,14 @@ function AchCard({ item, index, isLight }) {
           {/* RIGHT: body */}
           <div className="ach-card-body">
             <div style={{
+              position: 'absolute', top: 24, right: 28,
+              fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
+              fontSize: 52, color: item.accent,
+              opacity: isLight ? 0.12 : 0.065,
+              lineHeight: 1, pointerEvents: 'none', userSelect: 'none',
+            }}>{cardNum}</div>
+
+            <div style={{
               fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
               fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase',
               color: item.accent, marginBottom: 20,
@@ -708,14 +721,6 @@ function AchCard({ item, index, isLight }) {
                 </span>
               ))}
             </div>
-
-            <div style={{
-              position: 'absolute', bottom: 24, right: 28,
-              fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
-              fontSize: 52, color: item.accent,
-              opacity: isLight ? 0.12 : 0.065,
-              lineHeight: 1, pointerEvents: 'none', userSelect: 'none',
-            }}>{cardNum}</div>
           </div>
         </div>
       </TiltCard>
@@ -724,30 +729,26 @@ function AchCard({ item, index, isLight }) {
 }
 
 /* LEFT VERTICAL TIMELINE SIDEBAR */
-function VerticalTimeline({ activeIndex, onSelect, isLight, items = achievementsByYear }) {
+function VerticalTimeline({ activeIndex, onSelect, isLight, items }) {
   return (
     <div className="vtl-sidebar">
       <div className={isLight ? 'vtl-line light' : 'vtl-line'} />
       {items.map((a, i) => {
         const isActive = activeIndex === i;
         const isGold   = !!a.featured;
-        const getShadow = () => {
-          if (!isActive) return undefined;
-          if (isGold) return '0 0 20px rgba(251,191,36,0.85)';
-          return isLight
-            ? '0 0 16px rgba(14,165,233,0.75)'
-            : '0 0 16px rgba(34,211,238,0.75)';
-        };
         return (
           <div
-            key={a.year + a.title}
+            key={a.year + a.title + i}
             className={`vtl-item${isActive ? ' active' : ''}${isLight ? ' light' : ''}`}
             onClick={() => onSelect(i)}
           >
             <div className="vtl-dot-wrap">
-              <div
-                className={`vtl-dot${isGold ? ' vtl-dot-gold' : ''}`}
-                style={isActive ? { transform: 'scale(1.7)', boxShadow: getShadow() } : {}}
+              <div 
+                className={`vtl-dot${isGold ? ' vtl-dot-gold' : ''}`} 
+                style={(!isActive && i === 0) ? { 
+                  backgroundColor: 'rgba(251, 191, 36, 0.25)', 
+                  borderColor: 'rgba(251, 191, 36, 0.15)' 
+                } : undefined}
               />
             </div>
             <div className="vtl-tooltip">
@@ -831,7 +832,6 @@ export default function Achievement({ lightMode }) {
 
   useEffect(() => {
     setActiveIdx(0);
-    cardRefs.current = [];
   }, [selectedYear]);
 
   useEffect(() => {
@@ -851,22 +851,34 @@ export default function Achievement({ lightMode }) {
     };
   }, [readLightMode]);
 
+  /* FIXED SCROLL INTERSECTION LOGIC PLUGGED DIRECTLY IN */
   useEffect(() => {
+    // Keep ref slots aligned strictly with active array count to drop dangling trailing items
+    cardRefs.current = cardRefs.current.slice(0, visibleAchievements.length);
+
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach(e => {
           if (e.isIntersecting) {
             const idx = cardRefs.current.indexOf(e.target);
-            if (idx !== -1) setActiveIdx(idx);
+            if (idx !== -1) {
+              setActiveIdx(idx);
+            }
           }
         });
       },
-      { threshold: 0.5 }
+      { 
+        root: null,
+        rootMargin: '-30% 0px -40% 0px', // Focus checking inside the explicit horizontal center of the frame view
+        threshold: 0.2
+      }
     );
+
     visibleAchievements.forEach((_, index) => {
       const el = cardRefs.current[index];
       if (el) obs.observe(el);
     });
+
     return () => obs.disconnect();
   }, [visibleAchievements]);
 
@@ -881,7 +893,6 @@ export default function Achievement({ lightMode }) {
       <style>{STYLES}</style>
       <div className={`${bgClass} ${modeClass}`} style={{ minHeight: '100vh', position: 'relative', backgroundColor: isLight ? '#f8fbff' : '#010912' }}>
 
-        {/* No ambient glow in white mode */}
         {!isLight && (
           <div style={{
             position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
