@@ -13,7 +13,7 @@ export default function Login() {
   const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     // Placeholder — wire to Firebase / Supabase / custom backend
     setError('Member portal coming soon. Contact RTF leader for access.');
   };
