@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowUpRight, BadgeCheck, Sparkles } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { fadeUp, staggerContainer } from '../../lib/animations';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import { sponsors } from '../../data/stats';
@@ -28,10 +28,8 @@ export default function SponsorShowcase() {
   const [ref, isInView] = useScrollAnimation();
 
   return (
-    <section className="relative overflow-hidden border-y border-border/30 bg-deep px-4 py-20 sm:px-8 lg:py-24">
-      <div className="absolute inset-0 bg-grid opacity-80 pointer-events-none" />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
-      <div className="absolute left-1/2 top-20 h-64 w-[min(88vw,760px)] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+    <section className="relative overflow-hidden px-4 py-20 sm:px-8 lg:py-24 bg-transparent">
+      {/* <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" /> */}
 
       <MotionDiv
         ref={ref}
@@ -42,10 +40,10 @@ export default function SponsorShowcase() {
       >
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-14 min-w-0">
           <MotionDiv variants={fadeUp} className="min-w-0">
-            <span className="text-label text-cyan-400 mb-4 block whitespace-nowrap">
+            {/* <span className="text-label text-cyan-400 mb-4 block whitespace-nowrap">
               // PARTNER VISIBILITY
-            </span>
-            <h2 className="text-h2 text-text-primary mb-5 font-display font-bold leading-tight">
+            </span> */}
+            <h2 className="text-h2 text-red-500 mb-5 font-display font-bold leading-tight">
               Your brand should move with the machines we build.
             </h2>
             <p className="max-w-xl text-sm sm:text-base text-text-secondary leading-relaxed mb-8">
@@ -58,9 +56,8 @@ export default function SponsorShowcase() {
               {['Website presence', 'Event visibility', 'Student reach'].map((item) => (
                 <span
                   key={item}
-                  className="inline-flex items-center gap-2 rounded-button border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-xs font-mono uppercase tracking-wider text-cyan-300 whitespace-nowrap"
+                  className="inline-flex items-center gap-2 rounded-sm border border-border bg-elevated px-3 py-2 text-xs font-mono uppercase tracking-wider text-text-primary whitespace-nowrap"
                 >
-                  <BadgeCheck size={14} />
                   {item}
                 </span>
               ))}
@@ -72,8 +69,6 @@ export default function SponsorShowcase() {
           </MotionDiv>
 
           <MotionDiv variants={fadeUp} className="relative min-w-0">
-            <div className="absolute -inset-6 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-
             <div className="relative overflow-hidden rounded-card border border-cyan-500/20 bg-surface/70 py-8 shadow-card backdrop-blur-xl">
               <div className="mb-7 flex items-center justify-between gap-4 px-5 sm:px-7">
                 <div>

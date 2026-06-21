@@ -68,7 +68,7 @@ export const cardHover = {
   },
   hover: {
     y: -6,
-    boxShadow: '0 12px 40px rgba(6,182,212,0.25)',
+    boxShadow: '0 12px 40px rgba(255,32,32,0.25)',
     transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
   },
 };

@@ -110,7 +110,7 @@ export default function ParallaxImage({
       </MotionDiv>
 
       <div
-        className={`absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.12),transparent_45%),linear-gradient(135deg,#080D14,#0D1520)] transition-opacity duration-500 ${
+        className={`absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,32,32,0.12),transparent_45%),linear-gradient(135deg,#1A0505,#0A0A0A)] transition-opacity duration-500 ${
           hasVisibleImage ? 'opacity-0' : 'opacity-100'
         }`}
       />
@@ -118,7 +118,7 @@ export default function ParallaxImage({
       {!hasVisibleImage && (
         <div className="absolute inset-0 z-[1] flex items-center justify-center">
           <div className="h-1 w-36 overflow-hidden rounded-full bg-border/60">
-            <div className="h-full w-1/2 animate-pulse rounded-full bg-cyan-400" />
+            <div className="h-full w-1/2 animate-pulse rounded-full bg-red-400" />
           </div>
         </div>
       )}
@@ -135,7 +135,7 @@ export default function ParallaxImage({
       {/* Content */}
       <div className="relative z-10 flex items-center justify-center px-6 w-full h-full">
         {overlay && !children && (
-          <p className="font-mono text-sm text-cyan-400/80 tracking-widest uppercase text-center max-w-xl self-center">
+          <p className="font-mono text-sm text-red-400/80 tracking-widest uppercase text-center max-w-xl self-center">
             {overlay}
           </p>
         )}

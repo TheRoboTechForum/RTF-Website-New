@@ -1,194 +1,191 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Trophy, Rocket, Flag, Award, Cpu, Zap, MapPin, Users, Calendar } from 'lucide-react';
+import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { motion as Motion } from 'framer-motion';
 
-import roboconResultFile   from '../assets/docs/Final Result of  DD-Robocon 2026 Stage -II .pdf';
-import roboconTeamPhoto    from '../assets/img/robocon2026Result.png';
-import iitIndoreTeam       from '../assets/achievements/iit_indore_team.png';
-import lineFollowerRobots  from '../assets/achievements/line_follower_robots.png';
-import gecaLineFollower    from '../assets/achievements/geca_line_follower.png';
-import carvaanTrophy       from '../assets/achievements/carvaan_trophy.png';
+import roboconTeamPhoto from '../assets/img/robocon2026Result.png';
+import iitIndoreTeam from '../assets/achievements/iit_indore_team.png';
+import lineFollowerRobots from '../assets/achievements/line_follower_robots.png';
+import gecaLineFollower from '../assets/achievements/geca_line_follower.png';
+import carvaanTrophy from '../assets/achievements/carvaan_trophy.png';
 
-/* GLOBAL STYLES */
+const YEARS_DESC = ['2026', '2014'];
+
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-  @keyframes shimmer {
-    0%   { background-position: -600px 0; }
-    100% { background-position:  600px 0; }
-  }
-  @keyframes tlDotPulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(34,211,238,0.5); }
-    50%      { box-shadow: 0 0 0 6px rgba(34,211,238,0.0); }
-  }
-  @keyframes tlDotPulseGold {
-    0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0.6); }
-    50%      { box-shadow: 0 0 0 8px rgba(251,191,36,0.0); }
-  }
-  @keyframes tlDotPulseLight {
-    0%,100% { box-shadow: 0 0 0 0 rgba(14,165,233,0.5); }
-    50%      { box-shadow: 0 0 0 6px rgba(14,165,233,0.0); }
-  }
-  @keyframes tlDotPulseGoldLight {
-    0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0.5); }
-    50%      { box-shadow: 0 0 0 8px rgba(251,191,36,0.0); }
-  }
+  *, *::before, *::after { box-sizing: border-box; }
 
-  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-
-  /*  DARK MODE bg  */
-  .hex-bg { background-color: #010912; }
-
-  /*  WHITE MODE bg  */
-  .hex-bg-light {
-    background:
-      radial-gradient(circle at 50% 18%, rgba(14,165,233,0.15) 0%, rgba(14,165,233,0.07) 31%, transparent 58%),
-      linear-gradient(180deg, #f8fbff 0%, #f6fbff 48%, #ffffff 100%);
-    color: #0f172a;
-  }
-  .hex-bg-light::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image:
-      linear-gradient(rgba(14,165,233,0.055) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(14,165,233,0.055) 1px, transparent 1px),
-      radial-gradient(circle, rgba(6,182,212,0.55) 0 1.5px, transparent 2px);
-    background-size: 64px 64px, 64px 64px, 180px 180px;
-    background-position: center top, center top, 28px 36px;
-    opacity: 0.42;
-    mask-image: linear-gradient(180deg, black 0%, rgba(0,0,0,0.75) 56%, transparent 100%);
-  }
-
-  /*  Shimmer skeleton  */
-  .img-skeleton {
-    background: linear-gradient(90deg,rgba(34,211,238,0.03) 0%,rgba(34,211,238,0.09) 50%,rgba(34,211,238,0.03) 100%);
-    background-size:600px 100%;
-    animation: shimmer 1.6s infinite linear;
-  }
-  .light .img-skeleton {
-    background: linear-gradient(90deg,rgba(14,165,233,0.06) 0%,rgba(14,165,233,0.16) 50%,rgba(14,165,233,0.06) 100%);
-    background-size:600px 100%;
-  }
-
-  /*  Tag badge  */
-  .badge {
-    display:inline-flex; align-items:center;
-    padding:3px 10px; font-family:'DM Sans',sans-serif;
-    font-size:9px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase;
-    border-radius:5px; border:1px solid rgba(34,211,238,0.22);
-    color:rgba(34,211,238,0.88); background:rgba(34,211,238,0.06); white-space:nowrap;
-  }
-
-  /*  Achievement card - DARK  */
-  .ach-card {
+  /* Keep achievement layout styling, but do NOT override the global animated background. */
+  .achievement-page {
+    min-height: 100vh;
     position: relative;
-    background: linear-gradient(150deg,rgba(6,14,28,0.97) 0%,rgba(3,8,18,0.99) 100%);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: box-shadow 0.4s ease, border-color 0.4s ease;
-    cursor: default;
-  }
-  .ach-card-cyan { border: 1px solid rgba(34,211,238,0.16); }
-  .ach-card-cyan:hover {
-    border-color: rgba(34,211,238,0.42);
-    box-shadow: 0 28px 70px rgba(0,0,0,0.55), 0 0 50px rgba(34,211,238,0.07), inset 0 1px 0 rgba(34,211,238,0.08);
-  }
-  .ach-card-gold { border: 1px solid rgba(251,191,36,0.28); }
-  .ach-card-gold:hover {
-    border-color: rgba(251,191,36,0.55);
-    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(251,191,36,0.08), inset 0 1px 0 rgba(251,191,36,0.1);
+    overflow-x: clip;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
   }
 
-  /*  Achievement card - WHITE overrides  */
-  .light .ach-card {
-    background: linear-gradient(145deg, rgba(255,255,255,0.96) 0%, rgba(248,253,255,0.98) 100%);
-    box-shadow: 0 18px 46px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.96);
-    backdrop-filter: blur(14px);
-  }
-  .light .ach-card-cyan {
-    border: 1px solid rgba(14,165,233,0.22);
-  }
-  .light .ach-card-cyan:hover {
-    border-color: rgba(6,182,212,0.52);
-    box-shadow: 0 24px 58px rgba(15,23,42,0.12), 0 0 34px rgba(14,165,233,0.13), inset 0 1px 0 rgba(255,255,255,1);
-  }
-  .light .ach-card-gold {
-    border: 1px solid rgba(245,158,11,0.32);
-  }
-  .light .ach-card-gold:hover {
-    border-color: rgba(245,158,11,0.58);
-    box-shadow: 0 24px 58px rgba(15,23,42,0.12), 0 0 34px rgba(245,158,11,0.14), inset 0 1px 0 rgba(255,255,255,1);
+
+
+
+
+
+  .achievement-shell {
+    position: relative;
+    z-index: 2;
+    max-width: 1660px;
+    margin: 0 auto;
+    padding: 92px 34px 120px 112px;
   }
 
-  /*  meta row  */
-  .meta-item {
-    display:flex; align-items:center; gap:5px;
-    font-family:'DM Sans'; font-size:11px; color:rgba(148,163,184,0.6);
+  .achievement-hero {
+    max-width: 780px;
+    margin: 0 auto 72px;
+    text-align: center;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-  .light .meta-item { color: rgba(71,85,105,0.7); }
 
-  /*  scan line texture (only dark)  */
-  .scanlines {
-    background-image: repeating-linear-gradient(
-      0deg,
-      rgba(34,211,238,0.012) 0px,
-      rgba(34,211,238,0.012) 1px,
-      transparent 1px,
-      transparent 4px
-    );
-    pointer-events:none;
+  .achievement-kicker {
+    display: block;
+    margin-bottom: 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: rgba(255,32,32,0.72);
   }
-  .light .scanlines { background-image: none; }
 
-  /*  Left vertical timeline  */
-  .vtl-sidebar {
+  .light .achievement-kicker { color: #087ea4; }
+
+  .achievement-title {
+    margin: 0 0 22px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(44px, 8vw, 92px);
+    font-weight: 700;
+    line-height: 0.96;
+  }
+
+  .achievement-title span {
+    display: inline-block;
+    background-image: linear-gradient(135deg, #ffcccc 0%, #FF2020 34%, #CC0000 72%, #8B0000 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .light .achievement-title span {
+    background-image: linear-gradient(135deg, #111827 0%, #0f172a 36%, #0891b2 68%, #4f46e5 100%);
+  }
+
+  .achievement-subtitle {
+    max-width: 560px;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(148,163,184,0.76);
+  }
+
+  .light .achievement-subtitle { color: #475569; }
+
+  .achievement-scroll-hint {
+    margin-top: 40px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(148,163,184,0.45);
+    animation: ach-hint 2.4s ease-in-out infinite;
+  }
+
+  @keyframes ach-hint {
+    0%, 100% { transform: translateY(0); opacity: 0.45; }
+    50% { transform: translateY(5px); opacity: 0.9; }
+  }
+
+  /* Vertical timeline sidebar */
+  .year-timeline {
     position: fixed;
-    left: 20px;
+    left: 0;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 100;
+    width: 108px;
+    z-index: 60;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0;
-    padding: 20px 0;
+    padding: 16px 0;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
   }
-  .vtl-line {
+
+  .year-timeline::-webkit-scrollbar { display: none; }
+
+  .year-timeline-track {
     position: absolute;
     left: 50%;
-    top: 20px;
-    bottom: 20px;
-    width: 1px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
     transform: translateX(-50%);
-    background: linear-gradient(180deg, transparent, rgba(34,211,238,0.25) 15%, rgba(34,211,238,0.25) 85%, transparent);
-    z-index: 0;
+    background: linear-gradient(180deg, transparent, rgba(255,32,32,0.22) 12%, rgba(255,32,32,0.22) 88%, transparent);
+    border-radius: 2px;
+    pointer-events: none;
   }
-  .light .vtl-line {
-    background: linear-gradient(180deg, transparent, rgba(14,165,233,0.3) 15%, rgba(14,165,233,0.3) 85%, transparent);
+
+  .light .year-timeline-track {
+    background: linear-gradient(180deg, transparent, rgba(14,165,233,0.28) 12%, rgba(14,165,233,0.28) 88%, transparent);
   }
-  .vtl-item {
+
+  .year-timeline-progress {
+    position: absolute;
+    left: 50%;
+    top: 24px;
+    width: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, #FF2020, #CC0000);
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgba(255,32,32,0.55);
+    pointer-events: none;
+    transition: height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .light .year-timeline-progress {
+    background: linear-gradient(180deg, #0284c7, #0891b2);
+    box-shadow: 0 0 10px rgba(14,165,233,0.4);
+  }
+
+  .year-timeline-item {
     position: relative;
     z-index: 1;
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    cursor: pointer;
-    gap: 8px;
-    padding: 10px 0;
-    width: 140px;
-  }
-  .vtl-dot-wrap {
-    display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    flex-shrink: 0;
+    width: 100%;
+    padding: 9px 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: rgba(148,163,184,0.48);
+    transition: color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .vtl-dot {
-    width: 9px; height: 9px;
+
+  .year-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: rgba(34, 211, 238, 0.2); /* Muted, low-opacity matching cyan */
     border: 2px solid rgba(34, 211, 238, 0.1);
@@ -225,14 +222,25 @@ const STYLES = `
     transform: translateX(-6px);
     transition: opacity 0.2s, transform 0.2s;
     pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.85);
+    background: rgba(255,32,32,0.35);
+    border: 2px solid rgba(255,32,32,0.2);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
   }
-  .vtl-item:hover .vtl-label,
-  .vtl-item.active .vtl-label {
-    opacity: 1;
-    transform: translateX(0);
+
+  .year-timeline-item:hover {
+    color: rgba(255,32,32,0.85);
+    transform: scale(1.04);
   }
-  .vtl-year {
-    font-family: 'Orbitron', sans-serif;
+
+  .year-timeline-item:hover::before {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 0 14px rgba(255,32,32,0.45);
+  }
+
+  .year-timeline-item.active {
+    color: #FF2020;
+    transform: scale(1.08);
     font-weight: 700;
     font-size: 8px;
     letter-spacing: 0.18em;
@@ -277,350 +285,517 @@ const STYLES = `
 
   /* Tooltip box */
   .vtl-tooltip {
-    position: absolute;
-    left: 28px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(3,8,18,0.92);
-    border: 1px solid rgba(34,211,238,0.2);
-    border-radius: 10px;
-    width: 182px;
-    max-width: calc(100vw - 72px);
-    padding: 8px 12px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    backdrop-filter: blur(8px);
-  }
-  .vtl-item:hover .vtl-tooltip { opacity: 1; }
-  .light .vtl-tooltip {
-    background: rgba(255,255,255,0.98);
-    border-color: rgba(14,165,233,0.3);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   }
 
-  .achievement-toolbar {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
+  .year-timeline-item.active::before {
+    transform: translate(-50%, -50%) scale(1.35);
+    background: #FF2020;
+    border-color: rgba(255,32,32,0.5);
+    box-shadow: 0 0 18px rgba(255,32,32,0.75);
   }
-  .achievement-toolbar-copy {
+
+  .year-timeline-item.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 22px;
+    transform: translateY(-50%);
+    background: linear-gradient(180deg, transparent, #FF2020, transparent);
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 12px rgba(255,32,32,0.6);
+  }
+
+  .year-timeline-item .year-label {
+    position: relative;
+    z-index: 2;
+    padding-left: 22px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .light .year-timeline-item { color: rgba(100,116,139,0.65); }
+  .light .year-timeline-item:hover { color: #0284c7; }
+  .light .year-timeline-item.active { color: #0284c7; }
+  .light .year-timeline-item.active::before {
+    background: #0284c7;
+    box-shadow: 0 0 16px rgba(14,165,233,0.55);
+  }
+  .light .year-timeline-item.active::after {
+    background: linear-gradient(180deg, transparent, #0284c7, transparent);
+  }
+
+  .spotlight-section {
+    position: relative;
+    min-height: calc(var(--card-count, 1) * 100vh);
+    scroll-margin-top: 0;
+  }
+
+  .spotlight-stage {
+    position: sticky;
+    top: 0;
+    display: grid;
+    grid-template-columns: minmax(210px, 0.25fr) minmax(0, 1fr);
+    gap: clamp(18px, 2.8vw, 42px);
+    align-items: center;
+    min-height: 100vh;
+    padding: 5vh 0;
+  }
+
+  .spotlight-year {
+    position: relative;
+    z-index: 3;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 18px;
+    align-self: center;
   }
-  .achievement-toolbar-kicker {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+
+  .spotlight-year strong {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(58px, 9vw, 132px);
+    font-weight: 700;
+    line-height: 0.82;
+    letter-spacing: -0.04em;
+    color: #FF2020;
   }
-  .achievement-toolbar-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(14px, 1.8vw, 18px);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+
+  .light .spotlight-year strong { color: #0f172a; }
+
+  .spotlight-year span {
+    display: block;
+    max-width: 300px;
+    font-size: 16px;
+    line-height: 1.75;
+    color: rgba(248,250,252,0.86);
   }
-  .achievement-year-picker {
+
+  .light .spotlight-year span { color: #52637a; }
+
+  .spotlight-progress {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    gap: 7px;
+    margin-top: 4px;
   }
-  .achievement-year-chip {
-    border: 1px solid transparent;
-    border-radius: 999px;
-    padding: 10px 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 10px;
+
+  .spotlight-progress-dot {
+    width: 28px;
+    height: 3px;
+    border-radius: 99px;
+    background: rgba(148,163,184,0.22);
+    transition: background 0.28s ease, width 0.28s ease;
+  }
+
+  .spotlight-progress-dot.active {
+    width: 44px;
+    background: #FF2020;
+    box-shadow: 0 0 16px rgba(255,32,32,0.42);
+  }
+
+  .light .spotlight-progress-dot { background: rgba(15,23,42,0.14); }
+  .light .spotlight-progress-dot.active {
+    background: #0284c7;
+    box-shadow: 0 0 14px rgba(14,165,233,0.26);
+  }
+
+  .spotlight-card-frame {
+    position: relative;
+    min-height: clamp(520px, 72vh, 720px);
+  }
+
+  .achievement-card {
+    position: absolute;
+    inset: 50% 0 auto 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(360px, 52%) minmax(360px, 48%);
+    min-height: clamp(500px, 68vh, 700px);
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid rgba(255,32,32,0.18);
+    background: linear-gradient(135deg, rgba(10,0,0,0.96) 0%, rgba(3,3,3,0.97) 100%);
+    box-shadow: 0 30px 90px rgba(0,0,0,0.5), 0 0 60px rgba(255,32,32,0.06);
+    transform: translateY(calc(-50% + var(--card-y, 32px))) scale(var(--card-scale, 0.94));
+    opacity: var(--card-opacity, 0);
+    visibility: var(--card-visibility, hidden);
+    transform-origin: center center;
+    transition:
+      opacity 0.36s ease,
+      visibility 0.36s ease,
+      transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+    pointer-events: none;
+    backface-visibility: hidden;
+    cursor: zoom-in;
+  }
+
+  .achievement-card.is-active {
+    pointer-events: auto;
+  }
+
+  .light .achievement-card {
+    background: rgba(255,255,255,0.95);
+    border-color: rgba(14,165,233,0.18);
+    box-shadow: 0 24px 70px rgba(15,23,42,0.1);
+  }
+
+  .card-photo {
+    position: relative;
+    min-height: 100%;
+    background: #0f172a;
+    overflow: hidden;
+  }
+
+  .card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(0.14) contrast(1.04) saturate(0.92);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+  }
+
+  .achievement-card.is-active:hover .card-photo img {
+    transform: scale(1.035);
+    filter: grayscale(0.04) contrast(1.06) saturate(1.02);
+  }
+
+  .card-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,32,32,0.06) 0%, transparent 42%, rgba(5,0,0,0.92));
+  }
+
+  .light .card-photo::after {
+    background: linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.86));
+  }
+
+  .card-body {
+    padding: clamp(34px, 4.5vw, 68px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-bottom: 18px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    cursor: pointer;
-    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
-    white-space: nowrap;
-  }
-  .achievement-year-chip:hover {
-    transform: translateY(-1px);
-  }
-  .achievement-year-chip.is-active {
-    transform: translateY(-1px);
-  }
-  .achievement-year-chip-count {
-    margin-left: 6px;
-    opacity: 0.75;
-  }
-  .achievement-list {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  .achievement-empty {
-    padding: 28px 20px;
-    border-radius: 20px;
-    border: 1px dashed rgba(14,165,233,0.24);
-    text-align: center;
-    font-family: 'DM Sans', sans-serif;
-    color: rgba(148,163,184,0.9);
-  }
-  .light .achievement-empty {
-    border-color: rgba(14,165,233,0.22);
-    color: #475569;
-    background: rgba(255,255,255,0.58);
+    color: rgba(255,32,32,0.78);
   }
 
-  .ach-card-layout {
-    display: grid;
-    grid-template-columns: 45% 55%;
-    min-height: 340px;
-    overflow: hidden;
+  .light .card-eyebrow { color: #087ea4; }
+
+  .card-title {
+    margin: 0 0 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(34px, 4.6vw, 64px);
+    font-weight: 700;
+    line-height: 1.02;
+    color: #f8fafc;
   }
-  .ach-card-media {
-    position: relative;
-    min-height: 300px;
+
+  .light .card-title { color: #0f172a; }
+
+  .card-subtitle {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(226,232,240,0.74);
+  }
+
+  .light .card-subtitle { color: #334155; }
+
+  .card-description {
+    max-width: 720px;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.86;
+    color: rgba(148,163,184,0.84);
+  }
+
+  .light .card-description { color: #475569; }
+
+  .card-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(148,163,184,0.16);
+    font-size: 13px;
+    color: rgba(203,213,225,0.74);
+  }
+
+  .achievement-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 18px;
-    background:
-      radial-gradient(circle at 50% 38%, rgba(34,211,238,0.16) 0%, transparent 58%),
-      linear-gradient(145deg, rgba(3,8,18,0.85) 0%, rgba(8,15,28,0.96) 100%);
+    padding: clamp(18px, 4vw, 48px);
+    background: rgba(0,0,0,0.78);
+    backdrop-filter: blur(16px);
   }
-  .ach-card-body {
-    padding: 36px 36px 32px 32px;
+
+  .achievement-dialog {
+    position: relative;
+    width: min(1480px, 96vw);
+    max-height: 92vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.28fr) minmax(340px, 0.72fr);
+    overflow: hidden;
+    border: 1px solid rgba(255,32,32,0.24);
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(10,0,0,0.98) 0%, rgba(3,3,3,0.98) 100%);
+    box-shadow: 0 40px 120px rgba(0,0,0,0.72), 0 0 70px rgba(255,32,32,0.1);
+  }
+
+  .light .achievement-dialog {
+    border-color: rgba(14,165,233,0.24);
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 40px 120px rgba(15,23,42,0.24);
+  }
+
+  .achievement-dialog-media {
+    min-height: min(76vh, 760px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(14px, 2vw, 28px);
+    background:
+      radial-gradient(circle at 50% 45%, rgba(255,32,32,0.12), transparent 62%),
+      #050505;
+  }
+
+  .light .achievement-dialog-media {
+    background:
+      radial-gradient(circle at 50% 45%, rgba(14,165,233,0.12), transparent 62%),
+      #f8fbff;
+  }
+
+  .achievement-dialog-media img {
+    width: 100%;
+    height: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    border-radius: 14px;
+  }
+
+  .achievement-dialog-body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    position: relative;
-    gap: 0;
+    padding: clamp(28px, 4vw, 62px);
   }
-  @media (max-width: 1024px) {
-    .vtl-sidebar {
-      display: none;
-    }
+
+  .achievement-dialog-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    border: 1px solid rgba(255,32,32,0.28);
+    border-radius: 999px;
+    padding: 9px 14px;
+    color: #f8fafc;
+    background: rgba(10,0,0,0.72);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
   }
-  @media (max-width: 900px) {
-    .achievement-toolbar {
-      align-items: flex-start;
+
+  .light .achievement-dialog-close {
+    color: #0f172a;
+    background: rgba(255,255,255,0.88);
+    border-color: rgba(14,165,233,0.24);
+  }
+
+  .achievement-dialog-kicker {
+    margin: 0 0 18px;
+    color: #FF2020;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .light .achievement-dialog-kicker { color: #0284c7; }
+
+  .achievement-dialog-title {
+    margin: 0 0 12px;
+    color: #f8fafc;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(34px, 4vw, 62px);
+    line-height: 1.02;
+  }
+
+  .light .achievement-dialog-title { color: #0f172a; }
+
+  .achievement-dialog-subtitle {
+    margin: 0 0 22px;
+    color: rgba(226,232,240,0.78);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .light .achievement-dialog-subtitle { color: #334155; }
+
+  .achievement-dialog-description {
+    margin: 0;
+    color: rgba(203,213,225,0.84);
+    font-size: 16px;
+    line-height: 1.85;
+  }
+
+  .light .achievement-dialog-description { color: #475569; }
+
+  .achievement-dialog-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(148,163,184,0.16);
+    color: rgba(203,213,225,0.76);
+    font-size: 13px;
+  }
+
+  .light .achievement-dialog-details {
+    color: #64748b;
+    border-top-color: rgba(15,23,42,0.1);
+  }
+
+  .light .card-details {
+    border-top-color: rgba(15,23,42,0.1);
+    color: #64748b;
+  }
+
+  @media (max-width: 920px) {
+    .achievement-shell { padding: 88px 16px 80px; }
+
+    .year-timeline {
+      position: sticky;
+      top: 72px;
+      left: auto;
+      transform: none;
+      width: 100%;
+      max-height: none;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 10px 12px;
+      margin-bottom: 24px;
+      background: rgba(1,9,18,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,32,32,0.15);
+      border-radius: 0 0 12px 12px;
     }
-    .achievement-year-picker {
-      justify-content: flex-start;
+
+    .light .year-timeline {
+      background: rgba(248,252,255,0.9);
+      border-bottom-color: rgba(14,165,233,0.18);
     }
-    .ach-card-layout {
-      grid-template-columns: 1fr;
+
+    .year-timeline-track,
+    .year-timeline-progress { display: none; }
+
+    .year-timeline-item {
+      flex-shrink: 0;
+      width: auto;
+      min-width: 52px;
+      padding: 8px 14px;
+    }
+
+    .year-timeline-item::before,
+    .year-timeline-item.active::after { display: none; }
+
+    .year-timeline-item .year-label {
+      writing-mode: horizontal-tb;
+      padding-left: 0;
+    }
+
+    .spotlight-section {
+      min-height: auto !important;
+      margin-bottom: 34px;
+    }
+
+    .spotlight-stage {
+      position: relative;
+      top: auto;
+      display: block;
+      min-height: auto;
+      padding: 0;
+    }
+
+    .spotlight-year {
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(10px);
+    }
+
+    .light .spotlight-year {
+      background: rgba(248,252,255,0.92);
+    }
+
+    .spotlight-year strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: clamp(44px, 18vw, 72px);
+      letter-spacing: -0.025em;
+    }
+
+    .spotlight-year span {
+      max-width: none;
+      font-size: 15px;
+    }
+
+    .spotlight-progress { display: none; }
+
+    .spotlight-card-frame {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
       min-height: auto;
     }
-    .ach-card-media {
-      min-height: 260px;
-      padding: 14px;
+
+    .achievement-card {
+      position: relative;
+      inset: auto;
+      top: auto;
+      grid-template-columns: 1fr;
+      min-height: auto;
+      transform: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto;
     }
-    .ach-card-body {
-      padding: 28px 24px 30px;
+
+    .card-photo { min-height: 220px; }
+    .card-photo::after {
+      background: linear-gradient(180deg, rgba(255,32,32,0.06) 0%, transparent 45%, rgba(5,0,0,0.86));
     }
-  }
-`;
-
-/* DATA */
-const achievements = [
-  {
-    featured: true, rank: 'JOINT AIR-1',
-    year: '2026', date: 'May 2026',
-    title: 'DD Robocon 2026', subtitle: 'Stage 1 & 2 — All India Rank 1',
-    description: 'Secured Joint AIR-1 in Stage 1 & 2 of DD Robocon 2026 — "Kung Fu Quest" — by submitting detailed design documents & Working Video for two coordinated robots (manual & autonomous) complete with CAD models and simulations for weapon assembly, KFS collection, and Tic-Tac-Toe arena placement.',
-    resultFile: roboconResultFile,
-    image: roboconTeamPhoto,
-    icon: Trophy, venue: 'National Level', teamSize: '30+',
-    tags: ['DD Robocon', 'AIR-1', 'Autonomous', 'National'], accent: '#fbbf24',
-    hallLabel: 'Hall of Fame',
-  },
-  {
-    rank: 'TRIPLE AIR-1', year: '2026', date: 'March 2026',
-    title: 'IIT Indore — Ingenium', subtitle: 'Three Gold Medals at Techfest',
-    description: "Competed at IIT Indore's flagship Techfest Ingenium and swept all three events: AIR-1 in Aero Artistry (maximum unpowered glider flight time), AIR-1 in CV Obstacle Course (autonomous navigation via OpenCV on Raspberry Pi), and AIR-1 in Robo Soccer (small-bot football match).",
-    image: iitIndoreTeam,
-    icon: Award, venue: 'IIT Indore', teamSize: '25',
-    tags: ['Aero Artistry', 'CV Obstacle', 'Robo Soccer', 'AIR-1'], accent: '#22d3ee',
-  },
-  {
-    rank: 'AIR-1', year: '2026', date: 'March 2026',
-    title: 'SGGSIET Nanded — Rmaggedon', subtitle: 'Line Follower — National Title',
-    description: "Three teams from the Robo-Tech Forum competed in the national-level technical event Rmaggedon 2026 at SGGSIET, Nanded. One team claimed All India Rank 1 in the Line Follower event, reinforcing the club's dominance in precision autonomous robotics.",
-    image: lineFollowerRobots,
-    icon: Zap, venue: 'SGGSIET, Nanded', teamSize: '18',
-    tags: ['Line Follower', 'AIR-1', 'Rmaggedon'], accent: '#a78bfa',
-  },
-  {
-    rank: 'AIR-1 & 2', year: '2026', date: 'March 2026',
-    title: 'GECA Sambhajinagar — Wings', subtitle: 'Line Follower — 1st & 2nd Place',
-    description: "Two teams from the Robo-Tech Forum participated in the national-level Techfest Wings at GECA, Sambhajinagar. Both teams dominated the Line Follower competition, finishing AIR-1 and AIR-2 respectively and bringing dual national recognition to GCoEA.",
-    image: gecaLineFollower,
-    icon: Rocket, venue: 'GECA, Sambhajinagar', teamSize: '20',
-    tags: ['Line Follower', 'AIR-1', 'AIR-2', 'Wings'], accent: '#38bdf8',
-  },
-  {
-    rank: 'AIR-1 & 2', year: '2026', date: 'March 2026',
-    title: 'GCOE Jalgaon — CARVAAN', subtitle: 'Line Follower — 1st & 2nd Place',
-    description: "Two teams from the Robo-Tech Forum competed in the national-level Techfest CARVAAN at GCOE, Jalgaon, in the Line Follower competition. Both teams secured AIR-1 and AIR-2, completing a remarkable sweep of Line Follower events across multiple national venues in March 2026.",
-    image: carvaanTrophy,
-    icon: Cpu, venue: 'GCOE, Jalgaon', teamSize: '20',
-    tags: ['Line Follower', 'AIR-1', 'AIR-2', 'CARVAAN'], accent: '#34d399',
-  },
-  {
-    year: '2014', date: 'Foundation Year',
-    title: 'Genesis of The Robo-Tech Forum',
-    description: "Passionate engineers at GCoEA laid the foundation for the college's most decorated technical club.",
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800',
-    icon: Flag, venue: 'GCoEA Amravati', teamSize: '12',
-    tags: ['Foundation', 'Legacy'], accent: '#94a3b8',
-  },
-];
-
-/* LAZY IMAGE */
-function LazyImage({ src, alt, style }) {
-  const [loaded, setLoaded] = useState(false);
-  const [err, setErr] = useState(false);
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {!loaded && !err && <div className="img-skeleton" style={{ position: 'absolute', inset: 0 }} />}
-      <img
-        src={src} alt={alt} loading="lazy" decoding="async"
-        onLoad={() => setLoaded(true)}
-        onError={() => { setErr(true); setLoaded(true); }}
-        style={{ ...style, opacity: loaded ? 1 : 0, transition: 'opacity 0.55s ease' }}
-      />
-    </div>
-  );
-}
-
-/* TILT WRAPPER */
-function TiltCard({ className, style, children, onClick, onKeyDown, tabIndex, role, ariaLabel }) {
-  const ref = useRef(null);
-  
-  const onMove = useCallback(e => {
-    const el = ref.current; 
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width  - 0.5;
-    const y = (e.clientY - r.top)  / r.height - 0.5;
-    el.style.transform = `perspective(1100px) rotateY(${x * 5}deg) rotateX(${-y * 4}deg) translateY(-4px)`;
-  }, []);
-
-  const onLeave = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.transform = `perspective(1100px) rotateY(0deg) rotateX(0deg) translateY(0)`;
-  }, []);
-
-  return (
-    <div ref={ref} className={className}
-      style={{ ...style, transition: 'transform 0.12s ease, box-shadow 0.4s ease, border-color 0.4s ease' }}
-      onMouseMove={onMove} onMouseLeave={onLeave}
-      onClick={onClick} onKeyDown={onKeyDown} tabIndex={tabIndex} role={role} aria-label={ariaLabel}>
-      {children}
-    </div>
-  );
-}
-
-/* SINGLE ACHIEVEMENT CARD */
-function AchCard({ item, index, isLight }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
-  const Icon = item.icon;
-  const isGold = !!item.featured;
-  const cardCls = `ach-card ${isGold ? 'ach-card-gold' : 'ach-card-cyan'}`;
-  const cardNum = String(index + 1).padStart(2, '0');
-
-  const titleColor   = isLight ? '#0b1224' : '#f1f5f9';
-  const descColor    = isLight ? '#334155' : 'rgba(148,163,184,0.78)';
-  const subtitleClr  = isLight ? '#047fa8' : `${item.accent}cc`;
-  const metaClr      = isLight ? '#52637a' : 'rgba(148,163,184,0.6)';
-  const canOpenResult = Boolean(item.resultFile);
-
-  const openResultFile = useCallback(() => {
-    if (!item.resultFile || typeof window === 'undefined') return;
-    window.open(item.resultFile, '_blank', 'noopener,noreferrer');
-  }, [item.resultFile]);
-
-  const onCardKeyDown = useCallback((event) => {
-    if (!canOpenResult) return;
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openResultFile();
+    .light .card-photo::after {
+      background: linear-gradient(180deg, transparent 45%, rgba(255,255,255,0.74));
     }
-  }, [canOpenResult, openResultFile]);
 
-  return (
-    <motion.div ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
-    >
-      <TiltCard
-        className={cardCls}
-        onClick={canOpenResult ? openResultFile : undefined}
-        onKeyDown={canOpenResult ? onCardKeyDown : undefined}
-        tabIndex={canOpenResult ? 0 : undefined}
-        role={canOpenResult ? 'button' : undefined}
-        ariaLabel={canOpenResult ? `${item.title} result document` : undefined}
-        style={canOpenResult ? { cursor: 'pointer' } : undefined}
-      >
-        <div className="ach-card-layout">
-
-          {/* LEFT: image */}
-          <div className="ach-card-media">
-            <LazyImage
-              src={item.image} alt={item.title}
-              style={{
-                width: '100%', height: '100%', objectFit: 'contain',
-                objectPosition: 'center center',
-                filter: isLight
-                  ? 'brightness(1.03) saturate(1.06)'
-                  : 'brightness(0.95) saturate(1.08)',
-                borderRadius: 16,
-                boxShadow: isLight
-                  ? '0 10px 22px rgba(15,23,42,0.08)'
-                  : '0 12px 26px rgba(0,0,0,0.24)',
-              }}
-            />
-            {/* Subtle read-through overlay */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: isLight
-                ? 'linear-gradient(90deg, rgba(248,253,255,0.10) 0%, transparent 34%, transparent 66%, rgba(255,255,255,0.14) 100%)'
-                : 'linear-gradient(90deg, rgba(3,8,18,0.08) 0%, transparent 34%, transparent 66%, rgba(3,8,18,0.18) 100%)',
-              borderRadius: 20,
-            }} />
-            <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${item.accent}10 0%, transparent 58%)`, borderRadius: 20 }} />
-            <div className="scanlines" style={{ position: 'absolute', inset: 0 }} />
-
-            {item.hallLabel && (
-              <div style={{
-                position: 'absolute', top: 20, left: 20,
-                display: 'flex', alignItems: 'center', gap: 6,
-                background: isLight ? 'rgba(255,251,235,0.92)' : 'rgba(251,191,36,0.1)',
-                border: '1px solid rgba(251,191,36,0.45)',
-                borderRadius: 99, padding: '5px 13px',
-              }}>
-                <Trophy size={10} color="#fbbf24" />
-                <span style={{ fontFamily: 'DM Sans', fontSize: 9, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#d97706' }}>
-                  {item.hallLabel}
-                </span>
-              </div>
-            )}
-
-            <div style={{
-              position: 'absolute', bottom: -8, left: 14,
-              fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
-              fontSize: 'clamp(52px,6vw,84px)',
-              color: item.accent, opacity: isLight ? 0.12 : 0.055,
-              lineHeight: 1, userSelect: 'none', pointerEvents: 'none',
-            }}>{item.year}</div>
-          </div>
+    .achievement-dialog {
+      grid-template-columns: 1fr;
+      overflow-y: auto;
+    }
 
           {/* RIGHT: body */}
           <div className="ach-card-body">
@@ -773,20 +948,99 @@ function VerticalTimeline({ activeIndex, onSelect, isLight, items }) {
     </div>
   );
 }
+    .achievement-dialog-media {
+      min-height: 42vh;
+    }
 
-const achievementsByYear = [...achievements].sort((left, right) => {
-  const yearDiff = Number(right.year) - Number(left.year);
-  if (yearDiff !== 0) return yearDiff;
-  if (left.featured !== right.featured) return left.featured ? -1 : 1;
-  return right.date.localeCompare(left.date);
-});
+    .achievement-dialog-body {
+      padding: 24px;
+    }
+  }
 
-const achievementYears = ['All', ...new Set(achievementsByYear.map((achievement) => achievement.year))];
+  @media (prefers-reduced-motion: reduce) {
+    .achievement-card,
+    .year-timeline-item,
+    .year-timeline-progress { transition: none; }
+    .achievement-scroll-hint { animation: none; }
+  }
+`;
 
-/* ROOT COMPONENT */
-export default function Achievement({ lightMode }) {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [selectedYear, setSelectedYear] = useState('All');
+const storyData = {
+  '2026': {
+    summary: 'A year of national stages, repeated first-place finishes, and strong autonomous robotics work.',
+    cards: [
+      {
+        rank: 'JOINT AIR-1',
+        date: 'May 2026',
+        title: 'DD Robocon 2026',
+        subtitle: 'Stage 1 & 2 — All India Rank 1',
+        description: 'Secured Joint AIR-1 in Stage 1 & 2 of DD Robocon 2026 — "Kung Fu Quest" — by submitting detailed design documents & Working Video for two coordinated robots (manual & autonomous) complete with CAD models and simulations for weapon assembly, KFS collection, and Tic-Tac-Toe arena placement.',
+        venue: 'National Level',
+        team: '30+ Members',
+        image: roboconTeamPhoto,
+      },
+      {
+        rank: 'TRIPLE AIR-1',
+        date: 'March 2026',
+        title: 'IIT Indore — Ingenium',
+        subtitle: 'Three Gold Medals at Techfest',
+        description: "Competed at IIT Indore's flagship Techfest Ingenium and swept all three events: AIR-1 in Aero Artistry (maximum unpowered glider flight time), AIR-1 in CV Obstacle Course (autonomous navigation via OpenCV on Raspberry Pi), and AIR-1 in Robo Soccer (small-bot football match).",
+        venue: 'IIT Indore',
+        team: '25 Members',
+        image: iitIndoreTeam,
+      },
+      {
+        rank: 'AIR-1',
+        date: 'March 2026',
+        title: 'SGGSIET Nanded — Rmaggedon',
+        subtitle: 'Line Follower — National Title',
+        description: "Three teams from the Robo-Tech Forum competed in the national-level technical event Rmaggedon 2026 at SGGSIET, Nanded. One team claimed All India Rank 1 in the Line Follower event, reinforcing the club's dominance in precision autonomous robotics.",
+        venue: 'SGGSIET, Nanded',
+        team: '18 Members',
+        image: lineFollowerRobots,
+      },
+      {
+        rank: 'AIR-1 & 2',
+        date: 'March 2026',
+        title: 'GECA Sambhajinagar — Wings',
+        subtitle: 'Line Follower — 1st & 2nd Place',
+        description: "Two teams from the Robo-Tech Forum participated in the national-level Techfest Wings at GECA, Sambhajinagar. Both teams dominated the Line Follower competition, finishing AIR-1 and AIR-2 respectively and bringing dual national recognition to GCoEA.",
+        venue: 'GECA, Sambhajinagar',
+        team: '20 Members',
+        image: gecaLineFollower,
+      },
+      {
+        rank: 'AIR-1 & 2',
+        date: 'March 2026',
+        title: 'GCOE Jalgaon — CARVAAN',
+        subtitle: 'Line Follower — 1st & 2nd Place',
+        description: "Two teams from the Robo-Tech Forum competed in the national-level Techfest CARVAAN at GCOE, Jalgaon, in the Line Follower competition. Both teams secured AIR-1 and AIR-2, completing a remarkable sweep of Line Follower events across multiple national venues in March 2026.",
+        venue: 'GCOE, Jalgaon',
+        team: '20 Members',
+        image: carvaanTrophy,
+      }
+    ]
+  },
+  '2014': {
+    summary: "Passionate engineers at GCoEA laid the foundation for the college\'s most decorated technical club.",
+    cards: [
+      {
+        rank: 'Foundation',
+        date: 'Foundation Year',
+        title: 'Genesis of The Robo-Tech Forum',
+        subtitle: 'The beginning of a legacy',
+        description: "Passionate engineers at GCoEA laid the foundation for the college\'s most decorated technical club.",
+        venue: 'GCoEA Amravati',
+        team: '12 Members',
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800',
+      }
+    ]
+  }
+};
+
+const yearGroups = YEARS_DESC.map((year) => ({ year, ...storyData[year] }));
+
+function useDetectedLightMode(lightMode) {
   const [detectedLightMode, setDetectedLightMode] = useState(false);
 
   const readLightMode = useCallback(() => {
@@ -801,13 +1055,19 @@ export default function Achievement({ lightMode }) {
       body?.dataset.theme,
       root.dataset.mode,
       body?.dataset.mode,
-    ].filter(Boolean).join(' ').toLowerCase();
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
 
     const storedTheme = [
       window.localStorage.getItem('theme'),
       window.localStorage.getItem('color-theme'),
       window.localStorage.getItem('mode'),
-    ].filter(Boolean).join(' ').toLowerCase();
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
 
     if (themeText.includes('light') || storedTheme.includes('light')) return true;
     if (themeText.includes('dark') || storedTheme.includes('dark')) return false;
@@ -841,8 +1101,16 @@ export default function Achievement({ lightMode }) {
     if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
 
     const observer = new MutationObserver(syncMode);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-mode'] });
-    if (document.body) observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-mode'] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'data-theme', 'data-mode'],
+    });
+    if (document.body) {
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'data-theme', 'data-mode'],
+      });
+    }
 
     window.addEventListener('storage', syncMode);
     return () => {
@@ -881,12 +1149,319 @@ export default function Achievement({ lightMode }) {
 
     return () => obs.disconnect();
   }, [visibleAchievements]);
+  return typeof lightMode === 'boolean' ? lightMode : detectedLightMode;
+}
 
-  const bgClass   = isLight ? 'hex-bg-light' : 'hex-bg';
-  const modeClass = isLight ? 'light' : '';
+function SpotlightAchievementCard({ card, index, isActive, totalCards, onOpen }) {
+  const handleKeyDown = useCallback(
+    (event) => {
+      if (!isActive) return;
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onOpen(card);
+      }
+    },
+    [card, isActive, onOpen],
+  );
 
-  const taglineColor = isLight ? '#087ea4' : 'rgba(34,211,238,0.55)';
-  const subtitleClr  = isLight ? '#405167' : 'rgba(148,163,184,0.62)';
+  return (
+    <article
+      className={`achievement-card${isActive ? ' is-active' : ''}`}
+      aria-hidden={!isActive}
+      role={isActive ? 'button' : undefined}
+      tabIndex={isActive ? 0 : -1}
+      onClick={isActive ? () => onOpen(card) : undefined}
+      onKeyDown={handleKeyDown}
+      style={{
+        '--card-opacity': isActive ? 1 : 0,
+        '--card-scale': isActive ? 1 : 0.94,
+        '--card-y': isActive ? '0px' : index === 0 ? '-28px' : '36px',
+        '--card-visibility': isActive ? 'visible' : 'hidden',
+        zIndex: isActive ? totalCards + 1 : totalCards - index,
+      }}
+    >
+      <div className="card-photo">
+        <img src={card.image} alt={card.title} loading="lazy" decoding="async" />
+      </div>
+      <div className="card-body">
+        <div className="card-eyebrow">
+          <span>{card.rank}</span>
+          <span>{card.date}</span>
+        </div>
+        <h3 className="card-title">{card.title}</h3>
+        <p className="card-subtitle">{card.subtitle}</p>
+        <p className="card-description">{card.description}</p>
+        <div className="card-details">
+          <span>{card.venue}</span>
+          <span>{card.team}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function SpotlightYearSection({ group, activeCardIndex, registerSection, onOpenCard }) {
+  return (
+    <section
+      id={`year-${group.year}`}
+      data-year={group.year}
+      className="spotlight-section"
+      style={{ '--card-count': group.cards.length }}
+      ref={(node) => registerSection(group.year, node)}
+      aria-labelledby={`year-heading-${group.year}`}
+    >
+      <div className="spotlight-stage">
+        <div className="spotlight-year">
+          <strong id={`year-heading-${group.year}`}>{group.year}</strong>
+          <span>{group.summary}</span>
+          <div className="spotlight-progress" aria-hidden="true">
+            {group.cards.map((card, index) => (
+              <span
+                key={`${group.year}-${card.title}-dot`}
+                className={`spotlight-progress-dot${activeCardIndex === index ? ' active' : ''}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="spotlight-card-frame">
+          {group.cards.map((card, index) => (
+            <SpotlightAchievementCard
+              key={`${group.year}-${card.title}`}
+              card={card}
+              index={index}
+              totalCards={group.cards.length}
+              isActive={activeCardIndex === index}
+              onOpen={onOpenCard}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AchievementDialog({ card, onClose }) {
+  useEffect(() => {
+    if (!card || typeof document === 'undefined') return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [card, onClose]);
+
+  if (!card) return null;
+
+  return (
+    <div
+      className="achievement-dialog-backdrop"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <Motion.div
+        className="achievement-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="achievement-dialog-title"
+        initial={{ opacity: 0, scale: 0.96, y: 24 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 24 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <button type="button" className="achievement-dialog-close" onClick={onClose}>
+          Close
+        </button>
+        <div className="achievement-dialog-media">
+          <img src={card.image} alt={card.title} />
+        </div>
+        <div className="achievement-dialog-body">
+          <p className="achievement-dialog-kicker">
+            {card.rank} / {card.date}
+          </p>
+          <h2 id="achievement-dialog-title" className="achievement-dialog-title">
+            {card.title}
+          </h2>
+          <p className="achievement-dialog-subtitle">{card.subtitle}</p>
+          <p className="achievement-dialog-description">{card.description}</p>
+          <div className="achievement-dialog-details">
+            <span>{card.venue}</span>
+            <span>{card.team}</span>
+          </div>
+        </div>
+      </Motion.div>
+    </div>
+  );
+}
+
+const YearTimelineSidebar = forwardRef(function YearTimelineSidebar(
+  { years, activeYear, progressPct, onSelectYear },
+  ref,
+) {
+  return (
+    <nav ref={ref} className="year-timeline" aria-label="Achievement years">
+      <div className="year-timeline-track" aria-hidden="true" />
+      <div className="year-timeline-progress" style={{ height: `${progressPct}%` }} aria-hidden="true" />
+      {years.map((year) => (
+        <button
+          key={year}
+          type="button"
+          className={`year-timeline-item${activeYear === year ? ' active' : ''}`}
+          onClick={() => onSelectYear(year)}
+          title={year}
+        >
+          <span className="year-label">{year}</span>
+        </button>
+      ))}
+    </nav>
+  );
+});
+
+export default function Achievement({ lightMode }) {
+  const { year: yearParam } = useParams();
+  const isLight = useDetectedLightMode(lightMode);
+  const [activeYear, setActiveYear] = useState(null);
+  const [activeCardByYear, setActiveCardByYear] = useState(() =>
+    YEARS_DESC.reduce((acc, year) => ({ ...acc, [year]: 0 }), {}),
+  );
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [timelineProgress, setTimelineProgress] = useState(0);
+  const sectionRefs = useRef({});
+  const scrollIntentRef = useRef(null);
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    if (!yearParam || !storyData[yearParam]) return;
+
+    const frame = requestAnimationFrame(() => {
+      sectionRefs.current[yearParam]?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      setActiveYear(yearParam);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [yearParam]);
+
+  useEffect(() => {
+    let rafId = 0;
+
+    const syncSpotlight = () => {
+      const anchor = window.innerHeight * 0.36;
+      const landing = document.getElementById('achievement-landing');
+
+      if (landing) {
+        const landingRect = landing.getBoundingClientRect();
+        if (landingRect.bottom > anchor + 24) {
+          setActiveYear((prev) => (prev === null ? prev : null));
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          const pct = maxScroll > 0 ? Math.min(6, (window.scrollY / maxScroll) * 6) : 0;
+          setTimelineProgress((prev) => (Math.abs(prev - pct) < 0.5 ? prev : pct));
+          return;
+        }
+      }
+
+      let matchedYear = YEARS_DESC[0];
+      let closestDistance = Number.POSITIVE_INFINITY;
+      const nextCardByYear = {};
+
+      for (const group of yearGroups) {
+        const year = group.year;
+        const node = sectionRefs.current[year];
+        if (!node) continue;
+
+        const rect = node.getBoundingClientRect();
+        const travel = Math.max(1, rect.height - window.innerHeight);
+        const rawProgress = Math.min(1, Math.max(0, -rect.top / travel));
+        const cardIndex = Math.min(
+          group.cards.length - 1,
+          Math.max(0, Math.round(rawProgress * (group.cards.length - 1))),
+        );
+        nextCardByYear[year] = cardIndex;
+
+        if (rect.top <= anchor && rect.bottom >= anchor) {
+          matchedYear = year;
+          closestDistance = 0;
+          break;
+        }
+
+        const distance = Math.min(
+          Math.abs(rect.top - anchor),
+          Math.abs(rect.bottom - anchor),
+          Math.abs(rect.top + rect.height * 0.35 - anchor),
+        );
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          matchedYear = year;
+        }
+      }
+
+      const idx = YEARS_DESC.indexOf(matchedYear);
+      const activeGroup = yearGroups.find((group) => group.year === matchedYear);
+      const activeCardIndex = nextCardByYear[matchedYear] ?? 0;
+      const cardProgress = activeGroup && activeGroup.cards.length > 1
+        ? activeCardIndex / (activeGroup.cards.length - 1)
+        : 0;
+      const pct = ((idx + cardProgress + 1) / YEARS_DESC.length) * 100;
+
+      setActiveYear((prev) => (prev === matchedYear ? prev : matchedYear));
+      setActiveCardByYear((prev) => {
+        const changed = YEARS_DESC.some((year) => (nextCardByYear[year] ?? 0) !== prev[year]);
+        return changed ? { ...prev, ...nextCardByYear } : prev;
+      });
+      setTimelineProgress((prev) => (Math.abs(prev - pct) < 0.5 ? prev : pct));
+    };
+
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(syncSpotlight);
+    };
+
+    syncSpotlight();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const intent = scrollIntentRef.current;
+    if (!intent) return;
+    scrollIntentRef.current = null;
+
+    sectionRefs.current[intent]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  const registerSection = useCallback((year, node) => {
+    if (node) sectionRefs.current[year] = node;
+  }, []);
+
+  const scrollToYear = useCallback((year) => {
+    scrollIntentRef.current = year;
+    setActiveYear(year);
+    sectionRefs.current[year]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
+  const openCardDialog = useCallback((card) => {
+    setSelectedCard(card);
+  }, []);
+
+  const closeCardDialog = useCallback(() => {
+    setSelectedCard(null);
+  }, []);
 
   return (
     <>
@@ -918,117 +1493,54 @@ export default function Achievement({ lightMode }) {
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
+      <main className={`achievement-page ${isLight ? 'light' : 'dark'}`}>
+        <YearTimelineSidebar
+          ref={sidebarRef}
+          years={YEARS_DESC}
+          activeYear={activeYear}
+          progressPct={timelineProgress}
+          onSelectYear={scrollToYear}
+        />
+
+        <div className="achievement-shell">
+          <header id="achievement-landing" className="achievement-hero">
+            <Motion.span
+              className="achievement-kicker"
+              initial={{ opacity: 0, letterSpacing: '0.55em' }}
+              animate={{ opacity: 1, letterSpacing: '0.42em' }}
+              transition={{ duration: 0.8 }}
+            >
+              Hall of Fame
+            </Motion.span>
+            <Motion.h1
+              className="achievement-title"
+              initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
-                fontSize: 'clamp(42px,7vw,82px)', letterSpacing: '0.07em',
-                lineHeight: 1.05, marginBottom: 24,
-              }}
+              transition={{ delay: 0.12, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             >
-              <span style={{
-                display: 'inline-block',
-                backgroundImage: isLight
-                  ? 'linear-gradient(135deg,#111827 0%,#0f172a 34%,#0891b2 68%,#4f46e5 100%)'
-                  : 'linear-gradient(135deg,#eafaff 0%,#22d3ee 30%,#38bdf8 60%,#a78bfa 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                color: 'transparent',
-                WebkitTextFillColor: 'transparent',
-              }}>
-                ACHIEVEMENTS
-              </span>
-            </motion.h1>
+              <span>Achievements</span>
+            </Motion.h1>
+            <p className="achievement-subtitle">
+              Scroll through every year - each milestone takes the center stage as you move forward or backward.
+            </p>
+            <p className="achievement-scroll-hint" aria-hidden="true">
+              Scroll to explore
+            </p>
+          </header>
 
-            <motion.div
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.7 }}
-              style={{
-                height: 1.5, width: 100, margin: '0 auto 24px',
-                background: isLight
-                  ? 'linear-gradient(90deg,transparent,#06b6d4,#4f46e5,transparent)'
-                  : 'linear-gradient(90deg,transparent,#22d3ee,#a78bfa,transparent)',
-                borderRadius: 99,
-              }}
+          {yearGroups.map((group) => (
+            <SpotlightYearSection
+              key={group.year}
+              group={group}
+              activeCardIndex={activeCardByYear[group.year] ?? 0}
+              registerSection={registerSection}
+              onOpenCard={openCardDialog}
             />
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.55, duration: 0.6 }}
-              style={{
-                fontFamily: 'DM Sans', fontSize: 15.5,
-                color: subtitleClr,
-                maxWidth: 460, margin: '0 auto', lineHeight: 1.85, fontStyle: 'italic',
-              }}
-            >
-              From a garage dream to national glory — every block a milestone, every year a battle won.
-            </motion.p>
-          </div>
-
-          <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 24px 110px' }}>
-            <div className="achievement-toolbar">
-              <div className="achievement-toolbar-copy">
-                <span className="achievement-toolbar-kicker" style={{ color: taglineColor }}>FILTER BY YEAR</span>
-                <div className="achievement-toolbar-title" style={{ color: isLight ? '#0f172a' : '#e2e8f0' }}>
-                  {selectedYear === 'All' ? 'Latest to Oldest' : `${selectedYear} achievements`}
-                </div>
-              </div>
-              <div className="achievement-year-picker" role="tablist" aria-label="Achievement year filter">
-                {achievementYears.map((year) => {
-                  const active = year === selectedYear;
-                  const count = year === 'All'
-                    ? achievementsByYear.length
-                    : achievementsByYear.filter((achievement) => achievement.year === year).length;
-                  return (
-                    <button
-                      key={year}
-                      type="button"
-                      role="tab"
-                      aria-selected={active}
-                      className={`achievement-year-chip${active ? ' is-active' : ''}`}
-                      onClick={() => setSelectedYear(year)}
-                      style={{
-                        color: active ? (isLight ? '#ffffff' : '#00111a') : (isLight ? '#334155' : 'rgba(226,232,240,0.8)'),
-                        background: active
-                          ? (isLight ? 'linear-gradient(135deg,#0891b2 0%,#4f46e5 100%)' : 'linear-gradient(135deg,#22d3ee 0%,#a78bfa 100%)')
-                          : (isLight ? 'rgba(255,255,255,0.74)' : 'rgba(15,23,42,0.55)'),
-                        borderColor: active
-                          ? 'transparent'
-                          : (isLight ? 'rgba(14,165,233,0.18)' : 'rgba(34,211,238,0.16)'),
-                        boxShadow: active
-                          ? (isLight ? '0 14px 28px rgba(14,165,233,0.18)' : '0 14px 28px rgba(34,211,238,0.12)')
-                          : 'none',
-                      }}
-                    >
-                      {year}
-                      <span className="achievement-year-chip-count">{count}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 18, fontFamily: 'DM Sans', fontSize: 12, color: subtitleClr, lineHeight: 1.7 }}>
-              Showing {visibleAchievements.length} achievement{visibleAchievements.length === 1 ? '' : 's'}.
-            </div>
-
-            <div className="achievement-list">
-              {visibleAchievements.map((item, i) => (
-                <div key={`${item.year}-${item.title}`} ref={(el) => { cardRefs.current[i] = el; }}>
-                  <AchCard item={item} index={i} isLight={isLight} />
-                </div>
-              ))}
-              {visibleAchievements.length === 0 && (
-                <div className="achievement-empty">
-                  No achievements found for the selected year.
-                </div>
-              )}
-            </div>
-          </div>
+          ))}
         </div>
-      </div>
+
+        <AchievementDialog card={selectedCard} onClose={closeCardDialog} />
+      </main>
     </>
   );
 }

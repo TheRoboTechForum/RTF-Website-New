@@ -32,9 +32,9 @@ export default function SectionHeader({
       {label && (
         <span className="text-label text-cyan-400 mb-3 block">{label}</span>
       )}
-      <h2 className="text-h2 text-text-primary">{title}</h2>
+      <h2 className="text-h2 text-[#FF2020] text-5xl md:text-6xl font-extrabold">{title}</h2>
       {subtitle && (
-        <p className="text-body text-text-secondary mt-3 max-w-2xl mx-auto">
+        <p className="text-lg text-white mt-3 max-w-2xl mx-auto">
           {subtitle}
         </p>
       )}

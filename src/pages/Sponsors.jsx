@@ -103,7 +103,7 @@ export default function Sponsors() {
       </div>
 
       {/* ─── Impact Metrics ─── */}
-      <div className="bg-surface/40 border-y border-border/30 py-16 px-6 mb-20">
+      <div className="py-16 px-6 mb-20">
         <motion.div
           ref={metricsRef}
           initial="hidden"
@@ -154,7 +154,7 @@ export default function Sponsors() {
       </div>
 
       {/* ─── Competition Track Record ─── */}
-      <div className="bg-surface/30 border-y border-border/30 py-20 px-6 mb-24">
+      <div className="py-20 px-6 mb-24">
         <SectionHeader
           label="// WHERE YOUR BRAND APPEARS"
           title="Our Competition Track Record"
@@ -212,10 +212,8 @@ export default function Sponsors() {
         </div>
       )}
 
-      {/* ─── Final CTA — No prices, just a conversation ─── */}
+      {/* ─── Final CTA ─── */}
       <div className="relative py-20 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5" />
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
 
         <div className="relative z-10 max-w-2xl mx-auto text-center">
           <span className="text-label text-cyan-400 mb-4 block">// LET'S TALK</span>

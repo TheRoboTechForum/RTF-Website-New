@@ -143,7 +143,7 @@ export const teamMembers = [
   // },
    {
     id: 3,
-    name: 'Daksh R Titarmare ',
+    name: 'Daksh Raju Titarmare ',
     role: 'Website and IT Maintainer',
     department: 'Information Technology',
     type: 'lead',

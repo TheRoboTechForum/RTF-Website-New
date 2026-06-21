@@ -14,7 +14,7 @@ import { ArrowRight } from 'lucide-react';
  */
 const variants = {
   primary:
-    'bg-cyan-500 text-deep hover:bg-cyan-400 shadow-glow-cyan hover:shadow-[0_0_40px_rgba(6,182,212,0.5)]',
+    'bg-white text-black hover:bg-gray-100 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.25)]',
   secondary:
     'bg-transparent text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/10 hover:border-cyan-400/50',
   danger:

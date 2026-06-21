@@ -15,26 +15,27 @@ export default {
         elevated: 'var(--bg-elevated)',
         border: 'var(--bg-border)',
 
-        // Primary — Cyan
+        // Primary — Red accent ramp
         cyan: {
-          300: '#67E8F9',
-          400: '#22D3EE',
-          500: '#06B6D4',
-          glow: 'rgba(6, 182, 212, 0.35)',
+          300: '#FF6B6B',
+          400: '#FF2020',
+          500: '#CC0000',
+          600: '#B22222',
+          glow: 'rgba(255, 68, 68, 0.40)',
         },
 
-        // Secondary — Amber
+        // Secondary — Warm Gold
         amber: {
-          400: '#FBBF24',
-          500: '#F59E0B',
-          glow: 'rgba(245, 158, 11, 0.35)',
+          400: '#E6B800',
+          500: '#D4A017',
+          glow: 'rgba(230, 184, 0, 0.35)',
         },
 
-        // Tertiary — Purple
+        // Tertiary — Firebrick / Soft Red
         purple: {
-          400: '#8B5CF6',
-          500: '#7C3AED',
-          glow: 'rgba(124, 58, 237, 0.3)',
+          400: '#FF6B6B',
+          500: '#B22222',
+          glow: 'rgba(178, 34, 34, 0.3)',
         },
 
         // Text
@@ -62,10 +63,10 @@ export default {
       },
 
       boxShadow: {
-        card: '0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px #1E2D42',
-        'glow-cyan': '0 0 30px rgba(6, 182, 212, 0.35)',
-        'glow-amber': '0 0 30px rgba(245, 158, 11, 0.35)',
-        'glow-purple': '0 0 30px rgba(124, 58, 237, 0.3)',
+        card: '0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px #333333',
+        'glow-cyan': '0 0 30px rgba(255, 68, 68, 0.40)',
+        'glow-amber': '0 0 30px rgba(230, 184, 0, 0.35)',
+        'glow-purple': '0 0 30px rgba(178, 34, 34, 0.3)',
       },
 
       transitionDuration: {
@@ -107,4 +108,3 @@ export default {
   },
   plugins: [],
 };
-

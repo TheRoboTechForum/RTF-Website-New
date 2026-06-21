@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
 import { ArrowUpRight, Mail, MapPin, Clock } from 'lucide-react';
 import { contactInfo, socials, stats } from "../../data/stats";
+import rtfLogo from '../../assets/images/rtf-logo-img.jpg';
 
 const exploreLinks = [
   { path: "/projects", label: "Projects" },
@@ -43,25 +44,23 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative bg-deep px-4 pb-8 pt-20 sm:px-8 lg:pt-28 overflow-hidden z-10">
-      <div className="absolute inset-0 bg-grid opacity-70 pointer-events-none" />
-      <div className="absolute left-1/2 top-8 h-48 w-[min(90vw,720px)] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+  <footer className="relative bg-transparent px-4 pb-8 pt-20 sm:px-8 lg:pt-28 overflow-hidden z-10">      
+      {/* <div className="absolute inset-0 bg-grid opacity-70 pointer-events-none" /> */}
+      {/* <div className="absolute left-1/2 top-8 h-48 w-[min(90vw,720px)] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" /> */}
 
-      <div className="absolute inset-x-0 bottom-0 flex justify-center items-end pointer-events-none select-none z-0 opacity-[0.035]">
+      {/* <div className="absolute inset-x-0 bottom-0 flex justify-center items-end pointer-events-none select-none z-0 opacity-[0.035]">
         <span className="font-display font-black text-[28vw] leading-[0.72] text-white whitespace-nowrap">
           RTF
         </span>
-      </div>
+      </div> */}
 
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="bg-surface/80 backdrop-blur-xl border border-cyan-500/20 rounded-card p-6 sm:p-10 lg:p-12 shadow-card">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.5fr] lg:gap-16">
             <div>
               <Link to="/" className="group inline-flex items-center gap-3 mb-6" aria-label="The Robo-Tech Forum home">
-                <div className="w-11 h-11 rounded-button bg-cyan-500/15 border border-cyan-500/40 flex items-center justify-center transition-all duration-300 group-hover:bg-cyan-500/25 group-hover:shadow-glow-cyan">
-                  <span className="font-display font-bold text-cyan-300 text-sm">
-                    RTF
-                  </span>
+                <div className="w-11 h-11 rounded-full bg-white dark:bg-transparent border-2 border-cyan-500 flex items-center justify-center transition-all duration-300 group-hover:shadow-glow-cyan overflow-hidden">
+                  <img src={rtfLogo} alt="RTF Logo" className="w-full h-full object-cover invert dark:invert-0" />
                 </div>
                 <div>
                   <span className="block font-display font-semibold text-text-primary text-xl leading-tight">
@@ -155,7 +154,7 @@ export default function Footer() {
 
           <div className="my-8 h-px w-full bg-border/60" />
 
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between px-4">
             <div>
               <p className="text-xs text-text-muted">
                 © {new Date().getFullYear()} The The Robo-Tech Forum. All rights reserved.
@@ -165,7 +164,7 @@ export default function Footer() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
               <Link
                 to="/contact"
                 className="inline-flex items-center justify-center gap-2 rounded-button border border-cyan-500/30 px-4 py-2 text-sm font-medium text-cyan-300 transition-all hover:border-cyan-400/60 hover:bg-cyan-500/10"

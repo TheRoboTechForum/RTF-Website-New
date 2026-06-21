@@ -3,24 +3,20 @@ import { pageTransition, fadeUp, staggerContainer } from '../lib/animations';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import NeoButton from '../components/ui/NeoButton';
 import StatCounter from '../components/ui/StatCounter';
-import { Cpu, Wrench, GraduationCap, Target, Trophy, Rocket } from 'lucide-react';
 import { stats, competitions } from '../data/stats';
 
 const values = [
   {
-    icon: GraduationCap,
     title: 'We Learn',
     description:
       'Every member starts from scratch — Arduino workshops, SolidWorks training, ROS bootcamps. No prior experience required, just curiosity.',
   },
   {
-    icon: Wrench,
     title: 'We Create',
     description:
       'From Robocon competition bots to ISRO rovers and VTOL aircraft — we design, fabricate, and program real engineering systems.',
   },
   {
-    icon: Cpu,
     title: 'We Teach',
     description:
       'Seniors mentor juniors. Knowledge transfers through workshops, documentation, and hands-on lab sessions — creating a self-sustaining cycle of innovation.',
@@ -28,24 +24,36 @@ const values = [
 ];
 
 const domains = [
-  { icon: Target, name: 'Mechanical Design & CAD', description: 'SolidWorks, CNC machining, 3D printing, sheet metal fabrication' },
-  { icon: Cpu, name: 'Electronics & Embedded', description: 'Arduino, STM32, PCB design, motor drivers, sensor integration' },
-  { icon: Rocket, name: 'Aero & Drone Systems', description: 'Quadcopters, VTOL, RC planes, Pixhawk, ArduPilot, FPV' },
-  { icon: Trophy, name: 'Software & AI', description: 'ROS/ROS2, Python, OpenCV, path planning, SLAM, inverse kinematics' },
+  {
+    tag: '01',
+    name: 'Mechanical Design & CAD',
+    tools: ['SolidWorks', 'CNC Machining', '3D Printing', 'Sheet Metal'],
+  },
+  {
+    tag: '02',
+    name: 'Electronics & Embedded',
+    tools: ['Arduino', 'STM32', 'PCB Design', 'Motor Drivers'],
+  },
+  {
+    tag: '03',
+    name: 'Aero & Drone Systems',
+    tools: ['Quadcopters', 'VTOL', 'Pixhawk', 'ArduPilot'],
+  },
+  {
+    tag: '04',
+    name: 'Software & AI',
+    tools: ['ROS / ROS2', 'OpenCV', 'SLAM', 'Path Planning'],
+  },
 ];
 
-function MinimalCard({ children, className = '' }) {
-  return (
-    <div className={`p-8 h-full bg-[#0D1520]/50 border border-slate-800 rounded-2xl hover:bg-[#141E2E]/80 hover:border-slate-700 transition-all duration-300 flex flex-col ${className}`}>
-      {children}
-    </div>
-  );
-}
-
 export default function About() {
+  const [heroRef, heroInView] = useScrollAnimation(0.2);
+  const [missionRef, missionInView] = useScrollAnimation(0.2);
+  const [statsRef, statsInView] = useScrollAnimation(0.2);
   const [valuesRef, valuesInView] = useScrollAnimation();
   const [domainsRef, domainsInView] = useScrollAnimation();
   const [compRef, compInView] = useScrollAnimation();
+  const [ctaRef, ctaInView] = useScrollAnimation(0.2);
 
   return (
     <motion.main
@@ -54,158 +62,246 @@ export default function About() {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="pt-28 pb-24 px-6 md:px-12 max-w-6xl mx-auto"
+      className="pt-32 pb-24"
     >
-      {/* Hero */}
-      <div className="text-center max-w-4xl mx-auto mb-20 mt-10">
-        <motion.span 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-block px-4 py-1.5 text-xs font-mono tracking-widest text-slate-400 bg-slate-800/50 border border-slate-700 rounded-full mb-6"
+
+      {/* ── HERO ─────────────────────────────────────── */}
+      <section className="mb-28 md:mb-36">
+        <div ref={heroRef} className="max-w-5xl mx-auto px-6 md:px-12 text-center">
+          <motion.div variants={fadeUp} initial="hidden" animate={heroInView ? 'visible' : 'hidden'}>
+            <p className="text-sm font-mono tracking-[0.25em] text-cyan-400/70 uppercase mb-6">
+              Est. {stats.founded} · GCoEA, Amravati
+            </p>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-black text-text-heading tracking-tight leading-[1] mb-8">
+              The Robo-Tech{' '}
+              <span className="text-gradient-red">Forum</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-text-primary/80 font-light leading-relaxed max-w-2xl mx-auto">
+              A student-driven technical community built on hands-on robotics, embedded systems, and aero engineering.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── STATS ────────────────────────────────────── */}
+      <section className="mb-28 md:mb-36">
+        <motion.div
+          ref={statsRef}
+          variants={staggerContainer}
+          initial="hidden"
+          animate={statsInView ? 'visible' : 'hidden'}
+          className="max-w-4xl mx-auto px-6 md:px-12"
         >
-          ABOUT RTF
-        </motion.span>
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-slate-100 mb-8 tracking-tight"
-        >
-          Where Theory Meets Practice
-        </motion.h1>
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-slate-400 leading-relaxed font-light"
-        >
-          Founded in 2014, The Robo-Tech Forum (RTF) is the premier robotics club at Government College of Engineering, Amravati. We are a student-driven technical club dedicated to fostering innovation through hands-on robotics, embedded systems, and aero engineering.
-        </motion.p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+            {[
+              { end: stats.projects, label: 'Projects Built', suffix: '+' },
+              { end: stats.competitions, label: 'Competitions', suffix: '+' },
+              { end: stats.members, label: 'Active Members', suffix: '+' },
+              { end: new Date().getFullYear() - stats.founded, label: 'Years Strong', suffix: '+' },
+            ].map((s) => (
+              <motion.div key={s.label} variants={fadeUp} className="text-center">
+                <StatCounter end={s.end} label={s.label} suffix={s.suffix} />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── DIVIDER ──────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-6 md:px-12 mb-28 md:mb-36">
+        <div className="h-px bg-border/40" />
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-32">
-        <div className="text-center p-6 bg-slate-900/40 rounded-2xl border border-slate-800/50">
-          <StatCounter end={stats.members} label="Active Members" suffix="+" />
+      {/* ── MISSION ──────────────────────────────────── */}
+      <section className="mb-28 md:mb-36">
+        <div ref={missionRef} className="max-w-6xl mx-auto px-6 md:px-12">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate={missionInView ? 'visible' : 'hidden'}
+          >
+            <motion.div variants={fadeUp} className="mb-14 max-w-3xl">
+              <p className="text-sm font-mono tracking-[0.2em] text-cyan-400/70 uppercase mb-4">Mission</p>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-text-heading tracking-tight leading-[1.15]">
+                Empower students to build{' '}
+                <span className="text-gradient-red">real-world</span>{' '}
+                engineering systems.
+              </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10">
+              <motion.div variants={fadeUp} className="space-y-6">
+                <p className="text-lg text-text-primary/75 font-light leading-relaxed">
+                  <strong className="text-text-heading font-medium">For the individual,</strong>{' '}
+                  hands-on robotics means learning by doing — soldering circuits, debugging code, machining parts. The ability to design, prototype, and iterate builds confidence that carries far beyond the workshop.
+                </p>
+                <p className="text-lg text-text-primary/75 font-light leading-relaxed">
+                  <strong className="text-text-heading font-medium">For the college,</strong>{' '}
+                  RTF members consistently represent GCoEA at IIT Bombay, ISRO, and national-level stages — showcasing that world-class engineering talent comes from every campus.
+                </p>
+                <p className="text-lg text-text-primary/75 font-light leading-relaxed">
+                  <strong className="text-text-heading font-medium">For the industry,</strong>{' '}
+                  students trained in real hardware and embedded systems become immediately productive. Our alumni carry the maker mindset forward into leading tech companies and research labs.
+                </p>
+              </motion.div>
+
+              <motion.div variants={fadeUp} className="space-y-6">
+                <p className="text-lg text-text-primary/75 font-light leading-relaxed">
+                  Traditional engineering curricula often separate theory from practice. At RTF, we bridge that gap. Instead of waiting for lab sessions, our members get immediate access to components, tools, and mentorship — first-year students can start building from day one.
+                </p>
+                <p className="text-lg text-text-primary/75 font-light leading-relaxed">
+                  We build everything ourselves: competition robots capable of autonomous navigation, drones with custom flight controllers, and embedded systems powering real-world solutions — from breadboards to national stages, built entirely by students.
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
-        <div className="text-center p-6 bg-slate-900/40 rounded-2xl border border-slate-800/50">
-          <StatCounter end={stats.projects} label="Projects Built" suffix="+" />
-        </div>
-        <div className="text-center p-6 bg-slate-900/40 rounded-2xl border border-slate-800/50">
-          <StatCounter end={stats.competitions} label="Competitions" suffix="+" />
-        </div>
-        <div className="text-center p-6 bg-slate-900/40 rounded-2xl border border-slate-800/50">
-          <StatCounter end={new Date().getFullYear() - stats.founded} label="Years Strong" suffix="+" />
-        </div>
+      </section>
+
+      {/* ── DIVIDER ──────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-6 md:px-12 mb-28 md:mb-36">
+        <div className="h-px bg-border/40" />
       </div>
 
-      {/* Values */}
-      <div className="mb-32">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-display font-semibold text-slate-100 mb-4">Our Philosophy</h2>
-          <p className="text-slate-400 font-light">The core principles that drive our community.</p>
-        </div>
+      {/* ── VALUES ───────────────────────────────────── */}
+      <section className="px-6 md:px-12 max-w-6xl mx-auto mb-32">
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" className="mb-12">
+          <p className="text-sm font-mono tracking-[0.2em] text-cyan-400/70 uppercase mb-4">Philosophy</p>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-text-heading">
+            What drives <span className="text-gradient-red">us</span>
+          </h2>
+        </motion.div>
+
         <motion.div
           ref={valuesRef}
           variants={staggerContainer}
           initial="hidden"
           animate={valuesInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-3 gap-10"
         >
           {values.map((v) => (
-            <motion.div key={v.title} variants={fadeUp} className="h-full">
-              <MinimalCard>
-                <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center mb-6 text-slate-300">
-                  <v.icon size={22} />
-                </div>
-                <h3 className="font-display font-semibold text-slate-200 text-xl mb-3">
-                  {v.title}
-                </h3>
-                <p className="text-slate-400 leading-relaxed font-light">{v.description}</p>
-              </MinimalCard>
+            <motion.div key={v.title} variants={fadeUp}>
+              <h3 className="font-display font-semibold text-text-heading text-2xl mb-4">
+                {v.title}
+              </h3>
+              <p className="text-lg text-text-primary/75 leading-relaxed font-light">
+                {v.description}
+              </p>
             </motion.div>
           ))}
         </motion.div>
-      </div>
+      </section>
 
-      {/* Technical Domains */}
-      <div className="mb-32">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-display font-semibold text-slate-100 mb-4">Technical Domains</h2>
-          <p className="text-slate-400 font-light">Our expertise spans across four core engineering areas.</p>
-        </div>
+      {/* ── TECHNICAL DOMAINS ────────────────────────── */}
+      <section className="px-6 md:px-12 max-w-6xl mx-auto mb-32">
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" className="mb-12">
+          <p className="text-sm font-mono tracking-[0.2em] text-cyan-400/70 uppercase mb-4">Expertise</p>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-text-heading">
+            Technical <span className="text-gradient-red">Domains</span>
+          </h2>
+        </motion.div>
+
         <motion.div
           ref={domainsRef}
           variants={staggerContainer}
           initial="hidden"
           animate={domainsInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-10"
         >
           {domains.map((d) => (
-            <motion.div key={d.name} variants={fadeUp} className="h-full">
-              <MinimalCard className="flex-row items-start gap-5 p-6">
-                <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-slate-300">
-                  <d.icon size={20} />
-                </div>
-                <div>
-                  <h3 className="font-display font-semibold text-slate-200 text-lg mb-2">
-                    {d.name}
-                  </h3>
-                  <p className="text-sm text-slate-400 leading-relaxed font-light">{d.description}</p>
-                </div>
-              </MinimalCard>
+            <motion.div
+              key={d.name}
+              variants={fadeUp}
+              className="group border border-border/40 rounded-2xl p-8 bg-black/50 hover:bg-black/60 hover:border-border/60 transition-all duration-300"
+            >
+              <div className="flex items-start justify-between mb-5">
+                <h3 className="font-display font-semibold text-text-heading text-xl leading-tight">
+                  {d.name}
+                </h3>
+                <span className="text-sm font-mono text-cyan-400/50 shrink-0 ml-4 mt-0.5">
+                  {d.tag}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {d.tools.map((tool) => (
+                  <span
+                    key={tool}
+                    className="px-3 py-1 text-sm font-mono rounded-full bg-black/40 border border-border/50 text-text-primary/60 group-hover:border-cyan-500/30 group-hover:text-cyan-400/80 transition-colors duration-300"
+                  >
+                    {tool}
+                  </span>
+                ))}
+              </div>
             </motion.div>
           ))}
         </motion.div>
-      </div>
+      </section>
 
-      {/* Competitions */}
-      <div className="mb-32">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-display font-semibold text-slate-100 mb-4">National Competitions</h2>
-          <p className="text-slate-400 font-light">Where we put our skills to the test.</p>
-        </div>
+      {/* ── COMPETITIONS ─────────────────────────────── */}
+      <section className="px-6 md:px-12 max-w-6xl mx-auto mb-32">
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" className="mb-12">
+          <p className="text-sm font-mono tracking-[0.2em] text-cyan-400/70 uppercase mb-4">Track Record</p>
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-text-heading">
+            National <span className="text-gradient-red">Competitions</span>
+          </h2>
+        </motion.div>
+
         <motion.div
           ref={compRef}
           variants={staggerContainer}
           initial="hidden"
           animate={compInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
         >
           {competitions.map((c) => (
-            <motion.div key={c.id} variants={fadeUp} className="h-full">
-              <MinimalCard>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 text-[11px] font-mono font-medium tracking-wider uppercase bg-slate-800 text-slate-300 border border-slate-700 rounded-full">
-                    {c.year}
-                  </span>
-                </div>
-                <h3 className="font-display font-semibold text-slate-200 text-lg mb-1">
-                  {c.name}
-                </h3>
-                <p className="text-xs font-mono text-slate-500 mb-4">{c.organizer}</p>
-                <p className="text-sm text-slate-400 leading-relaxed font-light mt-auto">{c.description}</p>
-              </MinimalCard>
+            <motion.div key={c.id} variants={fadeUp}>
+              <h3 className="font-display font-semibold text-text-heading text-xl mb-2">
+                {c.name}
+              </h3>
+              <p className="text-sm font-mono text-cyan-400/60 mb-4">
+                {c.organizer} · {c.year}
+              </p>
+              <p className="text-lg text-text-primary/75 leading-relaxed font-light">
+                {c.description}
+              </p>
             </motion.div>
           ))}
         </motion.div>
-      </div>
+      </section>
 
-      {/* CTA */}
-      <div className="text-center bg-slate-900/40 border border-slate-800/50 rounded-3xl p-10 md:p-14 max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-display font-semibold text-slate-100 mb-4">Join the Team</h2>
-        <p className="text-slate-400 max-w-lg mx-auto mb-8 font-light">
-          We recruit new members every academic year. No prior experience required — just a willingness to learn and build.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <NeoButton to="/contact" arrow>
-            GET IN TOUCH
-          </NeoButton>
-          <NeoButton to="/projects" variant="secondary" arrow>
-            SEE OUR WORK
-          </NeoButton>
-        </div>
-      </div>
+      {/* ── CTA ──────────────────────────────────────── */}
+      <section className="px-6 md:px-12 max-w-6xl mx-auto">
+        <motion.div
+          ref={ctaRef}
+          variants={fadeUp}
+          initial="hidden"
+          animate={ctaInView ? 'visible' : 'hidden'}
+        >
+          <div className="relative text-center bg-black/50 border border-border/50 rounded-3xl p-10 md:p-16 max-w-3xl mx-auto overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent" />
+            <p className="text-sm font-mono tracking-[0.2em] text-cyan-400/70 uppercase mb-6">
+              Open Recruitment
+            </p>
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-text-heading mb-4">
+              Want to be part of the{' '}
+              <span className="text-gradient-red">journey</span>?
+            </h2>
+            <p className="text-lg text-text-primary/75 max-w-md mx-auto mb-10 font-light leading-relaxed">
+              We recruit new members every academic year. No prior experience required — just curiosity and the drive to build.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <NeoButton to="/contact" arrow>
+                GET IN TOUCH
+              </NeoButton>
+              <NeoButton to="/projects" variant="secondary" arrow>
+                SEE OUR WORK
+              </NeoButton>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
     </motion.main>
   );
 }

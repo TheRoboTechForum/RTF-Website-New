@@ -9,13 +9,14 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import VideoIntroEnhanced from './components/layout/VideoIntroEnhanced';
 import LoadingScreen from './components/layout/LoadingScreen';
+import DotGrid from './components/ui/DotGrid';
 
 // Pages
 import Home from './pages/Home';
 import About from './pages/About';
 import Projects from './pages/Projects';
 import Team from './pages/Team';
-import Sponsors from './pages/Sponsors';
+// import Sponsors from './pages/Sponsors';
 import Timeline from './pages/Timeline';
 import Achievement from './pages/Achievement';
 import Gallery from './pages/Gallery';
@@ -30,7 +31,7 @@ function AnimatedRoutes() {
     window.scrollTo(0, 0);
 
     // Only apply the loader logic to routes that are known to be asset/image-heavy
-    const imageHeavyRoutes = ['/gallery', '/team', '/projects', '/achievement', '/sponsors'];
+    const imageHeavyRoutes = ['/gallery', '/team', '/projects', '/achievement'];
     const requiresLoader = imageHeavyRoutes.some(route => location.pathname.startsWith(route));
 
     if (!requiresLoader) return;
@@ -93,7 +94,7 @@ function AnimatedRoutes() {
         <Route path="/about" element={<About />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/team" element={<Team />} />
-        <Route path="/sponsors" element={<Sponsors />} />
+        {/* <Route path="/sponsors" element={<Sponsors />} /> */}
         <Route path="/timeline" element={<Timeline />} />
         <Route path="/achievement" element={<Achievement />} />
         <Route path="/gallery" element={<Gallery />} />
@@ -146,17 +147,34 @@ function AppContent() {
 
       {/* Main Content */}
       <div className="relative min-h-screen bg-deep text-text-primary transition-colors duration-300" style={{ overflowX: 'clip' }}>
-        <Navbar />
-        <AnimatedRoutes />
-        <Footer />
+        {/* Global DotGrid Background */}
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
+          <DotGrid
+            dotSize={4}
+            gap={18}
+            baseColor="#333333"
+            activeColor="#CC0000"
+            proximity={120}
+            shockRadius={250}
+            shockStrength={5}
+            resistance={750}
+            returnDuration={1.5}
+          />
+        </div>
+
+        <div className="relative z-10">
+          <Navbar />
+          <AnimatedRoutes />
+          <Footer />
+        </div>
 
         {/* Scroll to Top Button */}
         {showButton && (
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="fixed bottom-6 right-6 z-[999] w-12 h-12 rounded-full 
-                       bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.8)] 
-                       hover:shadow-[0_0_25px_rgba(6,182,212,1)] 
+                       bg-cyan-500 text-black shadow-[0_0_15px_rgba(255,32,32,0.8)] 
+                       hover:shadow-[0_0_25px_rgba(255,32,32,1)] 
                        animate-pulse hover:animate-none transition-all 
                        duration-300 flex items-center justify-center 
                        border-2 border-cyan-300 cursor-pointer group"

@@ -4,6 +4,7 @@ import { pageTransition } from '../lib/animations';
 import HoloCard from '../components/ui/HoloCard';
 import NeoButton from '../components/ui/NeoButton';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import rtfLogo from '../assets/images/rtf-logo-img.jpg';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -29,8 +30,8 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center mx-auto mb-4">
-            <span className="font-display font-bold text-cyan-400 text-xl">RTF</span>
+          <div className="w-14 h-14 rounded-full bg-white dark:bg-transparent border-2 border-cyan-500 flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(255,32,32,0.15)] dark:shadow-[0_0_15px_rgba(255,32,32,0.3)] transition-colors duration-300 overflow-hidden">
+            <img src={rtfLogo} alt="RTF Logo" className="w-full h-full object-cover invert dark:invert-0" />
           </div>
           <h1 className="text-h2 text-text-primary">Member Login</h1>
           <p className="text-sm text-text-secondary mt-2">

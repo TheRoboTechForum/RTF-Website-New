@@ -78,10 +78,10 @@ export default function ParticleCanvas({ className = '' }) {
         if (p.y < 0)     { p.y = 0;     p.vy *= -1; }
         if (p.y > height){ p.y = height; p.vy *= -1; }
 
-        // Draw dot
+        // Draw dot — red particles
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(34,211,238,0.7)';
+        ctx.fillStyle = 'rgba(255,32,32,0.7)';
         ctx.fill();
       }
 
@@ -97,7 +97,7 @@ export default function ParticleCanvas({ className = '' }) {
           if (d2 < DIST2) {
             const alpha = (1 - d2 / DIST2) * 0.22;
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(34,211,238,${alpha.toFixed(2)})`;
+            ctx.strokeStyle = `rgba(255,32,32,${alpha.toFixed(2)})`;
             ctx.moveTo(pts[i].x, pts[i].y);
             ctx.lineTo(pts[j].x, pts[j].y);
             ctx.stroke();

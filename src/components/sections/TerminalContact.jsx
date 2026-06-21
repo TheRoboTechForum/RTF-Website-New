@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { fadeUp } from '../../lib/animations';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const PROMPTS = [
   { key: 'name', prompt: 'Enter your name:', type: 'text' },
@@ -10,12 +8,7 @@ const PROMPTS = [
   { key: 'message', prompt: 'Type your message:', type: 'text' },
 ];
 
-/**
- * TerminalContact — A contact form styled as an interactive terminal.
- * User is guided through prompts one at a time, like a CLI.
- */
 export default function TerminalContact() {
-  const [ref, isInView] = useScrollAnimation(0.2);
   const [step, setStep] = useState(0);
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([
@@ -30,20 +23,11 @@ export default function TerminalContact() {
   const inputRef = useRef(null);
   const scrollRef = useRef(null);
 
-  // Auto-scroll terminal to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [history]);
-
-  // Focus input when visible
-  useEffect(() => {
-    if (isInView && inputRef.current && !submitted) {
-      inputRef.current.focus();
-    }
-  }, [isInView, step, submitted]);
-
 
   const handleSubmitLine = useCallback(
     (e) => {
@@ -53,7 +37,6 @@ export default function TerminalContact() {
 
       const currentPrompt = PROMPTS[step];
 
-      // Basic email validation
       if (currentPrompt.key === 'email' && !/\S+@\S+\.\S+/.test(trimmed)) {
         setHistory((h) => [
           ...h,
@@ -71,7 +54,6 @@ export default function TerminalContact() {
       const nextStep = step + 1;
 
       if (nextStep < PROMPTS.length) {
-        // Show user input + next prompt
         setHistory((h) => [
           ...h,
           { type: 'input', text: trimmed },
@@ -80,7 +62,6 @@ export default function TerminalContact() {
         ]);
         setStep(nextStep);
       } else {
-        // All prompts answered — submit
         setHistory((h) => [
           ...h,
           { type: 'input', text: trimmed },
@@ -118,105 +99,87 @@ export default function TerminalContact() {
   };
 
   return (
-    <section className="py-24 px-6">
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        variants={fadeUp}
-        className="max-w-2xl mx-auto"
-      >
-        {/* Section label */}
-        <div className="text-center mb-10">
-          <span className="text-label text-cyan-400 mb-3 block">// REACH OUT</span>
-          <h2 className="text-h2 text-text-primary">Send Us a Message</h2>
-          <p className="text-body text-text-secondary mt-3 max-w-lg mx-auto">
-            Talk to us the way engineers do — through a terminal.
-          </p>
+    <div className="w-full">
+      <div className="rounded-card border border-border/50 overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.1)] bg-[#0a0a0a]">
+        {/* Title bar */}
+        <div className="flex items-center gap-2 px-4 py-3 bg-[#111] border-b border-border/40">
+          <div className="flex gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-red-500/70" />
+            <span className="w-3 h-3 rounded-full bg-amber-500/70" />
+            <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
+          </div>
+          <span className="text-xs font-mono text-text-muted ml-2">
+            rtf@gcoea:~/contact
+          </span>
+          <div className="flex-1" />
+          {submitted && (
+            <button
+              onClick={handleReset}
+              className="text-[10px] font-mono text-text-muted hover:text-red-400 transition-colors px-2 py-0.5 border border-border/50 rounded"
+            >
+              NEW SESSION
+            </button>
+          )}
         </div>
 
-        {/* Terminal window */}
-        <div className="rounded-card border border-border/50 overflow-hidden shadow-card bg-void">
-          {/* Title bar */}
-          <div className="flex items-center gap-2 px-4 py-3 bg-surface/80 border-b border-border/40">
-            <div className="flex gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-red-500/70" />
-              <span className="w-3 h-3 rounded-full bg-amber-500/70" />
-              <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
+        {/* Terminal body */}
+        <div
+          ref={scrollRef}
+          className="p-5 font-mono text-sm leading-relaxed h-[420px] overflow-y-auto scrollbar-thin"
+          onClick={() => inputRef.current?.focus()}
+        >
+          {history.map((line, i) => (
+            <div key={i} className="min-h-[1.5em] mb-1">
+              {line.type === 'system' && (
+                <span className="text-text-muted">{line.text}</span>
+              )}
+              {line.type === 'prompt' && (
+                <span className="text-red-500">
+                  <span className="text-text-muted">→ </span>
+                  {line.text}
+                </span>
+              )}
+              {line.type === 'input' && (
+                <span>
+                  <span className="text-emerald-400">$ </span>
+                  <span className="text-gray-100">{line.text}</span>
+                </span>
+              )}
+              {line.type === 'error' && (
+                <span className="text-red-400">{line.text}</span>
+              )}
+              {line.type === 'success' && (
+                <span className="text-emerald-400">{line.text}</span>
+              )}
             </div>
-            <span className="text-xs font-mono text-text-muted ml-2">
-              rtf@gcoea:~/contact
-            </span>
-            <div className="flex-1" />
-            {submitted && (
-              <button
-                onClick={handleReset}
-                className="text-[10px] font-mono text-text-muted hover:text-cyan-400 transition-colors px-2 py-0.5 border border-border/50 rounded"
-              >
-                NEW SESSION
-              </button>
-            )}
-          </div>
+          ))}
 
-          {/* Terminal body */}
-          <div
-            ref={scrollRef}
-            className="p-5 font-mono text-sm leading-relaxed h-[380px] overflow-y-auto scrollbar-thin"
-            onClick={() => inputRef.current?.focus()}
-          >
-            {history.map((line, i) => (
-              <div key={i} className="min-h-[1.5em]">
-                {line.type === 'system' && (
-                  <span className="text-text-muted">{line.text}</span>
-                )}
-                {line.type === 'prompt' && (
-                  <span className="text-cyan-400">
-                    <span className="text-text-muted">→ </span>
-                    {line.text}
-                  </span>
-                )}
-                {line.type === 'input' && (
-                  <span>
-                    <span className="text-emerald-400">$ </span>
-                    <span className="text-text-primary">{line.text}</span>
-                  </span>
-                )}
-                {line.type === 'error' && (
-                  <span className="text-red-400">{line.text}</span>
-                )}
-                {line.type === 'success' && (
-                  <span className="text-emerald-400">{line.text}</span>
-                )}
-              </div>
-            ))}
-
-            {/* Active input line */}
-            {!submitted && (
-              <form onSubmit={handleSubmitLine} className="flex items-center mt-1">
-                <span className="text-emerald-400 mr-2">$</span>
-                <input
-                  ref={inputRef}
-                  type={PROMPTS[step]?.type || 'text'}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  className="flex-1 bg-transparent text-text-primary outline-none caret-cyan-400 placeholder:text-text-muted/30"
-                  placeholder="type here..."
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-                <span className="w-[2px] h-4 bg-cyan-400 animate-blink ml-0.5" />
-              </form>
-            )}
-          </div>
+          {/* Active input line */}
+          {!submitted && (
+            <form onSubmit={handleSubmitLine} className="flex items-center mt-2">
+              <span className="text-emerald-400 mr-2">$</span>
+              <input
+                ref={inputRef}
+                type={PROMPTS[step]?.type || 'text'}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="flex-1 bg-transparent text-gray-100 outline-none caret-red-500 placeholder:text-text-muted/30"
+                placeholder="type here..."
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <span className="w-[2px] h-4 bg-red-500 animate-blink ml-0.5" />
+            </form>
+          )}
         </div>
+      </div>
 
-        {/* Hint below terminal */}
-        <p className="text-center text-xs text-text-muted font-mono mt-4">
-          Press <kbd className="px-1.5 py-0.5 bg-elevated border border-border rounded text-text-secondary">Enter</kbd> to submit each field
-          {' • '}
-          <kbd className="px-1.5 py-0.5 bg-elevated border border-border rounded text-text-secondary">Esc</kbd> to skip intro
-        </p>
-      </motion.div>
-    </section>
+      {/* Hint below terminal */}
+      <p className="text-center text-xs text-text-muted font-mono mt-4">
+        Press <kbd className="px-1.5 py-0.5 bg-surface border border-border rounded text-text-secondary">Enter</kbd> to submit each field
+        {' • '}
+        <kbd className="px-1.5 py-0.5 bg-surface border border-border rounded text-text-secondary">Esc</kbd> to skip intro
+      </p>
+    </div>
   );
 }
