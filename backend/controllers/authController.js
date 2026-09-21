@@ -81,15 +81,35 @@ const register = asyncHandler(async (req, res) => {
 //      — NEVER include passwordHash in what you send back!
 // });
 //
-// const getMe = asyncHandler(async (req, res) => {
-//   // req.user is attached by authMiddleware.js after verifying the JWT
-//   const user = await userModel.getUserByUid(req.user.uid);
-//   res.json({ success: true, data: user });
-// });
+
 // ─────────────────────────────────────────────────────────────
+
+const getMe = asyncHandler(async (req, res) => {
+  // req.user is attached by authMiddleware after verifying the JWT.
+  const user = await userModel.getUserByUid(req.user.uid);
+
+  // JWT is valid, but the user does not exist in the database.
+  if (!user) {
+    const err = new Error('User not found');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  // Never send the password hash to the frontend.
+  const { passwordHash, ...safeUser } = user;
+
+  res.json({
+    success: true,
+    data: {
+      uid: req.user.uid,
+      ...safeUser,
+    },
+  });
+});
 
 module.exports = {
   register,
+   getMe
   // login,
-  // getMe,
+ 
 };
