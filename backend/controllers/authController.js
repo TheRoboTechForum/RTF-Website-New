@@ -1,6 +1,17 @@
 // controllers/authController.js
+// ─────────────────────────────────────────────────────────────
+// THIS FILE IS THE TEMPLATE. When you build any other module
+// (recruitment, mail, room status), copy this same pattern:
+//   1. Receive already-validated req.body (validation happened
+//      in middleware, BEFORE this function even runs)
+//   2. Call model/service functions — never touch Firebase or
+//      bcrypt/jwt directly in here
+//   3. Return a consistent { success, data } or throw an error
+//      with a .statusCode (asyncHandler + errorHandler take it
+//      from there)
+// ─────────────────────────────────────────────────────────────
 
-const userModel = require("../models/userModel");
+const userModel = require('../models/userModel');
 const {
   hashPassword,
   comparePassword,
@@ -153,6 +164,15 @@ const login = asyncHandler(async (req, res) => {
 });
 
 
+  res.status(200).json({
+    success: true,
+    message: 'Login successful',
+    data: {
+      token,
+      user: safeUser,
+    },
+  });
+});
 module.exports = {
   register,
   login,

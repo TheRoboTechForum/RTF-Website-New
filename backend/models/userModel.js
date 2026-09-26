@@ -1,21 +1,50 @@
 // models/userModel.js
 // ─────────────────────────────────────────────────────────────
-// This is a "model" for a NoSQL database — NOT a schema class like
-// you'd get from Mongoose. It's just: (1) a documented shape for
-// what lives at /users/{uid}, and (2) plain functions that are the
-// ONLY way the rest of the app reads/writes that path.
+// Model functions for Firebase Realtime Database.
 //
-// Full schema reference: docs/firebase-schema.md
+// User structure:
+// /users/{yearOfPassing}/{rtfId}
 //
-// RULE: controllers never call `db.ref(...)` directly. They only
-// ever call functions from a model file. This is what keeps 20
-// different people's code writing the SAME shape of data.
+// Email index:
+// /usersByEmail/{sanitizedEmail}
+//
+// Controllers must NOT call db.ref(...) directly.
 // ─────────────────────────────────────────────────────────────
 const { db } = require("../config/firebaseAdmin");
 const sanitizeEmail = require("../utils/sanitizeEmail");
 
 /**
  * Checks whether a personal email already exists.
+ * User structure:
+ *
+ * /users/{yearOfPassing}/{rtfId}
+ *
+ * {
+ *   uid,
+ *   name,
+ *   collegeEnrollmentNo,
+ *   collegeEmail,
+ *   personalEmail,
+ *   branch,
+ *   yearOfPassing,
+ *   phone,
+ *   domain,
+ *   role,
+ *   status,
+ *   passwordHash,
+ *   rtfId,
+ *   createdAt,
+ *   approvedBy
+ * }
+ */
+
+/**
+ * Checks whether a personal email is already registered.
+ *
+ * Uses the /usersByEmail index for O(1) lookup.
+ *
+ * @param {string} personalEmail
+ * @returns {Promise<boolean>}
  */
 async function emailExists(personalEmail) {
   if (!db) {
@@ -211,4 +240,6 @@ module.exports = {
   getUserByEmail,
   getUserById,
   updateUser,
+  getUserByRtfId,
+  rtfIdExists,
 };
