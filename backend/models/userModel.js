@@ -11,91 +11,197 @@
 // ever call functions from a model file. This is what keeps 20
 // different people's code writing the SAME shape of data.
 // ─────────────────────────────────────────────────────────────
-
-const { db } = require('../config/firebaseAdmin');
-const { sanitizeEmail } = require('../utils/sanitizeEmail');
-
-/**
- * Shape stored at /users/{uid}:
- * {
- *   name, collegeEnrollmentNo, collegeEmail, personalEmail,
- *   branch, yearOfPassing, phone, domain, role, status,
- *   passwordHash, rtfId, createdAt, approvedBy
- * }
- */
+const { db } = require("../config/firebaseAdmin");
+const sanitizeEmail = require("../utils/sanitizeEmail");
 
 /**
- * Checks whether a personal email is already registered.
- * Uses the /usersByEmail index instead of scanning all users —
- * O(1) lookup instead of O(n).
- * @param {string} personalEmail
- * @returns {Promise<boolean>}
+ * Checks whether a personal email already exists.
  */
 async function emailExists(personalEmail) {
+  if (!db) {
+    throw new Error(
+      "Database is not initialized. Check your .env Firebase credentials."
+    );
+  }
+
   const key = sanitizeEmail(personalEmail);
-  const snapshot = await db.ref(`usersByEmail/${key}`).get();
+  const snapshot = await db.ref(`usersByEmail/${key}`).once("value");
+
   return snapshot.exists();
 }
 
 /**
- * Creates a new user. Writes to BOTH /users/{uid} and
- * /usersByEmail/{sanitized} in a single atomic multi-path update,
- * so the two paths can never go out of sync (e.g. server crashes
- * between two separate writes).
+ * Creates a new user.
  *
- * @param {object} userData - everything except uid (uid is generated here)
- * @returns {Promise<{ uid: string }>}
+ * The email index is reserved using a Firebase transaction so that
+ * two simultaneous registrations cannot use the same email.
  */
 async function createUser(userData) {
-  const newUserRef = db.ref('users').push(); // generates a unique uid
+  if (!db) {
+    throw new Error(
+      "Database is not initialized. Check your .env Firebase credentials."
+    );
+  }
+
+  const sanitizedEmail = sanitizeEmail(userData.personalEmail);
+
+  // Generate UID first.
+  const newUserRef = db.ref("users").push();
   const uid = newUserRef.key;
 
-  const record = {
-    ...userData,
-    status: 'pending', // every new registration starts pending admin approval
-    rtfId: null,        // assigned later, on approval
+  /*
+   * Atomically reserve the email.
+   *
+   * If the email already exists, the transaction is aborted.
+   */
+  const emailRef = db.ref(`usersByEmail/${sanitizedEmail}`);
+
+  const transactionResult = await emailRef.transaction((currentValue) => {
+    if (currentValue !== null) {
+      return; // Abort transaction because email is already registered.
+    }
+
+    return uid;
+  });
+
+  if (!transactionResult.committed) {
+    const error = new Error("User with this personal email already exists.");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  const userPayload = {
+    name: userData.name || "",
+    collegeEnrollmentNo: userData.collegeEnrollmentNo || "",
+    collegeEmail: userData.collegeEmail || "",
+    personalEmail: userData.personalEmail,
+    branch: userData.branch || "",
+    yearOfPassing: Number(userData.yearOfPassing) || null,
+    phone: userData.phone || "",
+    domain: userData.domain,
+    role: userData.role || "member",
+    status: "pending",
+    passwordHash: userData.passwordHash,
+    rtfId: userData.rtfId || null,
     createdAt: Date.now(),
     approvedBy: null,
   };
 
-  const sanitizedKey = sanitizeEmail(userData.personalEmail);
+  try {
+    /*
+     * Write the actual user record.
+     *
+     * The email has already been atomically reserved above.
+     */
+    await db.ref(`users/${uid}`).set(userPayload);
+  } catch (error) {
+    /*
+     * If creating the user fails, release the email reservation
+     * so the user can try registering again.
+     */
+    await emailRef.remove();
+    throw error;
+  }
 
-  // Multi-path update — Firebase applies both writes together or neither.
-  const updates = {};
-  updates[`users/${uid}`] = record;
-  updates[`usersByEmail/${sanitizedKey}`] = uid;
-
-  await db.ref().update(updates);
-
-  return { uid };
+  return {
+    uid,
+    ...userPayload,
+  };
 }
 
 /**
- * Fetches a user by their uid.
- * @param {string} uid
- * @returns {Promise<object|null>}
+ * Retrieves a user directly by UID.
  */
 async function getUserByUid(uid) {
-  const snapshot = await db.ref(`users/${uid}`).get();
-  return snapshot.exists() ? snapshot.val() : null;
+  if (!db) {
+    throw new Error(
+      "Database is not initialized. Check your .env Firebase credentials."
+    );
+  }
+
+  const snapshot = await db.ref(`users/${uid}`).once("value");
+
+  if (!snapshot.exists()) {
+    return null;
+  }
+
+  return {
+    uid,
+    ...snapshot.val(),
+  };
 }
 
 /**
- * Fetches a user by personal email — used at login.
- * Two-step lookup: sanitized email → uid, then uid → full record.
- * @param {string} personalEmail
- * @returns {Promise<object|null>} the user record WITH uid attached, or null
+ * Fetches a user by personal email.
  */
 async function getUserByEmail(personalEmail) {
-  const key = sanitizeEmail(personalEmail);
-  const uidSnapshot = await db.ref(`usersByEmail/${key}`).get();
+  if (!db) {
+    throw new Error(
+      "Database is not initialized. Check your .env Firebase credentials."
+    );
+  }
 
-  if (!uidSnapshot.exists()) return null;
+  const sanitizedEmail = sanitizeEmail(personalEmail);
+
+  const uidSnapshot = await db
+    .ref(`usersByEmail/${sanitizedEmail}`)
+    .once("value");
+
+  if (!uidSnapshot.exists()) {
+    return null;
+  }
 
   const uid = uidSnapshot.val();
-  const user = await getUserByUid(uid);
 
-  return user ? { uid, ...user } : null;
+  const userSnapshot = await db
+    .ref(`users/${uid}`)
+    .once("value");
+
+  if (!userSnapshot.exists()) {
+    return null;
+  }
+
+  return {
+    uid,
+    ...userSnapshot.val(),
+  };
+}
+
+/**
+ * Retrieves a user directly by UID.
+ */
+async function getUserById(uid) {
+  if (!db) {
+    throw new Error(
+      "Database is not initialized. Check your .env Firebase credentials."
+    );
+  }
+
+  const snapshot = await db.ref(`users/${uid}`).once("value");
+
+  if (!snapshot.exists()) {
+    return null;
+  }
+
+  return {
+    uid,
+    ...snapshot.val(),
+  };
+}
+
+/**
+ * Updates specific user fields.
+ */
+async function updateUser(uid, updateData) {
+  if (!db) {
+    throw new Error(
+      "Database is not initialized. Check your .env Firebase credentials."
+    );
+  }
+
+  await db.ref(`users/${uid}`).update(updateData);
+
+  return true;
 }
 
 module.exports = {
@@ -103,4 +209,6 @@ module.exports = {
   createUser,
   getUserByUid,
   getUserByEmail,
+  getUserById,
+  updateUser,
 };

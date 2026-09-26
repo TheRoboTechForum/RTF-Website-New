@@ -28,7 +28,10 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number'),
 });
-
+const loginSchema = z.object({
+  personalEmail: z.string().email(),
+  password: z.string().min(1),
+});
 // Placeholder for when you build the login route next — same
 // pattern, smaller schema. Uncomment and use in loginController.js.
 // const loginSchema = z.object({
@@ -38,5 +41,5 @@ const registerSchema = z.object({
 
 module.exports = {
   registerSchema,
-  // loginSchema,
+  loginSchema,
 };
