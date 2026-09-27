@@ -11,9 +11,9 @@
 const express = require("express");
 const router = express.Router();
 
-const { register, login } = require('../controllers/authController');
+const { register, /* login */ } = require('../controllers/authController');
 const validateRequest = require('../middlewares/validateRequest');
-const { registerSchema, loginSchema } = require('../validators/authValidators');
+const { registerSchema ,/*loginSchema*/ } = require('../validators/authValidators');
 
 // POST /api/auth/register
 // Request flow: validateRequest checks req.body against
@@ -22,12 +22,19 @@ const { registerSchema, loginSchema } = require('../validators/authValidators');
 // replaced with the clean, parsed data.
 router.post('/register', validateRequest(registerSchema), register);
 router.post('/login', validateRequest(loginSchema), login);
-
-// POST /api/auth/login
-router.post(
-  "/login",
-  validateRequest(loginSchema),
-  login
-);
+// ─────────────────────────────────────────────────────────────
+// NEXT ENDPOINTS TO ADD HERE (same pattern):
+//
+// const { login, getMe } = require('../controllers/authController');
+// const authMiddleware = require('../middlewares/authMiddleware');
+// const { loginSchema } = require('../validators/authValidators');
+//
+// router.post('/login', validateRequest(loginSchema), login);
+//
+// // A PROTECTED route — authMiddleware runs first, checks the JWT
+// // in the Authorization header, and attaches req.user if valid.
+// // If invalid/missing, it responds 401 and getMe never runs.
+// router.get('/me', authMiddleware, getMe);
+// ─────────────────────────────────────────────────────────────
 
 module.exports = router;

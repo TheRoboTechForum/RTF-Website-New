@@ -24,124 +24,176 @@ const asyncHandler = require("../utils/asyncHandler");
 /**
  * POST /api/auth/register
  */
-const register = asyncHandler(async (req, res) => {
-  const {
-    name,
-    collegeEnrollmentNo,
-    collegeEmail,
-    personalEmail,
-    branch,
-    yearOfPassing,
-    phone,
-    domain,
-    password,
-  } = req.body;
 
-  // 1. Basic validation
-  if (!personalEmail || !password || !domain || !yearOfPassing) {
-    const error = new Error(
-      "personalEmail, password, domain, and yearOfPassing are required fields."
-    );
-    error.statusCode = 400;
-    throw error;
-  }
+// ─────────────────────────────────────────────────────────────
+// NEXT UP (build these the same way, as separate functions below,
+// once register is tested and working):
+//
+// const login = asyncHandler(async (req, res) => {
+//   1. userModel.getUserByEmail(personalEmail)
+//   2. if not found → 401 "Invalid credentials" (don't reveal
+//      whether it was the email or password that was wrong)
+//   3. if found but status !== "active" → 403 "Account pending approval"
+//   4. comparePassword(password, user.passwordHash) → if false, 401
+//   5. generateAccessToken({ uid, role, domain })
+//   6. res.json({ success: true, data: { token, user: {...safe fields} } })
+//      — NEVER include passwordHash in what you send back!
+// });
+//
 
-  // 2. Check if user already exists
-  const existingUser = await userModel.getUserByEmail(personalEmail);
 
-  if (existingUser) {
-    const error = new Error(
-      "User with this personal email already exists."
-    );
-    error.statusCode = 409;
-    throw error;
-  }
-
-  // 3. Hash password
-  const passwordHash = await hashPassword(password);
-
-  // 4. Generate temporary RTF ID
-  const rtfId = await generateTempRtfId(
-    domain,
-    yearOfPassing
-  );
-
-  // 5. Create user
-  const newUser = await userModel.createUser({
-    name,
-    collegeEnrollmentNo,
-    collegeEmail,
-    personalEmail,
-    branch,
-    yearOfPassing,
-    phone,
-    domain,
-    rtfId,
-    passwordHash,
-    role: "member",
-    status: "pending",
-    createdAt: Date.now(),
-  });
-
-  // 6. Remove passwordHash from response
-  const { passwordHash: _, ...safeUserData } = newUser;
-
-  // 7. Send response
-  res.status(201).json({
-    success: true,
-    message: "Registration successful. Account pending approval.",
-    data: {
-      user: safeUserData,
-    },
-  });
-});
-
+// controllers/authController.js
+const { createUser, getUserByEmail } = require('../models/userModel');
+const { hashPassword, /* comparePassword, generateAccessToken*/ } = require('../services/authService');
+const { generateTempRtfId } = require('../services/idGeneratorService');
 
 /**
- * POST /api/auth/login
+ * REGISTER CONTROLLER
+ * Path: POST /api/auth/register
  */
-const login = asyncHandler(async (req, res) => {
-  const { personalEmail, password } = req.body;
+const register = async (req, res) => {
+  try {
+    const {
+      name,
+      collegeEnrollmentNo,
+      collegeEmail,
+      personalEmail,
+      branch,
+      yearOfPassing,
+      phone,
+      domain,
+      password,
+    } = req.body;
 
-  // 1. Validate input
-  if (!personalEmail || !password) {
-    const error = new Error(
-      "Both personalEmail and password are required."
-    );
-    error.statusCode = 400;
-    throw error;
+    // 1. Basic validation
+    if (!personalEmail || !password || !domain || !yearOfPassing) {
+      return res.status(400).json({
+        success: false,
+        error: 'personalEmail, password, domain, and yearOfPassing are required fields.',
+      });
+    }
+
+    // 2. Check if user already exists using O(1) email lookup
+    const existingUser = await getUserByEmail(personalEmail);
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        error: 'User with this personal email already exists.',
+      });
+    }
+
+    // 3. Hash the plain password
+    const passwordHash = await hashPassword(password);
+
+    // 4. Generate Temporary RTF ID (e.g., SD27-T01@RTF)
+    const rtfId = await generateTempRtfId(domain, yearOfPassing);
+
+    // 5. Save user via userModel (creates /users/{uid} and /usersByEmail/{sanitizedEmail})
+    const newUser = await createUser({
+      name,
+      collegeEnrollmentNo,
+      collegeEmail,
+      personalEmail,
+      branch,
+      yearOfPassing,
+      phone,
+      domain,
+      rtfId,             // Temporary RTF ID assigned on registration
+      passwordHash,
+      role: 'member',    // default role
+      status: 'pending', // default status
+      createdAt: Date.now(),
+    });
+
+    // 6. Omit sensitive fields from output
+    const { passwordHash: _, ...safeUserData } = newUser;
+
+    return res.status(201).json({
+      success: true,
+      message: 'Registration successful. Account pending approval.',
+      data: {
+        user: safeUserData,
+      },
+    });
+  } catch (error) {
+    console.error('Error in register controller:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Internal Server Error',
+    });
   }
+};
 
-  // 2. Find user
-  const user = await userModel.getUserByEmail(personalEmail);
+/**
+ * LOGIN CONTROLLER
+ * Path: POST /api/auth/login
+ */
+// const login = async (req, res) => {
+//   try {
+//     const { personalEmail, password } = req.body;
 
-  if (!user) {
-    const error = new Error("Invalid credentials.");
-    error.statusCode = 401;
-    throw error;
-  }
+//     // 1. Input validation
+//     if (!personalEmail || !password) {
+//       return res.status(400).json({
+//         success: false,
+//         error: 'Both personalEmail and password are required.',
+//       });
+//     }
 
-  // 3. Compare password
-  const isPasswordValid = await comparePassword(
-    password,
-    user.passwordHash
-  );
+//     // 2. O(1) Fast Lookup via /usersByEmail/{sanitizedEmail}
+//     const user = await getUserByEmail(personalEmail);
+//     if (!user) {
+//       return res.status(401).json({
+//         success: false,
+//         error: 'Invalid credentials.',
+//       });
+//     }
 
-  if (!isPasswordValid) {
-    const error = new Error("Invalid credentials.");
-    error.statusCode = 401;
-    throw error;
-  }
+//     // 3. Compare password with stored bcrypt hash
+//     const isPasswordValid = await comparePassword(password, user.passwordHash);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({
+//         success: false,
+//         error: 'Invalid credentials.',
+//       });
+//     }
 
-  // 4. Check account status
-  if (user.status !== "active") {
-    const error = new Error(
-      "Your account has not been approved yet."
-    );
-    error.statusCode = 403;
-    throw error;
-  }
+//     // 4. Generate JWT Access Token
+//     const token = generateAccessToken({
+//       uid: user.uid,
+//       role: user.role,
+//       domain: user.domain,
+//     });
 
+    // 5. Remove passwordHash from response data
+//     const { passwordHash, ...safeUserData } = user;
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Login successful',
+//       data: {
+//         token,
+//         user: safeUserData,
+//       },
+//     });
+//   } catch (error) {
+//     console.error('Error in login controller:', error);
+//     return res.status(500).json({
+//       success: false,
+//       error: error.message || 'Internal Server Error',
+//     });
+//   }
+// };
+
+//   res.status(200).json({
+//     success: true,
+//     message: 'Login successful',
+//     data: {
+//       token,
+//       user: safeUser,
+//     },
+//   });
+// });
   // 5. Generate JWT
   const token = generateAccessToken({
     uid: user.uid,
@@ -175,5 +227,5 @@ const login = asyncHandler(async (req, res) => {
 });
 module.exports = {
   register,
-  login,
+//   login,
 };

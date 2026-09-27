@@ -1,7 +1,7 @@
 {
   "name": "rtf-backend",
   "version": "1.0.0",
-  "private": true,
+  "description": "Backend API for RTF Website",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,14 +12,15 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
-    "express": "^5.1.0",
-    "firebase-admin": "^13.4.0",
-    "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
-    "nodemailer": "^10.0.10",
-    "zod": "^3.25.76"
+    "express": "^4.18.2",
+    "express-validator": "^7.3.2",
+    "firebase-admin": "^14.4.0",
+    "googleapis": "^182.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.12.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.14"
   }
 }

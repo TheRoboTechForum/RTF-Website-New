@@ -10,9 +10,10 @@
 //
 // Controllers must NOT call db.ref(...) directly.
 // ─────────────────────────────────────────────────────────────
-const { db } = require("../config/firebaseAdmin");
-const sanitizeEmail = require("../utils/sanitizeEmail");
 
+const { db } = require('../config/firebaseAdmin');
+const { sanitizeEmail } = require('../utils/sanitizeEmail');
+// const sanitizeEmail = require('../utils/sanitizeEmail');
 /**
  * Checks whether a personal email already exists.
  * User structure:
@@ -72,7 +73,14 @@ async function createUser(userData) {
     );
   }
 
-  const sanitizedEmail = sanitizeEmail(userData.personalEmail);
+  // ---------------------------------------------------------
+  // 2. Domain code for RTF ID
+  // ---------------------------------------------------------
+  const DOMAIN_CODE_MAP = {
+    software: 'SD',
+    electronics: 'ED',
+    aeromech: 'AMD',
+  };
 
   // Generate UID first.
   const newUserRef = db.ref("users").push();
@@ -141,6 +149,25 @@ async function createUser(userData) {
 /**
  * Retrieves a user directly by UID.
  */
+
+/**
+ * Fetches a user by personal email using the /usersByEmail index.
+ *
+ * @param {string} personalEmail
+ * @returns {Promise<object|null>}
+ */
+async function getUserByEmail(personalEmail) {
+  const key = sanitizeEmail(personalEmail);
+  const emailSnap = await db.ref(`usersByEmail/${key}`).get();
+
+  if (!emailSnap.exists()) {
+    return null;
+  }
+
+  const uid = emailSnap.val();
+  return await getUserByUid(uid);
+}
+
 async function getUserByUid(uid) {
   if (!db) {
     throw new Error(
@@ -234,8 +261,9 @@ async function updateUser(uid, updateData) {
 }
 
 module.exports = {
-  emailExists,
   createUser,
+  emailExists,
+  getUserByEmail,
   getUserByUid,
   getUserByEmail,
   getUserById,

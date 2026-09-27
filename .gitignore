@@ -30,3 +30,12 @@ dist-ssr
 backend/.env
 backend/.env2
 
+# Security / Credentials
+.env
+config/google-key.json
+
+config/*.json
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
