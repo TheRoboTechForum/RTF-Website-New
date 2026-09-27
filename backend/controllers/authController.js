@@ -14,25 +14,15 @@
 const userModel = require('../models/userModel');
 const {
   hashPassword,
-  /*comparePassword,
-  generateAccessToken,*/
-} = require('../services/authServices');
-const asyncHandler = require('../utils/asyncHandler');
+  comparePassword,
+  generateAccessToken,
+} = require("../services/authService");
+const { generateTempRtfId } = require("../services/idGeneratorService");
+const asyncHandler = require("../utils/asyncHandler");
+
 
 /**
  * POST /api/auth/register
- * Body (already validated by validateRequest(registerSchema)):
- *   name, collegeEnrollmentNo, collegeEmail, personalEmail,
- *   branch, yearOfPassing, phone, domain, password
- *
- * Flow:
- *   1. Check personalEmail isn't already registered
- *   2. Hash the password (NEVER store it plain)
- *   3. Create the user record (status: "pending")
- *   4. Return success — the frontend shows a
- *      "awaiting domain admin approval" message, NOT a logged-in state.
- *      (No JWT is issued here — the account can't log in until approved.
- *      The login endpoint, built the same way, checks status === "active".)
  */
 
 // ─────────────────────────────────────────────────────────────
@@ -204,6 +194,37 @@ const register = async (req, res) => {
 //     },
 //   });
 // });
+  // 5. Generate JWT
+  const token = generateAccessToken({
+    uid: user.uid,
+    role: user.role,
+    domain: user.domain,
+  });
+
+  // 6. Remove passwordHash
+  const { passwordHash: _, ...safeUserData } = user;
+
+  // 7. Send response
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    data: {
+      token,
+      user: safeUserData,
+    },
+  });
+});
+
+
+  res.status(200).json({
+    success: true,
+    message: 'Login successful',
+    data: {
+      token,
+      user: safeUser,
+    },
+  });
+});
 module.exports = {
   register,
 //   login,

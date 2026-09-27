@@ -8,8 +8,7 @@
 // routes/recruitmentRoutes.js, routes/mailRoutes.js — same shape,
 // different controller.
 // ─────────────────────────────────────────────────────────────
-
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 const { register, /* login */ } = require('../controllers/authController');
@@ -22,7 +21,7 @@ const { registerSchema ,/*loginSchema*/ } = require('../validators/authValidator
 // reaches the `register` controller. If it passes, req.body is
 // replaced with the clean, parsed data.
 router.post('/register', validateRequest(registerSchema), register);
-// router.post('/login', validateRequest(loginSchema), login);
+router.post('/login', validateRequest(loginSchema), login);
 // ─────────────────────────────────────────────────────────────
 // NEXT ENDPOINTS TO ADD HERE (same pattern):
 //

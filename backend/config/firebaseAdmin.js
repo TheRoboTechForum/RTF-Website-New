@@ -10,8 +10,11 @@
 // NEVER get these credentials; only this backend process holds them.
 // ─────────────────────────────────────────────────────────────
 
-const { initializeApp, getApps, cert } = require('firebase-admin/app');
-const { getDatabase } = require('firebase-admin/database');
+// NEVER get these credentials; only this backend process holds them.
+// ─────────────────────────────────────────────────────────────
+
+const admin = require('firebase-admin');
+// const admin = require('firebase-admin');
 
 // The private key in .env has literal "\n" characters (since .env
 // values are single-line strings) — we convert them back to real
@@ -73,6 +76,10 @@ if (getApps().length === 0) {
 } else {
   app = getApps()[0];
 }
+// if (!admin.apps.length) {
+//   admin.initializeApp(firebaseConfig);
+//   console.log('✅ Firebase Admin initialized');
+// }
 
 if (app) {
   // Use getFirestore(app) so that db.collection() works across all controllers
