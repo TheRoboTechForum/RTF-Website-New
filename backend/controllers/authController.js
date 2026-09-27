@@ -16,117 +16,153 @@ const {
   hashPassword,
   comparePassword,
   generateAccessToken,
-} = require('../services/authServices');
-const asyncHandler = require('../utils/asyncHandler');
+} = require("../services/authService");
+const { generateTempRtfId } = require("../services/idGeneratorService");
+const asyncHandler = require("../utils/asyncHandler");
+
 
 /**
  * POST /api/auth/register
- * Body (already validated by validateRequest(registerSchema)):
- *   name, collegeEnrollmentNo, collegeEmail, personalEmail,
- *   branch, yearOfPassing, phone, domain, password
- *
- * Flow:
- *   1. Check personalEmail isn't already registered
- *   2. Hash the password (NEVER store it plain)
- *   3. Create the user record (status: "pending")
- *   4. Return success — the frontend shows a
- *      "awaiting domain admin approval" message, NOT a logged-in state.
- *      (No JWT is issued here — the account can't log in until approved.
- *      The login endpoint, built the same way, checks status === "active".)
  */
 const register = asyncHandler(async (req, res) => {
-  const { personalEmail, password, ...rest } = req.body;
+  const {
+    name,
+    collegeEnrollmentNo,
+    collegeEmail,
+    personalEmail,
+    branch,
+    yearOfPassing,
+    phone,
+    domain,
+    password,
+  } = req.body;
 
-  // 1. Duplicate check
-  const alreadyExists = await userModel.emailExists(personalEmail);
-  if (alreadyExists) {
-    // Throwing an error with .statusCode is how we control the
-    // HTTP status code that errorHandler.js eventually sends.
-    const err = new Error('An account with this email already exists');
-    err.statusCode = 409; // 409 Conflict
-    throw err;
+  // 1. Basic validation
+  if (!personalEmail || !password || !domain || !yearOfPassing) {
+    const error = new Error(
+      "personalEmail, password, domain, and yearOfPassing are required fields."
+    );
+    error.statusCode = 400;
+    throw error;
   }
 
-  // 2. Hash the password — this is the ONLY place a password
-  //    should ever be touched in plain text, and it happens
-  //    immediately, before anything is stored.
+  // 2. Check if user already exists
+  const existingUser = await userModel.getUserByEmail(personalEmail);
+
+  if (existingUser) {
+    const error = new Error(
+      "User with this personal email already exists."
+    );
+    error.statusCode = 409;
+    throw error;
+  }
+
+  // 3. Hash password
   const passwordHash = await hashPassword(password);
 
-  // 3. Create the record via the model (model handles the
-  //    /users + /usersByEmail multi-path write internally)
-  const { uid, rtfId } = await userModel.createUser({
-  ...rest,
-  personalEmail,
-  passwordHash,
-});
+  // 4. Generate temporary RTF ID
+  const rtfId = await generateTempRtfId(
+    domain,
+    yearOfPassing
+  );
 
-  // 4. Respond — 201 Created, consistent { success, data } shape
+  // 5. Create user
+  const newUser = await userModel.createUser({
+    name,
+    collegeEnrollmentNo,
+    collegeEmail,
+    personalEmail,
+    branch,
+    yearOfPassing,
+    phone,
+    domain,
+    rtfId,
+    passwordHash,
+    role: "member",
+    status: "pending",
+    createdAt: Date.now(),
+  });
+
+  // 6. Remove passwordHash from response
+  const { passwordHash: _, ...safeUserData } = newUser;
+
+  // 7. Send response
   res.status(201).json({
     success: true,
+    message: "Registration successful. Account pending approval.",
     data: {
-      uid,
-      rtfId,
-      message: 'Registration received. Your domain admin will review your request.',
+      user: safeUserData,
     },
   });
 });
 
+
+/**
+ * POST /api/auth/login
+ */
 const login = asyncHandler(async (req, res) => {
-  const { rtfId, password } = req.body;
+  const { personalEmail, password } = req.body;
 
-  // Extract year from RTF ID
-  // Example: SD27-T01@RTF -> 2027
-  const yearMatch = rtfId.match(/^[A-Z]+(\d{2})-/);
-
-  if (!yearMatch) {
-    const err = new Error('Invalid RTF ID');
-    err.statusCode = 401;
-    throw err;
+  // 1. Validate input
+  if (!personalEmail || !password) {
+    const error = new Error(
+      "Both personalEmail and password are required."
+    );
+    error.statusCode = 400;
+    throw error;
   }
 
-  const yearOfPassing = `20${yearMatch[1]}`;
+  // 2. Find user
+  const user = await userModel.getUserByEmail(personalEmail);
 
-  // Find user using year + RTF ID
-  const user = await userModel.getUserByRtfId(
-    yearOfPassing,
-    rtfId
-  );
-
-  // User doesn't exist
   if (!user) {
-    const err = new Error('Invalid credentials');
-    err.statusCode = 401;
-    throw err;
+    const error = new Error("Invalid credentials.");
+    error.statusCode = 401;
+    throw error;
   }
 
-  // Account must be active
-  if (user.status !== 'active') {
-    const err = new Error('Account pending approval');
-    err.statusCode = 403;
-    throw err;
-  }
-
-  // Check password
-  const passwordMatches = await comparePassword(
+  // 3. Compare password
+  const isPasswordValid = await comparePassword(
     password,
     user.passwordHash
   );
 
-  if (!passwordMatches) {
-    const err = new Error('Invalid credentials');
-    err.statusCode = 401;
-    throw err;
+  if (!isPasswordValid) {
+    const error = new Error("Invalid credentials.");
+    error.statusCode = 401;
+    throw error;
   }
 
-  // Generate JWT
+  // 4. Check account status
+  if (user.status !== "active") {
+    const error = new Error(
+      "Your account has not been approved yet."
+    );
+    error.statusCode = 403;
+    throw error;
+  }
+
+  // 5. Generate JWT
   const token = generateAccessToken({
     uid: user.uid,
     role: user.role,
     domain: user.domain,
   });
 
-  // Never send passwordHash
-  const { passwordHash, ...safeUser } = user;
+  // 6. Remove passwordHash
+  const { passwordHash: _, ...safeUserData } = user;
+
+  // 7. Send response
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    data: {
+      token,
+      user: safeUserData,
+    },
+  });
+});
+
 
   res.status(200).json({
     success: true,

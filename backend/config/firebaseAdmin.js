@@ -10,8 +10,11 @@
 // NEVER get these credentials; only this backend process holds them.
 // ─────────────────────────────────────────────────────────────
 
-const { initializeApp, getApps, cert } = require('firebase-admin/app');
-const { getDatabase } = require('firebase-admin/database');
+// NEVER get these credentials; only this backend process holds them.
+// ─────────────────────────────────────────────────────────────
+
+const admin = require('firebase-admin');
+// const admin = require('firebase-admin');
 
 // The private key in .env has literal "\n" characters (since .env
 // values are single-line strings) — we convert them back to real
@@ -25,6 +28,16 @@ const firebaseConfig = {
   databaseURL: process.env.FIREBASE_DATABASE_URL,
 };
 
+// const firebaseConfig = {
+//   credential: admin.credential.cert({
+//     projectId: process.env.FIREBASE_PROJECT_ID,
+//     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+//     privateKey: process.env.FIREBASE_PRIVATE_KEY 
+ //   //  ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') 
+//       : '',
+//   }),
+//   databaseURL: process.env.FIREBASE_DATABASE_URL,
+// };
 // Guard against accidentally initializing twice (can happen if this
 // file gets required from multiple places during hot-reload).
 let app;
@@ -34,6 +47,10 @@ if (!getApps().length) {
 } else {
   app = getApps()[0];
 }
+// if (!admin.apps.length) {
+//   admin.initializeApp(firebaseConfig);
+//   console.log('✅ Firebase Admin initialized');
+// }
 
 // db is what every models/*.js file will import and use to read/write.
 const db = getDatabase(app);
