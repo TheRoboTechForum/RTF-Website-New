@@ -12,18 +12,50 @@
 
 import { z } from 'zod';
 
+/** Single source of truth for the branch dropdown — used by RegisterForm too. */
+export const BRANCH_OPTIONS = [
+  'Computer Science',
+  'Information Technology',
+  'Mechanical',
+  'Electrical',
+  'Civil',
+  'Instrumentation',
+];
+
+/** Single source of truth for the domain dropdown — used by RegisterForm too. */
+export const DOMAIN_OPTIONS = [
+  { value: 'software', label: 'Software Domain' },
+  { value: 'electrical', label: 'Electrical Domain' },
+  { value: 'aeromech', label: 'Aeronautics & Mechanical Domain' },
+];
+
+// Matches name@gcoea.ac.in as well as any subdomain, e.g. name@cse.gcoea.ac.in
+const GCOEA_EMAIL_REGEX = /^[\w.+-]+@(?:[\w-]+\.)*gcoea\.ac\.in$/i;
+
+/** Earliest selectable "Year of Passing" — also drives the input's min attribute. */
+export const MIN_YEAR_OF_PASSING = 2026;
+/** Latest selectable "Year of Passing". */
+export const MAX_YEAR_OF_PASSING = 2035;
+
 export const registerSchema = z
   .object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
-    collegeEnrollmentNo: z.string().min(3, 'Enter a valid enrollment number'),
-    collegeEmail: z.string().email('Enter a valid college email'),
+    collegeEnrollmentNo: z
+      .string()
+      .regex(/^\d{8}$/, 'Enrollment number must be exactly 8 digits'),
+    collegeEmail: z
+      .string()
+      .email('Enter a valid college email')
+      .regex(GCOEA_EMAIL_REGEX, 'College email must be a gcoea.ac.in address'),
     personalEmail: z.string().email('Enter a valid personal email'),
-    branch: z.string().min(2, 'Branch is required'),
+    branch: z.enum(BRANCH_OPTIONS, {
+      errorMap: () => ({ message: 'Select a valid branch' }),
+    }),
     yearOfPassing: z.coerce
       .number()
       .int()
-      .min(2024, 'Year of passing looks invalid')
-      .max(2035, 'Year of passing looks invalid'),
+      .min(MIN_YEAR_OF_PASSING, `Year of passing must be ${MIN_YEAR_OF_PASSING} or later`)
+      .max(MAX_YEAR_OF_PASSING, 'Year of passing looks invalid'),
     phone: z.string().regex(/^\d{10}$/, 'Phone number must be 10 digits'),
     domain: z.enum(['software', 'electrical', 'aeromech'], {
       errorMap: () => ({ message: 'Choose a domain' }),
@@ -42,3 +74,14 @@ export const registerSchema = z
     message: "Passwords don't match",
     path: ['confirmPassword'], // shows the error under this specific field
   });
+
+/**
+ * Login now happens with RTF ID + password only (no email/username).
+ * No format is enforced on the ID beyond "non-empty" since RTF IDs
+ * aren't necessarily the same shape as the 8-digit enrollment number —
+ * tighten this regex once the backend's RTF ID format is confirmed.
+ */
+export const loginSchema = z.object({
+  rtfId: z.string().trim().min(1, 'RTF ID is required'),
+  password: z.string().min(1, 'Password is required'),
+});
