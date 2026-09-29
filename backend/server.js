@@ -24,6 +24,8 @@ require('./config/firebaseAdmin');
 
 const errorHandler = require('./middlewares/errorHandler');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 // As you build more modules, import their routers the same way:
 // const recruitmentRoutes = require('./routes/recruitmentRoutes');
 // const mailRoutes = require('./routes/mailRoutes');
@@ -31,13 +33,25 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 // 2. MIDDLEWARE — these run on EVERY request, in this exact order.
 //    Order matters: cors before routes, json parser before anything
 //    that reads req.body, etc.
 
 // Allow the frontend (running on a different port in dev) to call us.
 app.use(cors({
-  origin: process.env.CLIENT_URL, // e.g. http://localhost:5173
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Origin is not allowed by CORS'));
+  },
   credentials: true,              // needed if we ever switch to cookie-based JWT
 }));
 
@@ -62,7 +76,7 @@ app.use('/api/auth', authRoutes);
 // app.use('/api/recruitment', recruitmentRoutes);
 // app.use('/api/mail', mailRoutes);
 // app.use('/api/room', roomRoutes);
-
+app.use('/api/users', userRoutes);//to check if user is there from rfID
 // A simple health-check route — useful to confirm the server is up
 // before you even test a real endpoint.
 app.get('/api/health', (req, res) => {

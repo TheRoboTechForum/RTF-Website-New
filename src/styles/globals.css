@@ -346,21 +346,3 @@
     scroll-behavior: auto !important;
   }
 }
-
-/* bg */
-
-/* Apply background globally to root elements */
-html, 
-body, 
-#root {
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  
-  /* Replace with your exact background property from your homepage */
-  background-image: url('../assets/your-homepage-bg.jpg'); 
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed; /* Keeps background fixed while content scrolls */
-}

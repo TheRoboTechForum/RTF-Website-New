@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 import { motion } from 'framer-motion';
 import { pageTransition } from '../lib/animations';
 import HeroSection from '../components/sections/HeroSection';
@@ -19,9 +17,6 @@ const MotionMain = motion.main;
 
 export default function Home() {
   return (
-
-    
-
     <MotionMain
       id="main-content"
       variants={pageTransition}
@@ -31,16 +26,7 @@ export default function Home() {
     >
       <div className="relative z-10">
         <HeroSection />
-
-        <Link
-             to="/first-year-registration"
-             className="fixed top-24 left-1/2 -translate-x-1/2 z-40 whitespace-nowrap bg-red-600 hover:bg-red-700 text-white text-sm md:text-lg font-bold px-5 md:px-8 py-3 md:py-4 rounded-xl border border-white/20 shadow-lg shadow-red-600/50 animate-pulse hover:animate-none transition"
->
-            🎓 First Year Registration is Open. Click Here!
-        </Link>
-
       </div>
-
 
       <div className="relative z-20">
         {/* <StatsBar /> */}

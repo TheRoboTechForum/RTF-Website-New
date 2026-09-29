@@ -22,8 +22,6 @@ import Achievement from './pages/Achievement';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import MailConsole from './pages/MailConsole';
-import FirstYearRegistration from './pages/FirstYearRegistration';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -102,9 +100,6 @@ function AnimatedRoutes() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/mail-console" element={<MailConsole />} />
-         <Route path="/first-year-registration" element={<FirstYearRegistration />} />
-
       </Routes>
     </AnimatePresence>
   );
@@ -199,12 +194,15 @@ function AppContent() {
  * App — Root component with Loading Provider wrapper
  */
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
     <ThemeProvider>
       <LoadingProvider>
         <AppContent />
+        <ToastContainer />
       </LoadingProvider>
     </ThemeProvider>
   );
