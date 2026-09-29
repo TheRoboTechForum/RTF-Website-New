@@ -24,22 +24,14 @@ const asyncHandler = require("../utils/asyncHandler");
 const { appendUserToSheet } = require('../services/sheetsService');
 
 /**
+/**
  * POST /api/auth/register
  */
 const register = asyncHandler(async (req, res) => {
-  const {
-    name,
-    collegeEnrollmentNo,
-    collegeEmail,
-    personalEmail,
-    branch,
-    yearOfPassing,
-    phone,
-    domain,
-    password,
-  } = req.body;
+  // 1. Destructure domain, yearOfPassing, personalEmail, password, and collect the rest
+  const { personalEmail, password, domain, yearOfPassing, ...rest } = req.body;
 
-  // 1. Basic validation
+  // 2. Validate required fields
   if (!personalEmail || !password || !domain || !yearOfPassing) {
     const error = new Error(
       "personalEmail, password, domain, and yearOfPassing are required fields."
@@ -48,9 +40,8 @@ const register = asyncHandler(async (req, res) => {
     throw error;
   }
 
-  // 2. Check if user already exists
+  // 3. Check duplicate user
   const existingUser = await userModel.getUserByEmail(personalEmail);
-
   if (existingUser) {
     const error = new Error(
       "User with this personal email already exists."
@@ -59,17 +50,24 @@ const register = asyncHandler(async (req, res) => {
     throw error;
   }
 
-  // 3. Hash password
+  // 4. Hash password
   const passwordHash = await hashPassword(password);
 
-  // 4. Generate temporary RTF ID
-  const rtfId = await generateRtfId(
+  // 5. Create user in Firebase DB
+  // Passing domain and yearOfPassing together with rest
+  const { uid, rtfId } = await userModel.createUser({
+    ...rest,
     domain,
-    yearOfPassing
-  );
+    yearOfPassing,
+    personalEmail,
+    passwordHash,
+  });
 
-const sheetData = {
-    ...rest, 
+  // 6. Prepare data & Append to Google Sheets (non-blocking)
+  const sheetData = {
+    ...rest,
+    domain,
+    yearOfPassing,
     personalEmail,
     uid,
     rtfId,
@@ -77,14 +75,15 @@ const sheetData = {
     createdAt: Date.now(),
   };
 
-appendUserToSheet(sheetData);
+  appendUserToSheet(sheetData);
 
-  // 4. Respond — 201 Created, consistent { success, data } shape
+  // 7. Respond
   res.status(201).json({
     success: true,
     message: "Registration successful. Account pending approval.",
     data: {
-      user: safeUserData,
+      uid,
+      rtfId,
     },
   });
 });
