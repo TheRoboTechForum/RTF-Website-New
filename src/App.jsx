@@ -22,8 +22,6 @@ import Achievement from './pages/Achievement';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import MailConsole from './pages/MailConsole';
-import FirstYearRegistration from './pages/FirstYearRegistration';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -102,9 +100,6 @@ function AnimatedRoutes() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/mail-console" element={<MailConsole />} />
-         <Route path="/first-year-registration" element={<FirstYearRegistration />} />
-
       </Routes>
     </AnimatePresence>
   );
