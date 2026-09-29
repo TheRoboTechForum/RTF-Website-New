@@ -17,7 +17,7 @@ const {
   comparePassword,
   generateAccessToken,
 } = require("../services/authService");
-const { generateTempRtfId } = require("../services/idGeneratorService");
+const { generateRtfId } = require("../services/idGeneratorService");
 const asyncHandler = require("../utils/asyncHandler");
 
 
@@ -61,7 +61,7 @@ const register = asyncHandler(async (req, res) => {
   const passwordHash = await hashPassword(password);
 
   // 4. Generate temporary RTF ID
-  const rtfId = await generateTempRtfId(
+  const rtfId = await generateRtfId(
     domain,
     yearOfPassing
   );
@@ -101,19 +101,19 @@ const register = asyncHandler(async (req, res) => {
  * POST /api/auth/login
  */
 const login = asyncHandler(async (req, res) => {
-  const { personalEmail, password } = req.body;
+  const { rtfId, password } = req.body;
 
   // 1. Validate input
-  if (!personalEmail || !password) {
+  if (!rtfId || !password) {
     const error = new Error(
-      "Both personalEmail and password are required."
+      "Both rtfId and password are required."
     );
     error.statusCode = 400;
     throw error;
   }
 
   // 2. Find user
-  const user = await userModel.getUserByEmail(personalEmail);
+  const user = await userModel.getUserByRtfId(rtfId);
 
   if (!user) {
     const error = new Error("Invalid credentials.");
@@ -163,16 +163,6 @@ const login = asyncHandler(async (req, res) => {
   });
 });
 
-
-  res.status(200).json({
-    success: true,
-    message: 'Login successful',
-    data: {
-      token,
-      user: safeUser,
-    },
-  });
-});
 module.exports = {
   register,
   login,

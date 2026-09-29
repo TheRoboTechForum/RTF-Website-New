@@ -23,11 +23,4 @@ const { registerSchema, loginSchema } = require('../validators/authValidators');
 router.post('/register', validateRequest(registerSchema), register);
 router.post('/login', validateRequest(loginSchema), login);
 
-// POST /api/auth/login
-router.post(
-  "/login",
-  validateRequest(loginSchema),
-  login
-);
-
 module.exports = router;
