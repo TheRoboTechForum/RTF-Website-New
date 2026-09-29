@@ -1,13 +1,15 @@
 const { db } = require('../config/firebaseAdmin');
 
 const DOMAIN_CODE_MAP = {
-  Software: 'SD',
-  Electrical: 'ED',
-  'Aero+Mech': 'AMD',
+  software: 'SD',
+  electrical: 'ED',
+  aeronautics: 'AD',
+  mechanical: 'MD',
 };
 
 async function generateRTFId(domain, yearOfPassing) {
-  const code = DOMAIN_CODE_MAP[domain];
+  const normalizedDomain = String(domain).trim().toLowerCase();
+  const code = DOMAIN_CODE_MAP[normalizedDomain];
 
   if (!code) {
     throw new Error(`Unsupported domain: ${domain}`);
@@ -22,7 +24,7 @@ async function generateRTFId(domain, yearOfPassing) {
   const yy = String(year).slice(-2);
 
   // One atomic counter for each domain + passing year.
-  const counterKey = `${domain}_${yearOfPassing}`
+  const counterKey = `${normalizedDomain}_${yearOfPassing}`
     .replace(/[.#$[\]/]/g, '_');
 
   const counterRef = db.ref(`rtfIdCounters/${counterKey}`);
@@ -43,5 +45,5 @@ async function generateRTFId(domain, yearOfPassing) {
 }
 
 module.exports = {
-  generateRtfId,
+  generateRtfId: generateRTFId,
 };

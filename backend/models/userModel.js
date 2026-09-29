@@ -11,7 +11,7 @@
 // Controllers must NOT call db.ref(...) directly.
 // ─────────────────────────────────────────────────────────────
 const { db } = require("../config/firebaseAdmin");
-const sanitizeEmail = require("../utils/sanitizeEmail");
+const { sanitizeEmail } = require("../utils/sanitizeEmail");
 
 /**
  * Checks whether a personal email already exists.
@@ -231,6 +231,48 @@ async function updateUser(uid, updateData) {
   await db.ref(`users/${uid}`).update(updateData);
 
   return true;
+}
+
+/**
+ * Retrieves a user by their RTF ID.
+ */
+async function getUserByRtfId(rtfId, yearOfPassing) {
+  if (!db) {
+    throw new Error(
+      "Database is not initialized. Check your .env Firebase credentials."
+    );
+  }
+
+  const snapshot = await db
+    .ref("users")
+    .orderByChild("rtfId")
+    .equalTo(rtfId)
+    .once("value");
+  const users = snapshot.val();
+
+  if (!users) {
+    return null;
+  }
+
+  const [uid, user] = Object.entries(users).find(([, candidate]) => {
+    return (
+      yearOfPassing === undefined ||
+      Number(candidate.yearOfPassing) === Number(yearOfPassing)
+    );
+  }) || [];
+
+  if (!uid) {
+    return null;
+  }
+
+  return { uid, ...user };
+}
+
+/**
+ * Checks whether an RTF ID is already assigned.
+ */
+async function rtfIdExists(yearOfPassing, rtfId) {
+  return Boolean(await getUserByRtfId(rtfId, yearOfPassing));
 }
 
 module.exports = {
