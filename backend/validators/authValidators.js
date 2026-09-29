@@ -19,7 +19,7 @@ const registerSchema = z.object({
     .min(2024, 'Year of passing looks invalid')
     .max(2035, 'Year of passing looks invalid'),
   phone: z.string().regex(/^\d{10}$/, 'Phone number must be 10 digits'),
-  domain: z.enum(['software', 'electrical', 'aeromech'], {
+  domain: z.enum(['software', 'electrical', 'aeronautics','mechanical'], {
     errorMap: () => ({ message: 'Choose a valid domain' }),
   }),
   password: z
@@ -31,12 +31,12 @@ const registerSchema = z.object({
 
 // Placeholder for when you build the login route next — same
 // pattern, smaller schema. Uncomment and use in loginController.js.
-// const loginSchema = z.object({
-//   personalEmail: z.string().email(),
-//   password: z.string().min(1, 'Password is required'),
-// });
+const loginSchema = z.object({
+  rtfId: z.string().min(1, 'RTF ID is required'),
+  password: z.string().min(1, 'Password is required'),
+});
 
 module.exports = {
   registerSchema,
-  // loginSchema,
+  loginSchema,
 };

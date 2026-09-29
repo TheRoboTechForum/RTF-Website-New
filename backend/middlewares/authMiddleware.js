@@ -14,7 +14,7 @@
 //      read req.user.uid / req.user.role without re-checking
 // ─────────────────────────────────────────────────────────────
 
-const { verifyAccessToken } = require('../services/authService');
+const { verifyAccessToken } = require('../services/authServices');
 
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization; // "Bearer eyJhbGciOi..."
