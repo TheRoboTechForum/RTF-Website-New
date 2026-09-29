@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const SHEET_URL = 'PASTE_BACKEND_URL_HERE';
 
@@ -37,6 +39,7 @@ const inputClass =
 const labelClass = 'block text-sm font-medium text-gray-300 mb-1';
 
 export default function FirstYearRegistration() {
+  const navigate = useNavigate();
   const [type, setType] = useState('first'); // 'first' or 'dsy'
   const [form, setForm] = useState(emptyForm);
   const [step, setStep] = useState('form'); // 'form' -> 'review' -> 'done'
@@ -134,7 +137,16 @@ export default function FirstYearRegistration() {
 
     return (
       <div className="min-h-screen pt-28 pb-12 px-4 text-white flex items-center justify-center bg-transparent">
-        <div className="w-full max-w-lg bg-black/40 border border-red-600/40 rounded-2xl p-6 md:p-8 space-y-5 backdrop-blur-md shadow-2xl">
+        <div className="relative w-full max-w-lg bg-black/40 border border-red-600/40 rounded-2xl p-6 md:p-8 space-y-5 backdrop-blur-md shadow-2xl">
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            aria-label="Back to home"
+            title="Back to home"
+            className="absolute top-4 left-4 p-2 text-gray-400 hover:text-red-500 transition"
+          >
+            <FaArrowLeft />
+          </button>
           <h1 className="text-2xl font-bold text-center">
             Verify Your <span className="text-red-600">Details</span>
           </h1>
@@ -180,8 +192,17 @@ export default function FirstYearRegistration() {
     <div className="min-h-screen pt-28 md:pt-32 pb-16 px-4 text-white flex items-center justify-center bg-transparent">
       <form
         onSubmit={handleReview}
-        className="w-full max-w-xl bg-black/40 border border-red-600/40 rounded-2xl p-6 md:p-8 space-y-6 backdrop-blur-md shadow-2xl"
+        className="relative w-full max-w-xl bg-black/40 border border-red-600/40 rounded-2xl p-6 md:p-8 space-y-6 backdrop-blur-md shadow-2xl"
       >
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          aria-label="Back to home"
+          title="Back to home"
+          className="absolute top-4 left-4 p-2 text-gray-400 hover:text-red-500 transition"
+        >
+          <FaArrowLeft />
+        </button>
         <div className="text-center space-y-1">
           <h1 className="text-3xl font-bold">
             RTF <span className="text-red-600">Registration</span>
