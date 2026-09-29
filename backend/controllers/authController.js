@@ -21,6 +21,8 @@ const { generateRtfId } = require("../services/idGeneratorService");
 const asyncHandler = require("../utils/asyncHandler");
 
 
+const { appendUserToSheet } = require('../services/sheetsService');
+
 /**
  * POST /api/auth/register
  */
@@ -66,27 +68,18 @@ const register = asyncHandler(async (req, res) => {
     yearOfPassing
   );
 
-  // 5. Create user
-  const newUser = await userModel.createUser({
-    name,
-    collegeEnrollmentNo,
-    collegeEmail,
+const sheetData = {
+    ...rest, 
     personalEmail,
-    branch,
-    yearOfPassing,
-    phone,
-    domain,
+    uid,
     rtfId,
-    passwordHash,
-    role: "member",
-    status: "pending",
+    status: 'pending',
     createdAt: Date.now(),
-  });
+  };
 
-  // 6. Remove passwordHash from response
-  const { passwordHash: _, ...safeUserData } = newUser;
+appendUserToSheet(sheetData);
 
-  // 7. Send response
+  // 4. Respond — 201 Created, consistent { success, data } shape
   res.status(201).json({
     success: true,
     message: "Registration successful. Account pending approval.",
