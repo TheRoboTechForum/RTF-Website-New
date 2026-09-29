@@ -33,13 +33,25 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 // 2. MIDDLEWARE — these run on EVERY request, in this exact order.
 //    Order matters: cors before routes, json parser before anything
 //    that reads req.body, etc.
 
 // Allow the frontend (running on a different port in dev) to call us.
 app.use(cors({
-  origin: process.env.CLIENT_URL, // e.g. http://localhost:5173
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Origin is not allowed by CORS'));
+  },
   credentials: true,              // needed if we ever switch to cookie-based JWT
 }));
 
