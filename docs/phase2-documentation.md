@@ -185,6 +185,8 @@ Same idea as §4.1, but applicants are pre-enrollment students who **don't yet h
 | Phone Number | |
 | Domain applying to | Software / Electrical / Aero+Mech |
 
+###10th,12th,cet percentile.jee optional main only
+
 ### 5.3 Temporary RTF ID
 Same format as §4.2, but must be visually distinguishable as temporary until an admin converts it, e.g.:
 
