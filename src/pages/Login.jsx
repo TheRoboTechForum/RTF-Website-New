@@ -2,13 +2,23 @@ import { motion } from 'framer-motion';
 import { pageTransition } from '../lib/animations';
 import AuthCard from '../components/auth/AuthCard';
 import rtfLogo from '../assets/images/rtf-logo-img.jpg';
+import { loginUser } from '../services/authService';
+import { Bounce, toast } from 'react-toastify';
 
 export default function Login() {
-  // TODO: wire this up to the real login endpoint once it's ready.
-  // AuthCard already handles its own loading/error state — just make
-  // this throw (or reject) on failure and LoginForm will surface it.
   const handleLogin = async ({ rtfId, password }) => {
-    throw new Error('Member portal coming soon. Contact RTF leader for access.');
+    const { token, user } = await loginUser({ rtfId, password });
+    window.localStorage.setItem('rtf_access_token', token);
+    window.localStorage.setItem('rtf_user', JSON.stringify(user));
+    toast.success('Welcome to RTF!', {
+      position: 'top-center',
+      autoClose: 3000,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'dark',
+      transition: Bounce,
+    });
   };
 
   return (

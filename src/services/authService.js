@@ -7,13 +7,22 @@
 // without touching every component.
 // ─────────────────────────────────────────────────────────────
 
-import axios from 'axios';
+import { API_ENDPOINTS, apiClient } from '../config/apiConfig';
 
-// Single axios instance, configured once, reused everywhere.
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL, // e.g. http://localhost:5000/api
-  headers: { 'Content-Type': 'application/json' },
-});
+function normalizeAuthError(error, fallbackMessage) {
+  if (error.response) {
+    throw {
+      message: error.response.data.error || fallbackMessage,
+      fieldErrors: error.response.data.fieldErrors || null,
+    };
+  }
+
+  if (error.request) {
+    throw { message: 'Could not reach the server. Check your connection.' };
+  }
+
+  throw { message: 'Something went wrong. Please try again.' };
+}
 
 /**
  * Registers a new user (member self-registration).
@@ -25,26 +34,18 @@ const api = axios.create({
  */
 export async function registerUser(formData) {
   try {
-    const response = await api.post('/auth/register', formData);
-    // Backend always responds { success: true, data: {...} } on success
+    const response = await apiClient.post(API_ENDPOINTS.auth.register, formData);
+    return response.data;
+  } catch (error) {
+    normalizeAuthError(error, 'Registration failed');
+  }
+}
+
+export async function loginUser(credentials) {
+  try {
+    const response = await apiClient.post(API_ENDPOINTS.auth.login, credentials);
     return response.data.data;
   } catch (error) {
-    // Axios puts the server's JSON body in error.response.data.
-    // We normalize it here so components don't need to know
-    // anything about axios's error shape — just { message, fieldErrors }.
-    if (error.response) {
-      // Server responded with an error status (400, 409, 500...)
-      throw {
-        message: error.response.data.error || 'Registration failed',
-        fieldErrors: error.response.data.fieldErrors || null,
-      };
-    } else if (error.request) {
-      // Request was sent but no response came back — server down,
-      // no internet, CORS issue, etc.
-      throw { message: 'Could not reach the server. Check your connection.' };
-    } else {
-      // Something went wrong just building the request
-      throw { message: 'Something went wrong. Please try again.' };
-    }
+    normalizeAuthError(error, 'Unable to sign in. Please try again.');
   }
 }

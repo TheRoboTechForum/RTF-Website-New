@@ -194,12 +194,15 @@ function AppContent() {
  * App — Root component with Loading Provider wrapper
  */
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
     <ThemeProvider>
       <LoadingProvider>
         <AppContent />
+        <ToastContainer />
       </LoadingProvider>
     </ThemeProvider>
   );

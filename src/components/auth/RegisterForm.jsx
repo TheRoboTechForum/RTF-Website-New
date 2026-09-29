@@ -46,6 +46,7 @@ import {
 } from '../../utils/validators';
 import { registerUser } from '../../services/authService';
 import NeoButton from '../ui/NeoButton';
+import { toast } from 'react-toastify';
 
 const inputClasses =
   'w-full pl-10 pr-4 py-3 bg-elevated border border-border rounded-button text-sm text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all';
@@ -155,6 +156,14 @@ export default function RegisterForm({ onSuccess }) {
 
     try {
       const result = await registerUser(payload);
+      toast.success(result.message || 'Registration successful!', {
+        position: 'top-center',
+        autoClose: 3000,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'dark',
+      });
       onSuccess(result.message);
     } catch (err) {
       if (err.fieldErrors) {
