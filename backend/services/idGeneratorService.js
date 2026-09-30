@@ -5,6 +5,8 @@ const DOMAIN_CODE_MAP = {
   electrical: 'ED',
   aeronautics: 'AD',
   mechanical: 'MD',
+  aero: 'AD',
+  mech: 'MD',
 };
 
 async function generateRTFId(domain, yearOfPassing) {
@@ -44,6 +46,22 @@ async function generateRTFId(domain, yearOfPassing) {
   return `${code}${yy}${serial}@RTF`;
 }
 
+function generateTemporaryRtfId(domain, phone) {
+  const normalizedDomain = String(domain || '').trim().toLowerCase();
+  const normalizedPhone = String(phone || '').replace(/\D/g, '');
+
+  if (!normalizedDomain) {
+    throw new Error('Domain is required to generate temporary RTF ID.');
+  }
+
+  if (!normalizedPhone || normalizedPhone.length !== 10) {
+    throw new Error('A valid 10-digit phone number is required to generate temporary RTF ID.');
+  }
+
+  return `${normalizedDomain}${normalizedPhone}@rtf`;
+}
+
 module.exports = {
   generateRtfId: generateRTFId,
+  generateTemporaryRtfId,
 };

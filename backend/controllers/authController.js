@@ -21,17 +21,23 @@ const { generateRtfId } = require("../services/idGeneratorService");
 const asyncHandler = require("../utils/asyncHandler");
 
 
-const { appendUserToSheet } = require('../services/sheetsService');
-
-/**
 /**
  * POST /api/auth/register
  */
 const register = asyncHandler(async (req, res) => {
-  // 1. Destructure domain, yearOfPassing, personalEmail, password, and collect the rest
-  const { personalEmail, password, domain, yearOfPassing, ...rest } = req.body;
+  const {
+    name,
+    collegeEnrollmentNo,
+    collegeEmail,
+    personalEmail,
+    branch,
+    yearOfPassing,
+    phone,
+    domain,
+    password,
+  } = req.body;
 
-  // 2. Validate required fields
+  // 1. Basic validation
   if (!personalEmail || !password || !domain || !yearOfPassing) {
     const error = new Error(
       "personalEmail, password, domain, and yearOfPassing are required fields."
@@ -40,8 +46,9 @@ const register = asyncHandler(async (req, res) => {
     throw error;
   }
 
-  // 3. Check duplicate user
+  // 2. Check if user already exists
   const existingUser = await userModel.getUserByEmail(personalEmail);
+
   if (existingUser) {
     const error = new Error(
       "User with this personal email already exists."
@@ -50,40 +57,41 @@ const register = asyncHandler(async (req, res) => {
     throw error;
   }
 
-  // 4. Hash password
+  // 3. Hash password
   const passwordHash = await hashPassword(password);
 
-  // 5. Create user in Firebase DB
-  // Passing domain and yearOfPassing together with rest
-  const { uid, rtfId } = await userModel.createUser({
-    ...rest,
+  // 4. Generate temporary RTF ID
+  const rtfId = await generateRtfId(
     domain,
-    yearOfPassing,
+    yearOfPassing
+  );
+
+  // 5. Create user
+  const newUser = await userModel.createUser({
+    name,
+    collegeEnrollmentNo,
+    collegeEmail,
     personalEmail,
+    branch,
+    yearOfPassing,
+    phone,
+    domain,
+    rtfId,
     passwordHash,
+    role: "member",
+    status: "pending",
+    createdAt: Date.now(),
   });
 
-  // 6. Prepare data & Append to Google Sheets (non-blocking)
-  const sheetData = {
-    ...rest,
-    domain,
-    yearOfPassing,
-    personalEmail,
-    uid,
-    rtfId,
-    status: 'pending',
-    createdAt: Date.now(),
-  };
+  // 6. Remove passwordHash from response
+  const { passwordHash: _, ...safeUserData } = newUser;
 
-  appendUserToSheet(sheetData);
-
-  // 7. Respond
+  // 7. Send response
   res.status(201).json({
     success: true,
     message: "Registration successful. Account pending approval.",
     data: {
-      uid,
-      rtfId,
+      user: safeUserData,
     },
   });
 });

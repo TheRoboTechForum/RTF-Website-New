@@ -25,7 +25,7 @@ require('./config/firebaseAdmin');
 const errorHandler = require('./middlewares/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-
+const recruitmentRoutes = require('./routes/recruitmentRoutes');
 // As you build more modules, import their routers the same way:
 // const recruitmentRoutes = require('./routes/recruitmentRoutes');
 // const mailRoutes = require('./routes/mailRoutes');
@@ -73,7 +73,7 @@ if (process.env.NODE_ENV === 'development') {
 //    base path. The router file itself defines what happens under
 //    that path (see routes/authRoutes.js for a fully commented example).
 app.use('/api/auth', authRoutes);
-// app.use('/api/recruitment', recruitmentRoutes);
+app.use('/api/recruitment', recruitmentRoutes);
 // app.use('/api/mail', mailRoutes);
 // app.use('/api/room', roomRoutes);
 app.use('/api/users', userRoutes);//to check if user is there from rfID

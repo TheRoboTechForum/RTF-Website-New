@@ -1,72 +1,68 @@
-// controllers/recruitmentController.js
+// controllers/recruitmentController.js.js
+// ─────────────────────────────────────────────────────────────
+// THIS FILE IS THE TEMPLATE. When you build any other module
+// (recruitment, mail, room status), copy this same pattern:
+//   1. Receive already-validated req.body (validation happened
+//      in middleware, BEFORE this function even runs)
+//   2. Call model/service functions — never touch Firebase or
+//      bcrypt/jwt directly in here
+//   3. Return a consistent { success, data } or throw an error
+//      with a .statusCode (asyncHandler + errorHandler take it
+//      from there)
+// ─────────────────────────────────────────────────────────────
 
-const { getUserById, updateUser } = require("../models/userModel");
-const {
-  generateRtfId,
-} = require("../services/idGeneratorService");
-
+const { generateTemporaryRtfId } = require('../services/idGeneratorService');
+const asyncHandler = require('../utils/asyncHandler');
+const { appendUserToSheet } = require('../services/sheetsService');
 
 /**
- * APPROVE APPLICANT CONTROLLER
- * Path: PATCH /api/recruitment/approve/:uid
+ * POST /api/recruitment/register-recruitment
  */
-const approveApplicant = async (req, res) => {
-  try {
-    const { uid } = req.params;
+const recruitmentRegister = asyncHandler(async (req, res) => {
+  const {
+    name,
+    personalEmail,
+    branch,
+    yearOfPassing,
+    phone,
+    domain,
+    ...rest
+  } = req.body;
 
-    // 1. Fetch applicant
-    const user = await getUserById(uid);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "Applicant not found.",
-      });
-    }
-
-    // 2. Check if already approved
-    if (user.status === "active") {
-      return res.status(400).json({
-        success: false,
-        error: "Applicant is already approved.",
-      });
-    }
-
-    // 3. Generate official RTF ID
-    const officialRtfId = await generateRtfId(
-      user.domain,
-      user.yearOfPassing
+  if (!name || !personalEmail || !branch || !yearOfPassing || !phone || !domain) {
+    const error = new Error(
+      'name, personalEmail, branch, yearOfPassing, phone, and domain are required fields.'
     );
-
-    // 4. Update applicant
-    await updateUser(uid, {
-      rtfId: officialRtfId,
-      tempRtfId: user.rtfId,
-      status: "active",
-      approvedBy: req.user?.uid || "admin",
-      approvedAt: Date.now(),
-    });
-
-    // 5. Return response
-    return res.status(200).json({
-      success: true,
-      message: "Applicant approved successfully.",
-      data: {
-        uid,
-        officialRtfId,
-        status: "active",
-      },
-    });
-  } catch (error) {
-    console.error("Error in approveApplicant controller:", error);
-
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Internal Server Error",
-    });
+    error.statusCode = 400;
+    throw error;
   }
-};
+
+  const rtfId = generateTemporaryRtfId(domain, phone);
+
+  const sheetData = {
+    name,
+    personalEmail,
+    branch,
+    yearOfPassing,
+    phone,
+    domain,
+    rtfId,
+    ...rest,
+    status: 'pending',
+    createdAt: Date.now(),
+  };
+
+  await appendUserToSheet(sheetData);
+
+  res.status(201).json({
+    success: true,
+    message: 'Registration successful. Account pending approval.',
+    data: {
+      rtfId,
+    },
+  });
+});
 
 module.exports = {
-  approveApplicant,
+  recruitmentRegister,
 };

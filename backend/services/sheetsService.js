@@ -6,6 +6,12 @@ const PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY
   ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
   : null;
 
+if (!SPREADSHEET_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {
+  throw new Error(
+    'Missing Google Sheets env vars. Required: SPREADSHEET_ID, GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY.'
+  );
+}
+
 const auth = new google.auth.GoogleAuth({
   credentials: {
     client_email: CLIENT_EMAIL,
@@ -43,18 +49,29 @@ async function appendUserToSheet(userData) {
       formattedDate,
     ];
 
-    await sheets.spreadsheets.values.append({
+    const currentSheet = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: 'Sheet1!A:N',
+      range: 'Sheet1!A:A',
+    });
+
+    const existingRows = currentSheet.data.values || [];
+    const nextRow = existingRows.length + 1;
+    const targetRange = `Sheet1!A${nextRow}:N${nextRow}`;
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: targetRange,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values: [rowValues],
       },
     });
 
-    console.log('[Google Sheets] Successfully appended a new registration row.');
+    console.log(`[Google Sheets] Successfully wrote a new registration row to ${targetRange}.`);
+    return true;
   } catch (error) {
     console.error('[Google Sheets Error] Failed to append registration row:', error.message);
+    throw error;
   }
 }
 
