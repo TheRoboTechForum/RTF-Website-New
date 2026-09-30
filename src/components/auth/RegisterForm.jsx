@@ -313,7 +313,7 @@ export default function RegisterForm({ onSuccess }) {
         />
       </div>
 
-      <div>
+      {/* <div>
         <label htmlFor="marksheet" className="text-label text-text-muted block mb-2">
           Upload Combined Marksheets
         </label>
@@ -334,7 +334,7 @@ export default function RegisterForm({ onSuccess }) {
         {marksheetFile && (
           <p className="text-xs text-cyan-300 mt-2">Selected: {marksheetFile.name}</p>
         )}
-      </div>
+      </div> */}
 
       <NeoButton type="submit" disabled={isSubmitting} className="w-full justify-center">
         {isSubmitting ? 'Submitting…' : 'Register'}

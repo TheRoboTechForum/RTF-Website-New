@@ -49,17 +49,19 @@ async function generateRTFId(domain, yearOfPassing) {
 function generateTemporaryRtfId(domain, phone) {
   const normalizedDomain = String(domain || '').trim().toLowerCase();
   const normalizedPhone = String(phone || '').replace(/\D/g, '');
+  const domainCode = DOMAIN_CODE_MAP[normalizedDomain];
 
-  if (!normalizedDomain) {
-    throw new Error('Domain is required to generate temporary RTF ID.');
+  if (!domainCode) {
+    throw new Error(`Unsupported domain: ${domain}`);
   }
 
   if (!normalizedPhone || normalizedPhone.length !== 10) {
     throw new Error('A valid 10-digit phone number is required to generate temporary RTF ID.');
   }
 
-  return `${normalizedDomain}${normalizedPhone}@rtf`;
+  return `${domainCode}${normalizedPhone.slice(0, 4)}@rtf`;
 }
+
 
 module.exports = {
   generateRtfId: generateRTFId,

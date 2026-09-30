@@ -153,8 +153,13 @@ export default function FirstYearRegistration() {
           <p className="mb-2 font-mono text-xs uppercase tracking-[0.25em] text-emerald-400">Application received</p>
           <h1 className="mb-3 text-3xl font-display font-bold">Welcome to the intake node.</h1>
           <p className="mb-7 text-sm leading-6 text-text-secondary">
-            Your recruitment application has been recorded. Keep your temporary reference ID for future communication.
-          </p>
+  Your recruitment application has been recorded.{' '}
+  <br />
+  <strong className="font-semibold text-text-primary">
+    Please take a screenshot of this page and keep it for future communication.
+  </strong>
+</p>
+
           <p className="mb-7 font-mono text-lg text-text-primary">{submitted}</p>
           <button type="button" onClick={() => navigate('/')} className="text-sm text-cyan-400 transition hover:text-cyan-300">
             Return to home
