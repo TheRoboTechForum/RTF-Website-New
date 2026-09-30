@@ -22,6 +22,7 @@ import Achievement from './pages/Achievement';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
+import FirstYearRegistration from './pages/FirstYearRegistration';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -100,6 +101,7 @@ function AnimatedRoutes() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/recruitment-2026" element={<FirstYearRegistration />} />
       </Routes>
     </AnimatePresence>
   );

@@ -36,6 +36,7 @@ import {
   GraduationCap,
   Layers,
   ChevronDown,
+  FileText,
 } from 'lucide-react';
 import {
   registerSchema,
@@ -144,18 +145,38 @@ export default function RegisterForm({ onSuccess }) {
     setError,
   } = useForm({ resolver: zodResolver(registerSchema) });
 
-  // Separate from field errors — for errors not tied to one input
-  // (e.g. "email already registered", or "server unreachable").
   const [formError, setFormError] = useState(null);
+  const [marksheetFile, setMarksheetFile] = useState(null);
 
   const onSubmit = async (data) => {
     setFormError(null);
 
-    // confirmPassword is frontend-only — stripped before sending.
+    if (!marksheetFile) {
+      setFormError('Please upload your combined marksheet PDF.');
+      return;
+    }
+
+    if (marksheetFile.type !== 'application/pdf') {
+      setFormError('Only PDF files are allowed.');
+      return;
+    }
+
+    if (marksheetFile.size > 5 * 1024 * 1024) {
+      setFormError('Marksheet PDF must be 5 MB or smaller.');
+      return;
+    }
+
     const { confirmPassword, ...payload } = data;
+    const formData = new FormData();
+
+    Object.entries(payload).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    formData.append('marksheet', marksheetFile);
 
     try {
-      const result = await registerUser(payload);
+      const result = await registerUser(formData);
       toast.success(result.message || 'Registration successful!', {
         position: 'top-center',
         autoClose: 3000,
@@ -290,6 +311,29 @@ export default function RegisterForm({ onSuccess }) {
           error={errors.confirmPassword}
           registration={register('confirmPassword')}
         />
+      </div>
+
+      <div>
+        <label htmlFor="marksheet" className="text-label text-text-muted block mb-2">
+          Upload Combined Marksheets
+        </label>
+        <p className="text-xs text-text-muted mb-2">
+          Please combine your 10th, 12th, CET, JEE Main, and/or Diploma marksheets into a single PDF.
+          Only PDF files are accepted. Maximum file size: 5 MB.
+        </p>
+        <div className="relative">
+          <FileText size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input
+            id="marksheet"
+            type="file"
+            accept="application/pdf,.pdf"
+            className={`${inputClasses} pl-10`}
+            onChange={(event) => setMarksheetFile(event.target.files?.[0] || null)}
+          />
+        </div>
+        {marksheetFile && (
+          <p className="text-xs text-cyan-300 mt-2">Selected: {marksheetFile.name}</p>
+        )}
       </div>
 
       <NeoButton type="submit" disabled={isSubmitting} className="w-full justify-center">

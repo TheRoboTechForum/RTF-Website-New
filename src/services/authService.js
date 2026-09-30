@@ -34,7 +34,11 @@ function normalizeAuthError(error, fallbackMessage) {
  */
 export async function registerUser(formData) {
   try {
-    const response = await apiClient.post(API_ENDPOINTS.auth.register, formData);
+    const config = formData instanceof FormData
+      ? { headers: { 'Content-Type': 'multipart/form-data' } }
+      : {};
+
+    const response = await apiClient.post(API_ENDPOINTS.auth.register, formData, config);
     return response.data;
   } catch (error) {
     normalizeAuthError(error, 'Registration failed');

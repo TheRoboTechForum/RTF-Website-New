@@ -2,8 +2,8 @@ const { google } = require('googleapis');
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 const CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
-const PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY
-  ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
+const PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY_SHEET
+  ? process.env.GOOGLE_PRIVATE_KEY_SHEET.replace(/\\n/g, '\n')
   : null;
 
 if (!SPREADSHEET_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {

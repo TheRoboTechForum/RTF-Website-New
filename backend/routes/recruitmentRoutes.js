@@ -10,16 +10,20 @@
 // ─────────────────────────────────────────────────────────────
 const express = require("express");
 const router = express.Router();
+const multer = require('multer');
 
 const { recruitmentRegister } = require('../controllers/recruitmentController');
 const validateRequest = require('../middlewares/validateRequest');
 const { recruitmentRegisterSchema } = require('../validators/recruitmentValidators');
 
-// POST /api/auth/register
-// Request flow: validateRequest checks req.body against
-// registerSchema FIRST — if it fails, the request never even
-// reaches the `register` controller. If it passes, req.body is
-// replaced with the clean, parsed data.
-router.post('/register-recruitment', validateRequest(recruitmentRegisterSchema), recruitmentRegister);
+const parseRecruitmentFields = multer().none();
+console.log("entering into register-recruitment ");
+
+router.post(
+  '/register-recruitment',
+  parseRecruitmentFields,
+  validateRequest(recruitmentRegisterSchema),
+  recruitmentRegister
+);
 
 module.exports = router;

@@ -17,6 +17,7 @@
     "googleapis": "^182.0.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.12.1",
+    "multer": "^2.4.0",
     "zod": "^4.6.5"
   }
 }
