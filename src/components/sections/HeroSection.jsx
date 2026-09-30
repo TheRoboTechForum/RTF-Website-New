@@ -26,7 +26,7 @@ export default function HeroSection() {
                 <NeoButton
                   to="/recruitment-2026"
                   variant="danger"
-                  className="animate-bounce px-4 py-2 text-[11px]"
+                  className="order-first animate-bounce px-4 py-2 text-[11px] sm:order-none"
                 >
                   APPLY 2026
                 </NeoButton>
