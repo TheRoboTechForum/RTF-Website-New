@@ -320,6 +320,11 @@
   50%, 100% { opacity: 0; }
 }
 
+@keyframes neo-button-shine {
+  0%, 20% { transform: translateX(0) rotate(25deg); }
+  70%, 100% { transform: translateX(400%) rotate(25deg); }
+}
+
 /* Skeleton loading shimmer — used in Projects page */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }

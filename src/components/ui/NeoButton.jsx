@@ -18,7 +18,7 @@ const variants = {
   secondary:
     'bg-transparent text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/10 hover:border-cyan-400/50',
   danger:
-    'bg-error/10 text-error border border-error/30 hover:bg-error/20 hover:border-error/50',
+    'relative overflow-hidden bg-[#e50909] text-white border border-[#ff2020] hover:bg-[#e00000] hover:border-[#e00000] active:scale-95 active:brightness-125 before:pointer-events-none before:absolute before:-top-1/2 before:h-[200%] before:-left-1/2 before:w-1/3 before:bg-white/30 before:animate-[neo-button-shine_2.4s_ease-in-out_infinite]',
 };
 
 export default function NeoButton({
@@ -34,7 +34,7 @@ export default function NeoButton({
   const baseClasses = `inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-mono font-semibold tracking-wider rounded-button transition-all duration-250 ease-smooth group ${variants[variant]} ${className}`;
 
   const content = (
-    <>
+    <span className="relative z-10 inline-flex items-center justify-center gap-2">
       {children}
       {arrow && (
         <ArrowRight
@@ -42,7 +42,7 @@ export default function NeoButton({
           className="group-hover:translate-x-0.5 transition-transform duration-200"
         />
       )}
-    </>
+    </span>
   );
 
   if (to) {
