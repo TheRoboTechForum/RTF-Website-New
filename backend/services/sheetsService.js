@@ -2,13 +2,18 @@ const { google } = require('googleapis');
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 const CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
-const PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY_SHEET
-  ? process.env.GOOGLE_PRIVATE_KEY_SHEET.replace(/\\n/g, '\n')
+const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY_SHEET || process.env.GOOGLE_PRIVATE_KEY;
+const PRIVATE_KEY = rawPrivateKey
+  ? rawPrivateKey
+    .replace(/^['"]|['"]$/g, '')
+    .replace(/\\n/g, '\n')
+    .replace(/\r/g, '')
+    .trim()
   : null;
 
 if (!SPREADSHEET_ID || !CLIENT_EMAIL || !PRIVATE_KEY) {
   throw new Error(
-    'Missing Google Sheets env vars. Required: SPREADSHEET_ID, GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY.'
+    'Missing Google Sheets env vars. Required: SPREADSHEET_ID, GOOGLE_CLIENT_EMAIL, and GOOGLE_PRIVATE_KEY_SHEET (or GOOGLE_PRIVATE_KEY).'
   );
 }
 
