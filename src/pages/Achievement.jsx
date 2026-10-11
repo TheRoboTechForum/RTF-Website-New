@@ -187,6 +187,41 @@ const STYLES = `
     width: 8px;
     height: 8px;
     border-radius: 50%;
+    background: rgba(34, 211, 238, 0.2); /* Muted, low-opacity matching cyan */
+    border: 2px solid rgba(34, 211, 238, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    flex-shrink: 0;
+  }
+  
+  /* ONLY active items pulse and have colorful backgrounds */
+  .vtl-item.active .vtl-dot {
+    background: rgba(34,211,238,0.75);
+    border: 2px solid rgba(34,211,238,0.25);
+    box-shadow: 0 0 8px rgba(34,211,238,0.35);
+    animation: tlDotPulse 2.5s ease-in-out infinite;
+  }
+  .vtl-item.active .vtl-dot-gold {
+    background: rgba(251,191,36,0.9);
+    border-color: rgba(251,191,36,0.35);
+    box-shadow: 0 0 12px rgba(251,191,36,0.45);
+    animation: tlDotPulseGold 2s ease-in-out infinite;
+  }
+  .vtl-item:hover .vtl-dot,
+  .vtl-item.active .vtl-dot {
+    transform: scale(1.6);
+  }
+  .vtl-item:hover .vtl-dot-gold,
+  .vtl-item.active .vtl-dot-gold {
+    transform: scale(1.6);
+  }
+  .vtl-label {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
     transform: translate(-50%, -50%) scale(0.85);
     background: rgba(255,32,32,0.35);
     border: 2px solid rgba(255,32,32,0.2);
@@ -207,6 +242,49 @@ const STYLES = `
     color: #FF2020;
     transform: scale(1.08);
     font-weight: 700;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    color: rgba(34,211,238,0.9);
+    white-space: nowrap;
+  }
+  .vtl-year-gold { color: rgba(251,191,36,1); }
+  .vtl-title-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    color: rgba(148,163,184,0.85);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* light vtl overrides */
+  .light .vtl-dot {
+    background: rgba(14, 165, 233, 0.25); /* Muted, light mode sky blue */
+  }
+  .light .vtl-item.active .vtl-dot {
+    background: rgba(14,165,233,0.85);
+    border-color: rgba(14,165,233,0.3);
+    box-shadow: 0 0 8px rgba(14,165,233,0.35);
+    animation: tlDotPulseLight 2.5s ease-in-out infinite;
+  }
+  .light .vtl-item.active .vtl-dot-gold {
+    background: rgba(251,191,36,0.9);
+    border-color: rgba(251,191,36,0.35);
+    box-shadow: 0 0 12px rgba(251,191,36,0.45);
+    animation: tlDotPulseGoldLight 2s ease-in-out infinite;
+  }
+  .light .vtl-item.active .vtl-dot {
+    box-shadow: 0 0 16px rgba(14,165,233,0.75);
+  }
+  .light .vtl-item.active .vtl-dot-gold {
+    box-shadow: 0 0 20px rgba(251,191,36,0.85);
+  }
+  .light .vtl-year { color: #0369a1; }
+  .light .vtl-title-text { color: #334155; }
+
+  /* Tooltip box */
+  .vtl-tooltip {
   }
 
   .year-timeline-item.active::before {
@@ -719,6 +797,157 @@ const STYLES = `
       overflow-y: auto;
     }
 
+          {/* RIGHT: body */}
+          <div className="ach-card-body">
+            <div style={{
+              position: 'absolute', top: 24, right: 28,
+              fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
+              fontSize: 52, color: item.accent,
+              opacity: isLight ? 0.12 : 0.065,
+              lineHeight: 1, pointerEvents: 'none', userSelect: 'none',
+            }}>{cardNum}</div>
+
+            <div style={{
+              fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
+              fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase',
+              color: item.accent, marginBottom: 20,
+              display: 'flex', alignItems: 'center', gap: 10,
+            }}>
+              <div style={{ width: 26, height: 1, background: item.accent, opacity: 0.45 }} />
+              {item.rank}
+              <div style={{ width: 26, height: 1, background: item.accent, opacity: 0.45 }} />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 11,
+                background: `${item.accent}14`, border: `1px solid ${item.accent}28`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <Icon size={18} color={item.accent} />
+              </div>
+              <span style={{
+                fontFamily: 'DM Sans', fontSize: 11,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                color: isLight ? `${item.accent}` : `${item.accent}99`,
+              }}>{item.date}</span>
+            </div>
+
+            <h2 style={{
+              fontFamily: "'Orbitron',sans-serif", fontWeight: 900,
+              fontSize: 'clamp(18px,2.2vw,28px)', letterSpacing: '0.03em',
+              color: titleColor, lineHeight: 1.2, marginBottom: 6,
+            }}>{item.title}</h2>
+
+            <p style={{
+              fontFamily: 'DM Sans', fontSize: 11, fontWeight: 500,
+              color: subtitleClr, letterSpacing: '0.08em',
+              textTransform: 'uppercase', marginBottom: 16,
+            }}>{item.subtitle}</p>
+
+            {canOpenResult && (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                width: 'fit-content',
+                marginBottom: 14,
+                padding: '5px 10px',
+                borderRadius: 999,
+                fontFamily: 'DM Sans',
+                fontSize: 9,
+                fontWeight: 700,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                border: `1px solid ${item.accent}44`,
+                background: `${item.accent}12`,
+                color: item.accent,
+              }}>
+                View Result File
+              </span>
+            )}
+
+            <p style={{
+              fontFamily: 'DM Sans', fontSize: 14,
+              color: descColor, lineHeight: 1.82,
+              marginBottom: 22, maxWidth: 400,
+            }}>{item.description}</p>
+
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 22 }}>
+              {item.tags.map(tag => (
+                <span key={tag} className="badge"
+                  style={{
+                    borderColor: `${item.accent}${isLight ? '55' : '28'}`,
+                    color: item.accent,
+                    background: `${item.accent}${isLight ? '15' : '09'}`,
+                  }}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              {[
+                { I: MapPin,   l: item.venue },
+                { I: Users,    l: `${item.teamSize} Members` },
+                { I: Calendar, l: item.year },
+              ].map(({ I, l }) => (
+                <span key={l} className="meta-item" style={{ color: metaClr }}>
+                  <I size={11} color={`${item.accent}55`} />{l}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </TiltCard>
+    </motion.div>
+  );
+}
+
+/* LEFT VERTICAL TIMELINE SIDEBAR */
+function VerticalTimeline({ activeIndex, onSelect, isLight, items }) {
+  return (
+    <div className="vtl-sidebar">
+      <div className={isLight ? 'vtl-line light' : 'vtl-line'} />
+      {items.map((a, i) => {
+        const isActive = activeIndex === i;
+        const isGold   = !!a.featured;
+        return (
+          <div
+            key={a.year + a.title + i}
+            className={`vtl-item${isActive ? ' active' : ''}${isLight ? ' light' : ''}`}
+            onClick={() => onSelect(i)}
+          >
+            <div className="vtl-dot-wrap">
+              <div 
+                className={`vtl-dot${isGold ? ' vtl-dot-gold' : ''}`} 
+                style={(!isActive && i === 0) ? { 
+                  backgroundColor: 'rgba(251, 191, 36, 0.25)', 
+                  borderColor: 'rgba(251, 191, 36, 0.15)' 
+                } : undefined}
+              />
+            </div>
+            <div className="vtl-tooltip">
+              <div style={{
+                fontFamily: "'Orbitron',sans-serif", fontWeight: 700,
+                fontSize: 8, letterSpacing: '0.18em',
+                color: isGold ? '#fbbf24' : (isLight ? '#0284c7' : '#22d3ee'),
+                marginBottom: 2,
+              }}>{a.year}</div>
+              <div style={{
+                fontFamily: 'DM Sans', fontSize: 10,
+                color: isLight ? '#334155' : 'rgba(148,163,184,0.9)',
+                lineHeight: 1.35,
+                whiteSpace: 'normal',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word',
+              }}>{a.title}</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
     .achievement-dialog-media {
       min-height: 42vh;
     }
@@ -846,6 +1075,25 @@ function useDetectedLightMode(lightMode) {
     return window.matchMedia?.('(prefers-color-scheme: light)').matches ?? false;
   }, []);
 
+  const isLight = typeof lightMode === 'boolean' ? lightMode : detectedLightMode;
+
+  const cardRefs = useRef([]);
+  const visibleAchievements = useMemo(() => (
+    selectedYear === 'All'
+      ? achievementsByYear
+      : achievementsByYear.filter((achievement) => achievement.year === selectedYear)
+  ), [selectedYear]);
+
+  const handleSelect = (i) => {
+    setActiveIdx(i);
+    const el = cardRefs.current[i];
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  useEffect(() => {
+    setActiveIdx(0);
+  }, [selectedYear]);
+
   useEffect(() => {
     const syncMode = () => setDetectedLightMode(readLightMode());
     syncMode();
@@ -871,6 +1119,36 @@ function useDetectedLightMode(lightMode) {
     };
   }, [readLightMode]);
 
+  /* FIXED SCROLL INTERSECTION LOGIC PLUGGED DIRECTLY IN */
+  useEffect(() => {
+    // Keep ref slots aligned strictly with active array count to drop dangling trailing items
+    cardRefs.current = cardRefs.current.slice(0, visibleAchievements.length);
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const idx = cardRefs.current.indexOf(e.target);
+            if (idx !== -1) {
+              setActiveIdx(idx);
+            }
+          }
+        });
+      },
+      { 
+        root: null,
+        rootMargin: '-30% 0px -40% 0px', // Focus checking inside the explicit horizontal center of the frame view
+        threshold: 0.2
+      }
+    );
+
+    visibleAchievements.forEach((_, index) => {
+      const el = cardRefs.current[index];
+      if (el) obs.observe(el);
+    });
+
+    return () => obs.disconnect();
+  }, [visibleAchievements]);
   return typeof lightMode === 'boolean' ? lightMode : detectedLightMode;
 }
 
@@ -1188,6 +1466,33 @@ export default function Achievement({ lightMode }) {
   return (
     <>
       <style>{STYLES}</style>
+      <div className={`${bgClass} ${modeClass}`} style={{ minHeight: '100vh', position: 'relative', backgroundColor: isLight ? '#f8fbff' : '#010912' }}>
+
+        {!isLight && (
+          <div style={{
+            position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
+            width: 900, height: 320, pointerEvents: 'none', zIndex: 1,
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(34,211,238,0.045) 0%, transparent 65%)',
+          }} />
+        )}
+
+        <VerticalTimeline activeIndex={activeIdx} onSelect={handleSelect} isLight={isLight} items={visibleAchievements} />
+
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ textAlign: 'center', padding: '112px 24px 60px' }}>
+            <motion.span
+              initial={{ opacity: 0, letterSpacing: '0.5em' }}
+              animate={{ opacity: 1, letterSpacing: '0.35em' }}
+              transition={{ duration: 0.9 }}
+              style={{
+                fontFamily: 'DM Sans', fontSize: 10.5, letterSpacing: '0.35em',
+                textTransform: 'uppercase', color: taglineColor,
+                display: 'block', marginBottom: 22,
+              }}
+            >// HALL OF FAME</motion.span>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
       <main className={`achievement-page ${isLight ? 'light' : 'dark'}`}>
         <YearTimelineSidebar
           ref={sidebarRef}
