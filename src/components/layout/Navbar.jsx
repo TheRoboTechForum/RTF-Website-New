@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 import { staggerContainer, fadeUp } from '../../lib/animations';
 import ThemeToggle from '../ui/ThemeToggle';
+import MemberProfileOverlay from '../Member/MemberProfileOverlay';
+import CertificatesOverlay from '../Member/CertificatesOverlay';
+import SettingsOverlay from '../Member/SettingsOverlay';
 import rtfLogo from '../../assets/images/rtf-logo-img.jpg';
+
 
 const navLinks = [
   { path: '/', label: 'Home' },
@@ -21,6 +25,10 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profilePageOpen, setProfilePageOpen] = useState(false);
+  const [certificatesOpen, setCertificatesOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -34,6 +42,21 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.profile-menu')) {
+        setProfileOpen(false);
+      }
+    };
+
+    // Closes the profile-dropdown after clicking anywhere on the website
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -42,11 +65,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? 'glass shadow-card'
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
+        ? 'glass shadow-card'
+        : 'bg-transparent'
+        }`}
     >
       <nav className="relative z-50 max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
@@ -67,11 +89,10 @@ export default function Navbar() {
               <li key={link.path}>
                 <Link
                   to={link.path}
-                  className={`relative px-3 py-2 text-sm font-body font-medium transition-colors duration-200 rounded-button ${
-                    isActive
-                      ? 'text-cyan-400'
-                      : 'text-text-secondary hover:text-text-primary'
-                  }`}
+                  className={`relative px-3 py-2 text-sm font-body font-medium transition-colors duration-200 rounded-button ${isActive
+                    ? 'text-cyan-400'
+                    : 'text-text-secondary hover:text-text-primary'
+                    }`}
                 >
                   {link.label}
                   {isActive && (
@@ -90,12 +111,53 @@ export default function Navbar() {
         {/* Desktop Controls */}
         <div className="hidden lg:flex items-center gap-4">
           {/* <ThemeToggle /> */}
-          <Link
-            to="/login"
-            className="flex items-center gap-2 px-4 py-2 text-sm font-mono font-medium text-cyan-400 border border-cyan-500/30 rounded-button hover:bg-cyan-500/10 hover:border-cyan-400/50 transition-all duration-200"
-          >
-            MEMBER LOGIN
-          </Link>
+
+          <div className="relative profile-menu">
+            <button
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="p-2 text-cyan-400 border border-cyan-500/30 rounded-full hover:bg-cyan-500/10 transition-all"
+              aria-label="Open profile menu"
+            >
+              <User size={22} />
+            </button>
+
+            {profileOpen && (
+              <div className="absolute right-0 mt-3 w-56 glass rounded-lg border border-cyan-500/30 p-2">
+                <p className="px-3 py-2 text-sm text-text-secondary">
+                  Member Profile
+                </p>
+
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setProfilePageOpen(true);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-text-primary hover:bg-cyan-500/10 rounded"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setCertificatesOpen(true);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-text-primary hover:bg-cyan-500/10 rounded"
+                >
+                  Certificates
+                </button>
+
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setSettingsOpen(true);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-text-primary hover:bg-cyan-500/10 rounded"
+                >
+                  Settings
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Mobile Hamburger */}
@@ -132,9 +194,8 @@ export default function Navbar() {
                     <Link
                       to={link.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`text-2xl font-display font-semibold transition-colors ${
-                        isActive ? 'text-cyan-400' : 'text-text-secondary hover:text-text-primary'
-                      }`}
+                      className={`text-2xl font-display font-semibold transition-colors ${isActive ? 'text-cyan-400' : 'text-text-secondary hover:text-text-primary'
+                        }`}
                     >
                       {link.label}
                     </Link>
@@ -155,6 +216,28 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+
+      {/* ProfilePage Overlay */}
+      {profilePageOpen && (
+        <MemberProfileOverlay
+          onClose={() => setProfilePageOpen(false)}
+        />
+      )}
+
+      {/* Certificate Overlay */}
+      {certificatesOpen && (
+        <CertificatesOverlay
+          onClose={() => setCertificatesOpen(false)}
+        />
+      )}
+
+      {/* Settings Overlay */}
+      {settingsOpen && (
+        <SettingsOverlay
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
     </header>
   );
 }
