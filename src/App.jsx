@@ -16,6 +16,8 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Projects from './pages/Projects';
 import Team from './pages/Team';
+import MailConsole from './pages/MailConsole';
+
 // import Sponsors from './pages/Sponsors';
 import Timeline from './pages/Timeline';
 import Achievement from './pages/Achievement';
@@ -100,6 +102,7 @@ function AnimatedRoutes() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/mail-console" element={<MailConsole />} />
       </Routes>
     </AnimatePresence>
   );
