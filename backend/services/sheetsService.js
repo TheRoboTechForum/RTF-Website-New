@@ -80,6 +80,69 @@ async function appendUserToSheet(userData) {
   }
 }
 
+const RESULT_WORKSHEETS = {
+  mechanical: 'Mechanical',
+  power: 'Power',
+  programming: 'Programming',
+};
+
+async function readResultRecords(domain) {
+  const worksheetName = RESULT_WORKSHEETS[domain];
+  if (!worksheetName) {
+    const error = new Error('Unknown results domain.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${worksheetName}!A:Z`,
+    majorDimension: 'ROWS',
+    valueRenderOption: 'FORMATTED_VALUE',
+  });
+
+  const values = response.data.values || [];
+  if (values.length === 0) return [];
+
+  const headers = values[0].map((header) =>
+    String(header || '').trim().toLowerCase().replace(/\./g, '')
+  );
+  const serialIndex = headers.indexOf('sr');
+  const nameIndex = headers.indexOf('name');
+  const branchIndex = headers.indexOf('branch');
+
+  if (nameIndex === -1 || branchIndex === -1) {
+    const error = new Error(
+      `${worksheetName} must contain Name and Branch columns.`
+    );
+    error.statusCode = 422;
+    throw error;
+  }
+
+  const records = [];
+  values.slice(1).forEach((row, rowIndex) => {
+    const name = String(row[nameIndex] ?? '').trim();
+    const branch = String(row[branchIndex] ?? '').trim();
+
+    if (!name && !branch) return;
+    if (!name || !branch) return;
+
+    const rawSerial = serialIndex >= 0 ? String(row[serialIndex] ?? '').trim() : '';
+    const parsedSerial = Number.parseInt(rawSerial, 10);
+    const serialNumber =
+      Number.isInteger(parsedSerial) && parsedSerial > 0
+        ? parsedSerial
+        : rowIndex + 1;
+
+    records.push({ serialNumber, name, branch });
+  });
+
+  return records.sort(
+    (a, b) => a.serialNumber - b.serialNumber || a.name.localeCompare(b.name)
+  );
+}
+
 module.exports = {
   appendUserToSheet,
+  readResultRecords,
 };

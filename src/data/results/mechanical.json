@@ -1,0 +1,77 @@
+[
+  {
+    "serialNumber": 1,
+    "name": "Anand Gadge",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 2,
+    "name": "Rajesh Dhage",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 3,
+    "name": "Harshal Adhav",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 4,
+    "name": "Shruti Hukare",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 5,
+    "name": "Trupti Baraskar",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 6,
+    "name": "Aman Shinde",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 7,
+    "name": "Nivedita Kuwar",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 8,
+    "name": "Tushar Dharne",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 9,
+    "name": "Bhushan Dohe",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 10,
+    "name": "Adinath Konde",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 11,
+    "name": "Devesh Kolhe",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 12,
+    "name": "Om Kolate",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 13,
+    "name": "Shruti Badre",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 14,
+    "name": "Tanvi Raghorte",
+    "branch": "Mechanical Engineering"
+  },
+  {
+    "serialNumber": 15,
+    "name": "Aniket Salunke",
+    "branch": "Mechanical Engineering"
+  }
+]

@@ -1,6 +1,7 @@
 import NeoButton from '../ui/NeoButton';
 import rtfLogo from '../../assets/images/rtf-logo-img.jpg';
 import gcoeaLogo from '../../assets/images/gcoea-logo.jpeg';
+import ResultsAnnouncement from '../results/ResultsAnnouncement';
 
 export default function HeroSection() {
   return (
@@ -9,6 +10,9 @@ export default function HeroSection() {
       <div className="relative z-10 flex items-center justify-center w-full px-6">
         <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
           <div className="lg:col-span-3 flex flex-col items-start">
+<div className="mb-5 flex w-full justify-start translate-x-px">
+                <ResultsAnnouncement />
+            </div>
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 <div className="inline-flex items-center gap-3 px-3.5 py-2 rounded-full border border-red-500/40 bg-black/90 shadow-[0_0_18px_rgba(255,32,32,0.16)] backdrop-blur-sm">
@@ -23,13 +27,13 @@ export default function HeroSection() {
                     GCoEA Amravati &middot; Est. 2014
                   </span>
                 </div>
-                <NeoButton
+                {/* <NeoButton
                   to="/recruitment-2026"
                   variant="danger"
                   className="order-first animate-bounce px-4 py-2 text-[11px] sm:order-none"
                 >
                   APPLY 2026
-                </NeoButton>
+                </NeoButton> */}
               </div>
               <p className="text-2xl md:text-3xl font-display font-bold tracking-widest text-cyan-600 dark:text-cyan-400 uppercase mb-2 select-none leading-none">
                 WE <span className="inline-block min-w-[240px] text-text-primary">INNOVATE</span>
