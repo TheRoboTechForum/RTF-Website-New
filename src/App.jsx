@@ -23,6 +23,8 @@ import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import FirstYearRegistration from './pages/FirstYearRegistration';
+import ResultsLanding from './components/results/ResultsLanding';
+import DomainResults from './components/results/DomainResults';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -102,6 +104,8 @@ function AnimatedRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/recruitment-2026" element={<FirstYearRegistration />} />
+        <Route path="/result26" element={<ResultsLanding />} />
+        <Route path="/result26/:domain" element={<DomainResults />} />
       </Routes>
     </AnimatePresence>
   );

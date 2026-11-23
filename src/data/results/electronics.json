@@ -1,0 +1,87 @@
+[
+  {
+    "serialNumber": 1,
+    "name": "Om Chandurkar",
+    "branch": "Electrical Engineering"
+  },
+  {
+    "serialNumber": 2,
+    "name": "Neetal Rathi",
+    "branch": "Electrical Engineering"
+  },
+  {
+    "serialNumber": 3,
+    "name": "Vaibhav Bhende",
+    "branch": "Electrical Engineering"
+  },
+  {
+    "serialNumber": 4,
+    "name": "Lucky Dodai",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 5,
+    "name": "Kartik Aasollar",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 6,
+    "name": "Aarush Devrankar",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 7,
+    "name": "Arya Korde",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 8,
+    "name": "Shivraj Desai",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 9,
+    "name": "Mansi More",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 10,
+    "name": "Divyanshu Walse",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 11,
+    "name": "Samiksha Neware",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 12,
+    "name": "Rohan Shinde",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 13,
+    "name": "Sanket Shinde",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 14,
+    "name": "Shashank Kubade",
+    "branch": "Electronics Engineering"
+  },
+  {
+    "serialNumber": 15,
+    "name": "Anmol Bonde",
+    "branch": "Instrumentation Engineering"
+  },
+  {
+    "serialNumber": 16,
+    "name": "Ankur Waichol",
+    "branch": "Instrumentation Engineering"
+  },
+  {
+    "serialNumber": 17,
+    "name": "Priya Naukarkar",
+    "branch": "Instrumentation Engineering"
+  }
+]
