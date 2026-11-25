@@ -10,7 +10,7 @@ export default function ShortlistedCandidatesNotice() {
         Congratulations, Selected Candidates!
       </h2>
       <p className="mt-4 leading-relaxed text-text-secondary">
-        Candidates shortlisted for the Robotics Forum are requested to complete the registration
+        Candidates shortlisted for THE ROBOTECH FORUM are requested to complete the registration
         form using the link below. Please ensure all required personal and contact details are
         entered correctly.
       </p>
