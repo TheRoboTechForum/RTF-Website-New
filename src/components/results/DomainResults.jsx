@@ -6,6 +6,7 @@ import StudentCard from './StudentCard';
 import ResultsLoader from './ResultsLoader';
 import ResultsEmptyState from './ResultsEmptyState';
 import DomainArtwork from './DomainArtwork';
+import ShortlistedCandidatesNotice from './ShortlistedCandidatesNotice';
 
 const domainLabels = {
   mechanical: 'MECHANICAL',
@@ -146,6 +147,7 @@ export default function DomainResults() {
             </div>
           )}
         </section>
+        {status === 'success' && students.length > 0 && <ShortlistedCandidatesNotice />}
       </div>
     </main>
   );

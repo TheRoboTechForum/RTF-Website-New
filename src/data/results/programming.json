@@ -1,1 +1,82 @@
-[]
+[
+  {
+    "serialNumber": 1,
+    "name": "Jayati Jain",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 2,
+    "name": "Purva Tayade",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 3,
+    "name": "Jhanvi Mutha",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 4,
+    "name": "Rahul Malviya",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 5,
+    "name": "Ajinkya Wari",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 6,
+    "name": "Aditya Pingane",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 7,
+    "name": "Anshul Ukey",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 8,
+    "name": "Laxmita Raut",
+    "branch": "Computer Science and Engineering"
+  },
+  {
+    "serialNumber": 9,
+    "name": "Shivam Kushwa",
+    "branch": "Information Technology"
+  },
+  {
+    "serialNumber": 10,
+    "name": "Aditya Gawane",
+    "branch": "Information Technology"
+  },
+  {
+    "serialNumber": 11,
+    "name": "Atharva Rane",
+    "branch": "Information Technology"
+  },
+  {
+    "serialNumber": 12,
+    "name": "Dhara Kite",
+    "branch": "Information Technology"
+  },
+  {
+    "serialNumber": 13,
+    "name": "Saloni Thakare",
+    "branch": "Information Technology"
+  },
+  {
+    "serialNumber": 14,
+    "name": "Faiz Firoj Jakhura",
+    "branch": "Information Technology"
+  },
+  {
+    "serialNumber": 15,
+    "name": "Sanjana Behare",
+    "branch": "Information Technology"
+  },
+  {
+    "serialNumber": 16,
+    "name": "Priyasha Palekar",
+    "branch": "Information Technology"
+  }
+]
